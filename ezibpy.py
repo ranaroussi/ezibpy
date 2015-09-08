@@ -528,14 +528,15 @@ class ezIBpy():
     # ---------------------------------------------------------
     def contractString(self, contract, seperator="_"):
         """ returns string from contract tuple """
-        try:
-            contractTuple = contract
-            if type(contract) != tuple:
-                contractTuple = (contract.m_symbol, contract.m_secType,
-                    contract.m_exchange, contract.m_currency, contract.m_expiry,
-                    contract.m_strike, contract.m_right)
 
-            # build identifier
+        contractTuple = contract
+        if type(contract) != tuple:
+            contractTuple = (contract.m_symbol, contract.m_secType,
+                contract.m_exchange, contract.m_currency, contract.m_expiry,
+                contract.m_strike, contract.m_right)
+
+        # build identifier
+        try:
             if contractTuple[1] in ("OPT", "FOP"):
                 # contractString = (contractTuple[0], contractTuple[1], contractTuple[6], contractTuple[4], contractTuple[5])
                 if contractTuple[5]*100 - int(contractTuple[5]*100):
@@ -561,12 +562,11 @@ class ezIBpy():
             else: # STK
                 contractString = (contractTuple[0], contractTuple[1])
 
-
             # construct string
             contractString = seperator.join(str(v) for v in contractString).replace(seperator+"STK", "")
 
         except:
-            contractString = ""
+            contractString = contractTuple[0]
 
         return contractString
 
@@ -577,7 +577,7 @@ class ezIBpy():
         # https://www.interactivebrokers.com/en/software/api/apiguide/java/contract.htm
 
         contractString = self.contractString(contractTuple)
-        print(contractString)
+        # print(contractString)
 
         # get (or set if not set) the tickerId for this symbol
         # tickerId = self.tickerId(contractTuple[0])

@@ -5,6 +5,7 @@
 import time
 from datetime import datetime
 from pandas import DataFrame
+from math import ceil
 
 from ib.opt import Connection, message
 from ib.ext.Contract import Contract

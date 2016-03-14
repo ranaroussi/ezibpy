@@ -226,12 +226,9 @@ class ezIBpy():
         # contract identifier
         contractString = self.contractString(msg.contract)
 
-        # if msg.pos != 0 or msg.contract.m_symbol in self.contracts.keys():
         if msg.pos != 0 or contractString in self.contracts.keys():
             self.log(mode="info", msg="[POSITION]: " + str(msg))
-            # self.positions[msg.contract.m_symbol] = {
             self.positions[contractString] = {
-                # "symbol":        msg.contract.m_symbol,
                 "symbol":        contractString,
                 "position":      int(msg.pos),
                 "avgCost":       float(msg.avgCost),
@@ -249,9 +246,7 @@ class ezIBpy():
         # contract identifier
         contractString = self.contractString(msg.contract)
 
-        # self.portfolio[msg.contract.m_symbol] = {
         self.portfolio[contractString] = {
-            # "symbol":        msg.contract.m_symbol,
             "symbol":        contractString,
             "position":      int(msg.position),
             "marketPrice":   float(msg.marketPrice),
@@ -331,12 +326,13 @@ class ezIBpy():
             print(self.historicalData)
             if self.csv_path != None:
                 for sym in self.historicalData:
-                    print("[HISTORY FINISHED]: " + str(sym.upper()))
-                    # if self.contracts[self.tickerId(sym)].m_secType == "FUT":
-                    #     self.historicalData[sym].to_csv(self.csv_path +
-                    #         sym.upper() +'.csv');
-                    # else:
-                    self.historicalData[sym].to_csv(self.csv_path + sym.upper() +'.csv');
+                    # print("[HISTORY FINISHED]: " + str(sym.upper()))
+                    # contractString = self.contractString(str(sym))
+                    contractString = str(sym)
+                    print("[HISTORY FINISHED]: " + contractString)
+                    self.historicalData[sym].to_csv(
+                        self.csv_path + contractString +'.csv'
+                        );
 
             print('.')
             # fire callback

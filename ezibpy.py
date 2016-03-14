@@ -531,8 +531,11 @@ class ezIBpy():
     def contractString(self, contract, seperator="_"):
         """ returns string from contract tuple """
 
+        localSymbol   = ""
         contractTuple = contract
+
         if type(contract) != tuple:
+            localSymbol   = contract.m_localSymbol
             contractTuple = (contract.m_symbol, contract.m_secType,
                 contract.m_exchange, contract.m_currency, contract.m_expiry,
                 contract.m_strike, contract.m_right)
@@ -551,9 +554,12 @@ class ezIBpy():
 
             elif contractTuple[1] == "FUT":
                 # round expiry day to expiry month
-                exp = str(contractTuple[4])[:6]
-                exp = dataTypes["MONTH_CODES"][int(exp[4:6])] + str(int(exp[:4]))
-                # print(contractTuple[0], exp)
+                if localSymbol != "":
+                    exp = localSymbol[2:-1]+str(contractTuple[4][:4])
+                else:
+                    exp = str(contractTuple[4])[:6]
+                    exp = dataTypes["MONTH_CODES"][int(exp[4:6])] + str(int(exp[:4]))
+
                 contractString = (contractTuple[0] + exp, contractTuple[1])
 
             elif contractTuple[1] == "CASH":

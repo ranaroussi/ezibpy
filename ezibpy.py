@@ -72,7 +72,10 @@ class ezIBpy():
         self.portfolio     = {}
 
         # holds market data
-        tickDF = DataFrame({ "datetime":[0], "bid":[0], "bidsize":[0],  "ask":[0], "asksize":[0], "last":[0], "lastsize":[0] })
+        tickDF = DataFrame({
+            "datetime":[0], "bid":[0], "bidsize":[0],
+            "ask":[0], "asksize":[0], "last":[0], "lastsize":[0]
+            })
         tickDF.set_index('datetime', inplace=True)
         self.marketData  = { 0: tickDF } # idx = tickerId
 
@@ -98,7 +101,11 @@ class ezIBpy():
         self.clientId = 0
         self.host     = host
         self.port     = port
-        self.ibConn   = Connection.create(host=self.host, port=self.port, clientId=self.clientId)
+        self.ibConn   = Connection.create(
+                            host = self.host,
+                            port = self.port,
+                            clientId = self.clientId
+                            )
 
         # Assign error handling function.
         self.ibConn.register(self.handleErrorEvents, 'Error')
@@ -426,7 +433,8 @@ class ezIBpy():
 
         # update timestamp
         if msg.tickType == dataTypes["FIELD_LAST_TIMESTAMP"]:
-            ts = datetime.fromtimestamp(int(msg.value)).strftime(dataTypes["DATE_TIME_FORMAT_LONG_MILLISECS"])
+            ts = datetime.fromtimestamp(int(msg.value)) \
+                .strftime(dataTypes["DATE_TIME_FORMAT_LONG_MILLISECS"])
             self.marketData[msg.tickerId].index = [ts]
             # self.log(mode="debug", msg="[TICK TS]: " + ts)
 
@@ -438,7 +446,8 @@ class ezIBpy():
             # self.log(mode="info", msg="[RTVOL]: " + str(msg))
 
             tick = dataTypes["RTVOL_TICKS"]
-            (tick['price'], tick['size'], tick['time'], tick['volume'], tick['vwap'], tick['single']) = msg.value.split(';')
+            (tick['price'], tick['size'], tick['time'], tick['volume'],
+                tick['vwap'], tick['single']) = msg.value.split(';')
 
             try:
                 tick['last']       = float(tick['price'])
@@ -450,7 +459,8 @@ class ezIBpy():
 
                 # parse time
                 s, ms = divmod(int(tick['time']), 1000)
-                tick['time'] = '{}.{:03d}'.format(time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(s)), ms)
+                tick['time'] = '{}.{:03d}'.format(
+                    time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(s)), ms)
 
                 # add most recent bid/ask to "tick"
                 tick['bid']     = round(self.marketData[msg.tickerId]['bid'][0], 2)
@@ -544,7 +554,8 @@ class ezIBpy():
                 else:
                     strike = "{0:.2f}".format(contractTuple[5])
 
-                contractString = (contractTuple[0] + str(contractTuple[4]) + contractTuple[6], str(strike).replace(".", ""))
+                contractString = (contractTuple[0] + str(contractTuple[4]) + \
+                    contractTuple[6], str(strike).replace(".", ""))
 
             elif contractTuple[1] == "FUT":
                 exp = str(contractTuple[4])
@@ -563,7 +574,8 @@ class ezIBpy():
                 contractString = (contractTuple[0], contractTuple[1])
 
             # construct string
-            contractString = seperator.join(str(v) for v in contractString).replace(seperator+"STK", "")
+            contractString = seperator.join(
+                str(v) for v in contractString).replace(seperator+"STK", "")
 
         except:
             contractString = contractTuple[0]
@@ -805,7 +817,8 @@ class ezIBpy():
         for contract in contracts:
             # tickerId = self.tickerId(contract.m_symbol)
             tickerId = self.tickerId(self.contractString(contract))
-            self.ibConn.reqMktData(tickerId, contract, dataTypes["GENERIC_TICKS_RTVOLUME"], False)
+            self.ibConn.reqMktData(
+                tickerId, contract, dataTypes["GENERIC_TICKS_RTVOLUME"], False)
 
     # ---------------------------------------------------------
     def cancelMarketData(self, contracts=None):
@@ -825,8 +838,8 @@ class ezIBpy():
 
 
     # ---------------------------------------------------------
-    def requestHistoricalData(self, contracts=None, resolution="1 min", lookback="1 D",
-            data="TRADES", end_datetime=None, rth=False, csv_path=None):
+    def requestHistoricalData(self, contracts=None, resolution="1 min",
+        lookback="1 D", data="TRADES", end_datetime=None, rth=False, csv_path=None):
         """
         Download to historical data
         https://www.interactivebrokers.com/en/software/api/apiguide/java/reqhistoricaldata.htm

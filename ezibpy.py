@@ -188,9 +188,6 @@ class ezIBpy():
             self.orderId     = msg.orderId
 
         elif msg.typeName == dataTypes["MSG_COMMISSION_REPORT"]:
-            # print("---------------")
-            # print(vars(msg.commissionReport))
-            # print("---------------")
             self.commission = msg.commissionReport.m_commission
 
         else:

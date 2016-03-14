@@ -555,11 +555,8 @@ class ezIBpy():
                     contractTuple[6], str(strike).replace(".", ""))
 
             elif contractTuple[1] == "FUT":
-                exp = str(contractTuple[4])
-                if len(exp) > 6:
-                    # round expiry day to expiry month
-                    exp = str(ceil(int(contractTuple[4]) / 100)*100)[:6]
-
+                # round expiry day to expiry month
+                exp = str(contractTuple[4])[:6]
                 exp = dataTypes["MONTH_CODES"][int(exp[4:6])] + str(int(exp[:4]))
                 # print(contractTuple[0], exp)
                 contractString = (contractTuple[0] + exp, contractTuple[1])

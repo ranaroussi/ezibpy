@@ -226,14 +226,14 @@ class ezIBpy():
         # contract identifier
         contractString = self.contractString(msg.contract)
 
-        if msg.pos != 0 or contractString in self.contracts.keys():
-            self.log(mode="info", msg="[POSITION]: " + str(msg))
-            self.positions[contractString] = {
-                "symbol":        contractString,
-                "position":      int(msg.pos),
-                "avgCost":       float(msg.avgCost),
-                "account":       msg.account
-            }
+        # if msg.pos != 0 or contractString in self.contracts.keys():
+        self.log(mode="info", msg="[POSITION]: " + str(msg))
+        self.positions[contractString] = {
+            "symbol":        contractString,
+            "position":      int(msg.pos),
+            "avgCost":       float(msg.avgCost),
+            "account":       msg.account
+        }
 
         # fire callback
         self.ibCallback(caller="handlePosition", msg=msg)
@@ -680,7 +680,7 @@ class ezIBpy():
         if "trailingPercent" in kwargs:
             order.m_trailingPercent = kwargs["trailingPercent"]
 
-        # For TRAIL LIMIT orders only
+        # For TRAILLIMIT orders only
         if "trailStopPrice" in kwargs:
             order.m_trailStopPrice = kwargs["trailStopPrice"]
 
@@ -689,9 +689,61 @@ class ezIBpy():
 
 
     # ---------------------------------------------------------
+    def createTargetOrder(self, quantity, parentId=0, \
+        target=0., orderType=None, transmit=True, label=None):
+        """ Creates TARGET order """
+        order = self.createOrder(quantity,
+            price     = target,
+            transmit  = transmit,
+            orderType = dataTypes["ORDER_TYPE_LIMIT"] if orderType == None else orderType,
+            # ocaGroup  = label,
+            parentId  = parentId
+        )
+        return order
+
+    # ---------------------------------------------------------
+    def createStopOrder(self, quantity, parentId=0, \
+        stop=0., orderType=None, transmit=True, label=None):
+        """ Creates STOP order """
+        if orderType == dataTypes["ORDER_TYPE_TRAIL_STOP"]:
+            order = self.createOrder(quantity,
+                trailingPercent = stop,
+                transmit  = transmit,
+                orderType = dataTypes["ORDER_TYPE_STOP"] if orderType == None else orderType,
+                # ocaGroup  = label,
+                parentId  = parentId
+            )
+        else:
+            order = self.createOrder(quantity,
+                stop      = stop,
+                transmit  = transmit,
+                orderType = dataTypes["ORDER_TYPE_STOP"] if orderType == None else orderType,
+                # ocaGroup  = label,
+                parentId  = parentId
+            )
+        # return self.placeOrder(contract, order, self.orderId+2)
+        return order
+
+    # ---------------------------------------------------------
+    def attachTrailingStopOrder(self, contract, quantity, parentId=0, trailPercent=100.):
+        """ convert hard stop order to trailing stop order """
+        if parentId not in self.orders:
+            raise ValueError("Order #"+ str(parentId) +" doesn't exist or wasn't submitted")
+            return
+
+        order = self.createStopOrder(quantity,
+            parentId  = parentId,
+            stop      = trailPercent,
+            orderType = dataTypes["ORDER_TYPE_TRAIL_STOP"],
+            transmit  = True
+        )
+
+        return self.placeOrder(contract, order, self.orderId+1)
+
+    # ---------------------------------------------------------
     def createBracketOrder(self, \
         contract, quantity, entry=0., target=0., stop=0., \
-        targetOrderType=None, stopOrderType=None, label=None, \
+        targetType=None, stopType=None, label=None, \
         tif="DAY", fillorkill=False, iceberg=False, **kwargs):
         """
         creates One Cancels All Bracket Order
@@ -707,38 +759,26 @@ class ezIBpy():
         # target
         targetOrderId = 0
         if target > 0:
-            targetOrderId = entryOrderId+1
-            targetOrder   = self.createOrder(-quantity,
-                price     = target,
+            targetOrder = self.createTargetOrder(-quantity,
+                parentId  = entryOrderId,
+                target    = target,
                 transmit  = False if stop > 0 else True,
-                orderType = dataTypes["ORDER_TYPE_LIMIT"] if targetOrderType == None else targetOrderType,
-                # ocaGroup  = label,
-                parentId  = entryOrderId
+                orderType = targetType,
+                label     = label
             )
-            self.placeOrder(contract, targetOrder, targetOrderId)
+            targetOrderId = self.placeOrder(contract, targetOrder, self.orderId+1)
 
         # stop
         stopOrderId = 0
         if stop > 0:
-            stopOrderId  = entryOrderId+2 # if target > 0 else entryOrderId+1
-            if stopOrderType == dataTypes["ORDER_TYPE_TRAIL_STOP"]:
-                stopOrder  = self.createOrder(-quantity, price=0,
-                    trailingPercent = stop,
-                    transmit  = True,
-                    orderType = dataTypes["ORDER_TYPE_TRAIL_STOP"],
-                    # ocaGroup  = label,
-                    parentId  = entryOrderId
-                )
-            else:
-                stopOrder  = self.createOrder(-quantity, price=0,
-                    stop      = stop,
-                    transmit  = True,
-                    orderType = dataTypes["ORDER_TYPE_STOP"] if stopOrderType == None else stopOrderType,
-                    # ocaGroup  = label,
-                    parentId  = entryOrderId
-                )
-
-            self.placeOrder(contract, stopOrder, stopOrderId)
+            stopOrder = self.createStopOrder(-quantity,
+                parentId  = entryOrderId,
+                stop      = stop,
+                orderType = stopType,
+                transmit  = True,
+                label     = label
+            )
+            stopOrderId = self.placeOrder(contract, stopOrder, self.orderId+2)
 
         return {
             "label": label,
@@ -746,25 +786,6 @@ class ezIBpy():
             "targetOrderId": targetOrderId,
             "stopOrderId": stopOrderId
             }
-
-    # ---------------------------------------------------------
-    def createTrailingStopOrder(self, contract, quantity, parentId=0, trailPercent=100.):
-        """ convert hard stop ordet to trailing stop order """
-        if parentId not in self.orders:
-            raise ValueError("Order #"+ str(parentId) +" doesn't exist or wasn't submitted")
-            return
-
-
-        order = self.createOrder(quantity,
-            # trailStopPrice = trailPercent,
-            # stop = 0.2,
-            trailingPercent = trailPercent,
-            orderType = dataTypes["ORDER_TYPE_TRAIL_STOP"],
-            parentId  = parentId,
-            transmit  = True
-        )
-        return self.placeOrder(contract, order, self.orderId+1)
-
 
     # ---------------------------------------------------------
     def placeOrder(self, contract, order, orderId=None):

@@ -583,7 +583,7 @@ class ezIBpy():
     def handleTrailingStops(self, tickerId):
         """ software-based trailing stop """
 
-        print('*')
+        # print('*')
 
         # existing?
         if tickerId not in self.trailingStops.keys():
@@ -640,7 +640,7 @@ class ezIBpy():
     # ---------------------------------------------------------
     def triggerTrailingStops(self, tickerId):
         """ trigger waiting trailing stops """
-        print('.')
+        # print('.')
         # test
         symbol   = self.tickerSymbol(tickerId)
         contract = self.contracts[tickerId]
@@ -655,9 +655,9 @@ class ezIBpy():
             trailPercent   = pendingOrder["trailPercent"]
             quantity       = pendingOrder["quantity"]
 
-            print(">>>>>>>", pendingOrder)
-            print(">>>>>>>", parentId)
-            print(">>>>>>>", self.orders)
+            # print(">>>>>>>", pendingOrder)
+            # print(">>>>>>>", parentId)
+            # print(">>>>>>>", self.orders)
 
             # abort
             if parentId not in self.orders.keys():

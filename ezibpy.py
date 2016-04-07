@@ -373,7 +373,7 @@ class ezIBpy():
             hist_row = DataFrame(index=['datetime'], data={
                 "datetime":ts, "O":msg.open, "H":msg.high,
                 "L":msg.low, "C":msg.close, "V":msg.volume,
-                "OI":msg.count })
+                "OI":msg.count, "WAP": msg.WAP })
             hist_row.set_index('datetime', inplace=True)
 
             symbol = self.tickerSymbol(msg.reqId)
@@ -466,13 +466,13 @@ class ezIBpy():
 
             tick = dataTypes["RTVOL_TICKS"]
             (tick['price'], tick['size'], tick['time'], tick['volume'],
-                tick['vwap'], tick['single']) = msg.value.split(';')
+                tick['wap'], tick['single']) = msg.value.split(';')
 
             try:
                 tick['last']       = float(tick['price'])
                 tick['lastsize']   = float(tick['size'])
                 tick['volume']     = float(tick['volume'])
-                tick['vwap']       = float(tick['vwap'])
+                tick['wap']        = float(tick['wap'])
                 tick['single']     = tick['single'] == 'true'
                 tick['instrument'] = self.tickerSymbol(msg.tickerId)
 

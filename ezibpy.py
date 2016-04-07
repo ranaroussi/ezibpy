@@ -618,7 +618,7 @@ class ezIBpy():
             elif trailingStop['trailPercent'] > 0:
                 newStop = price + (price*(trailingStop['trailPercent']/100))
 
-        print("\n\n", trailingStop['lastPrice'], newStop, price, "\n\n")
+        # print("\n\n", trailingStop['lastPrice'], newStop, price, "\n\n")
 
         # no change?
         if newStop == trailingStop['lastPrice']:

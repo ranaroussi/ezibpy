@@ -668,7 +668,7 @@ class ezIBpy():
                 if self.orders[parentId]["status"] != "FILLED":
                     return None
 
-            print("\n\n", quantity, triggerPrice, price, "\n\n")
+            # print("\n\n", quantity, triggerPrice, price, "\n\n")
 
             # create the order
             if ((quantity > 0) & (triggerPrice >= price)) | ((quantity < 0) & (triggerPrice <= price)) :
@@ -688,7 +688,7 @@ class ezIBpy():
                     del self.triggerableTrailingStops[symbol]
                     return trailingStopOrderId
 
-                print("------", stopOrderId , parentId, newStop , quantity, "------")
+                # print("------", stopOrderId , parentId, newStop , quantity, "------")
 
                 trailingStopOrderId = self.modifyStopOrder(
                     orderId  = stopOrderId,

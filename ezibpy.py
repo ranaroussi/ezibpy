@@ -79,6 +79,13 @@ class ezIBpy():
         self.marketData  = { 0: tickDF } # idx = tickerId
 
 
+        # holds orderbook data
+        l2DF = DataFrame(index=range(5), data={
+            "bid":0, "bidsize":0,
+            "ask":0, "asksize":0
+        })
+        self.marketDepthData = { 0: l2DF } # idx = tickerId
+
         # trailing stops
         self.trailingStops = {}
         # "tickerId" = {
@@ -175,13 +182,17 @@ class ezIBpy():
             if self.time < msg.time:
                 self.time = msg.time
 
+        elif (msg.typeName == dataTypes["MSG_TYPE_MKT_DEPTH"] or
+                msg.typeName == dataTypes["MSG_TYPE_MKT_DEPTH_L2"]):
+            self.handleMarketDepth(msg)
+
         elif msg.typeName == dataTypes["MSG_TYPE_TICK_STRING"]:
             self.handleTickString(msg)
 
         elif msg.typeName == dataTypes["MSG_TYPE_TICK_PRICE"]:
             self.handleTickPrice(msg)
 
-        elif msg.typeName == dataTypes["MSG_TYPE_STICK_SIZE"]:
+        elif msg.typeName == dataTypes["MSG_TYPE_TICK_SIZE"]:
             self.handleTickSize(msg)
 
         elif msg.typeName == dataTypes["MSG_TYPE_TICK_OPTION"]:
@@ -340,6 +351,40 @@ class ezIBpy():
 
     # ---------------------------------------------------------
     # Start price handlers
+    # ---------------------------------------------------------
+    def handleMarketDepth(self, msg):
+        """
+        https://www.interactivebrokers.com/en/software/api/apiguide/java/updatemktdepth.htm
+        https://www.interactivebrokers.com/en/software/api/apiguide/java/updatemktdepthl2.htm
+        """
+
+        # make sure symbol exists
+        if msg.tickerId not in self.marketDepthData.keys():
+            self.marketDepthData[msg.tickerId] = self.marketDepthData[0].copy()
+
+        # bid
+        if msg.side == 1:
+            self.marketDepthData[msg.tickerId].loc[msg.position, "bid"] = msg.price
+            self.marketDepthData[msg.tickerId].loc[msg.position, "bidsize"] = msg.size
+
+        # ask
+        elif msg.side == 0:
+            self.marketDepthData[msg.tickerId].loc[msg.position, "ask"] = msg.price
+            self.marketDepthData[msg.tickerId].loc[msg.position, "asksize"] = msg.size
+
+        """
+        # bid/ask spread / vol diff
+        self.marketDepthData[msg.tickerId].loc[msg.position, "spread"] = \
+            self.marketDepthData[msg.tickerId].loc[msg.position, "ask"]-\
+            self.marketDepthData[msg.tickerId].loc[msg.position, "bid"]
+
+        self.marketDepthData[msg.tickerId].loc[msg.position, "spreadsize"] = \
+            self.marketDepthData[msg.tickerId].loc[msg.position, "asksize"]-\
+            self.marketDepthData[msg.tickerId].loc[msg.position, "bidsize"]
+        """
+
+        self.ibCallback(caller="handleMarketDepth", msg=msg)
+
     # ---------------------------------------------------------
     def handleHistoricalData(self, msg):
         # self.log(mode="debug", msg="[HISTORY]: " + str(msg))
@@ -826,27 +871,27 @@ class ezIBpy():
 
     # shortcuts
     # ---------------------------------------------------------
-    def createStockContract(self, symbol, exchange="SMART", currency="USD"):
+    def createStockContract(self, symbol, currency="USD", exchange="GLOBEX"):
         contract_tuple = (symbol, "STK", exchange, currency, "", 0.0, "")
         contract = self.createContract(contract_tuple)
         return contract
 
     # ---------------------------------------------------------
-    def createFutureContract(self, symbol, exchange="GLOBEX", currency="USD", expiry=None):
+    def createFutureContract(self, symbol, currency="USD", expiry=None, exchange="GLOBEX"):
         contract_tuple = (symbol, "FUT", exchange, currency, expiry, 0.0, "")
         contract = self.createContract(contract_tuple)
         return contract
 
     # ---------------------------------------------------------
-    def createOptionContract(self, symbol, secType="OPT", exchange="SMART", \
-        currency="USD", expiry=None, strike=0.0, otype="CALL"):
+    def createOptionContract(self, symbol, secType="OPT", \
+        currency="USD", expiry=None, strike=0.0, otype="CALL", exchange="SMART"):
         # secType = OPT (Option) / FOP (Options on Futures)
         contract_tuple = (symbol, secType, exchange, currency, expiry, float(strike), otype)
         contract = self.createContract(contract_tuple)
         return contract
 
     # ---------------------------------------------------------
-    def createCashContract(self, symbol, exchange="SMART", currency="USD"):
+    def createCashContract(self, symbol, currency="USD", exchange="SMART"):
         """ Used for FX, etc:
         createCashContract("EUR", currency="USD")
         """
@@ -1046,6 +1091,41 @@ class ezIBpy():
         # https://www.interactivebrokers.com/en/software/api/apiguide/java/reqids.htm
         """
         self.ibConn.reqIds(numIds)
+
+    # ---------------------------------------------------------
+    def requestMarketDepth(self, contracts=None, num_rows=5):
+        """
+        Register to streaming market data updates
+        https://www.interactivebrokers.com/en/software/api/apiguide/java/reqmktdepth.htm
+        """
+
+        if num_rows > 5:
+            num_rows = 5
+
+        if contracts == None:
+            contracts = list(self.contracts.values())
+        elif not isinstance(contracts, list):
+            contracts = [contracts]
+
+        for contract in contracts:
+            tickerId = self.tickerId(self.contractString(contract))
+            self.ibConn.reqMktDepth(
+                tickerId, contract, num_rows)
+
+    # ---------------------------------------------------------
+    def cancelMarketDepth(self, contracts=None):
+        """
+        Cancel streaming market data for contract
+        https://www.interactivebrokers.com/en/software/api/apiguide/java/cancelmktdepth.htm
+        """
+        if contracts == None:
+            contracts = list(self.contracts.values())
+        elif not isinstance(contracts, list):
+            contracts = [contracts]
+
+        for contract in contracts:
+            tickerId = self.tickerId(self.contractString(contract))
+            self.ibConn.cancelMktDepth(tickerId=tickerId)
 
 
     # ---------------------------------------------------------

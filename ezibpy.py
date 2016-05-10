@@ -1093,14 +1093,14 @@ class ezIBpy():
         self.ibConn.reqIds(numIds)
 
     # ---------------------------------------------------------
-    def requestMarketDepth(self, contracts=None, num_rows=5):
+    def requestMarketDepth(self, contracts=None, num_rows=10):
         """
         Register to streaming market data updates
         https://www.interactivebrokers.com/en/software/api/apiguide/java/reqmktdepth.htm
         """
 
-        if num_rows > 5:
-            num_rows = 5
+        if num_rows > 10:
+            num_rows = 10
 
         if contracts == None:
             contracts = list(self.contracts.values())

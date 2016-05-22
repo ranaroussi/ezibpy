@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-
 import time
 from datetime import datetime
 from pandas import DataFrame
 
-from ib.opt import Connection, message
+from ib.opt import Connection #, message
 from ib.ext.Contract import Contract
 from ib.ext.Order import Order
 

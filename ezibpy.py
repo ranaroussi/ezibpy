@@ -390,7 +390,7 @@ class ezIBpy():
         print('.', end="",flush=True)
 
         if msg.date[:8].lower() == 'finished':
-            print(self.historicalData)
+            # print(self.historicalData)
             if self.csv_path != None:
                 for sym in self.historicalData:
                     # print("[HISTORY FINISHED]: " + str(sym.upper()))

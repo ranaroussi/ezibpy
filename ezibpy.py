@@ -178,6 +178,7 @@ class ezIBpy():
             pass
 
         elif msg.typeName == dataTypes["MSG_CURRENT_TIME"]:
+            print(msg)
             if self.time < msg.time:
                 self.time = msg.time
 

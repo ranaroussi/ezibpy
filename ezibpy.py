@@ -651,16 +651,16 @@ class ezIBpy():
 
         # long
         if (trailingStop['quantity'] < 0) & (trailingStop['lastPrice'] < price):
-            if trailingStop['trailAmount'] > 0:
-                newStop = price - trailingStop['trailAmount']
+            if abs(trailingStop['trailAmount']) > 0:
+                newStop = price - abs(trailingStop['trailAmount'])
             elif trailingStop['trailPercent'] > 0:
-                newStop = price - (price*(trailingStop['trailPercent']/100))
+                newStop = price - (price*(abs(trailingStop['trailPercent'])/100))
         # short
         elif (trailingStop['quantity'] > 0) & (trailingStop['lastPrice'] > price):
-            if trailingStop['trailAmount'] > 0:
-                newStop = price + trailingStop['trailAmount']
+            if abs(trailingStop['trailAmount']) > 0:
+                newStop = price + abs(trailingStop['trailAmount'])
             elif trailingStop['trailPercent'] > 0:
-                newStop = price + (price*(trailingStop['trailPercent']/100))
+                newStop = price + (price*(abs(trailingStop['trailPercent'])/100))
 
         # print("\n\n", trailingStop['lastPrice'], newStop, price, "\n\n")
 

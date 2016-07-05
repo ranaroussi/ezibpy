@@ -976,7 +976,7 @@ class ezIBpy():
             order = self.createOrder(quantity,
                 trailingPercent = stop,
                 transmit  = transmit,
-                orderType = orderType,
+                orderType = dataTypes["ORDER_TYPE_STOP"],
                 ocaGroup  = group,
                 parentId  = parentId
             )

@@ -38,6 +38,12 @@ class ezIBpy():
                 logging.critical(msg)
 
 
+
+    def roundClosestValid(self, val, res, decimals=2):
+        """ round to closest resolution """
+        return round(round(val / res)*res, decimals)
+
+
     """
     https://www.interactivebrokers.com/en/software/api/apiguide/java/java_eclientsocket_methods.htm
     """
@@ -578,7 +584,7 @@ class ezIBpy():
     # ---------------------------------------------------------
     def createTriggerableTrailingStop(self, symbol, quantity=1, \
         triggerPrice=0, trailPercent=100., trailAmount=0., \
-        parentId=0, stopOrderId=None):
+        parentId=0, stopOrderId=None, ticksize=0.01):
         """ adds order to triggerable list """
 
         self.triggerableTrailingStops[symbol] = {
@@ -587,14 +593,15 @@ class ezIBpy():
             "triggerPrice": triggerPrice,
             "trailAmount": abs(trailAmount),
             "trailPercent": abs(trailPercent),
-            "quantity": quantity
+            "quantity": quantity,
+            "ticksize": ticksize
         }
 
         return self.triggerableTrailingStops[symbol]
 
     # ---------------------------------------------------------
     def registerTrailingStop(self, tickerId, orderId=0, quantity=1, \
-        lastPrice=0, trailPercent=100., trailAmount=0., parentId=0):
+        lastPrice=0, trailPercent=100., trailAmount=0., parentId=0, ticksize=0.01):
         """ adds trailing stop to monitor list """
 
         trailingStop = self.trailingStops[tickerId] = {
@@ -603,7 +610,8 @@ class ezIBpy():
             "lastPrice": lastPrice,
             "trailAmount": trailAmount,
             "trailPercent": trailPercent,
-            "quantity": quantity
+            "quantity": quantity,
+            "ticksize": ticksize
         }
 
         return trailingStop
@@ -637,7 +645,7 @@ class ezIBpy():
         trailingStop   = self.trailingStops[tickerId]
         price          = self.marketData[tickerId]['last'][0]
         symbol         = self.tickerSymbol(tickerId)
-        contract       = self.contracts[tickerId]
+        # contract       = self.contracts[tickerId]
         # contractString = self.contractString(contract)
 
         # filled / no positions?
@@ -648,6 +656,7 @@ class ezIBpy():
 
         # continue...
         newStop = trailingStop['lastPrice']
+        ticksize = trailingStop['ticksize']
 
         # long
         if (trailingStop['quantity'] < 0) & (trailingStop['lastPrice'] < price):
@@ -661,6 +670,9 @@ class ezIBpy():
                 newStop = price + abs(trailingStop['trailAmount'])
             elif trailingStop['trailPercent'] > 0:
                 newStop = price + (price*(abs(trailingStop['trailPercent'])/100))
+
+        # valid newStop
+        newStop = self.roundClosestValid(newStop, ticksize)
 
         # print("\n\n", trailingStop['lastPrice'], newStop, price, "\n\n")
 
@@ -687,8 +699,8 @@ class ezIBpy():
         # print('.')
         # test
         symbol   = self.tickerSymbol(tickerId)
-        contract = self.contracts[tickerId]
         price    = self.marketData[tickerId]['last'][0]
+        # contract = self.contracts[tickerId]
 
         if symbol in self.triggerableTrailingStops.keys():
             pendingOrder   = self.triggerableTrailingStops[symbol]
@@ -698,6 +710,7 @@ class ezIBpy():
             trailAmount    = pendingOrder["trailAmount"]
             trailPercent   = pendingOrder["trailPercent"]
             quantity       = pendingOrder["quantity"]
+            ticksize       = pendingOrder["ticksize"]
 
             # print(">>>>>>>", pendingOrder)
             # print(">>>>>>>", parentId)
@@ -734,6 +747,9 @@ class ezIBpy():
 
                 # print("------", stopOrderId , parentId, newStop , quantity, "------")
 
+                # use valid newStop
+                newStop = self.roundClosestValid(newStop, ticksize)
+
                 trailingStopOrderId = self.modifyStopOrder(
                     orderId  = stopOrderId,
                     parentId = parentId,
@@ -753,7 +769,8 @@ class ezIBpy():
                         lastPrice = price,
                         trailAmount = trailAmount,
                         trailPercent = trailPercent,
-                        quantity = quantity
+                        quantity = quantity,
+                        ticksize = ticksize
                     )
 
                     return trailingStopOrderId

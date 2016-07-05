@@ -730,7 +730,7 @@ class ezIBpy():
                         newStop -= price*(trailPercent/100)
                 else:
                     del self.triggerableTrailingStops[symbol]
-                    return trailingStopOrderId
+                    return 0
 
                 # print("------", stopOrderId , parentId, newStop , quantity, "------")
 

@@ -130,9 +130,9 @@ class ezIBpy():
 
 
     # ---------------------------------------------------------
-    def connect(self, clientId, host="localhost", port=7496):
+    def connect(self, clientId=0, host="localhost", port=7496):
         """ Establish connection to TWS/IBGW """
-        self.clientId = 0
+        self.clientId = clientId
         self.host     = host
         self.port     = port
         self.ibConn   = Connection.create(
@@ -674,7 +674,7 @@ class ezIBpy():
         # valid newStop
         newStop = self.roundClosestValid(newStop, ticksize)
 
-        # print("\n\n", trailingStop['lastPrice'], newStop, price, "\n\n")
+        print("\n\n", trailingStop['lastPrice'], newStop, price, "\n\n")
 
         # no change?
         if newStop == trailingStop['lastPrice']:
@@ -758,6 +758,7 @@ class ezIBpy():
                 )
 
                 if trailingStopOrderId:
+                    # print(">>> TRAILING STOP")
                     del self.triggerableTrailingStops[symbol]
 
                     # register trailing stop

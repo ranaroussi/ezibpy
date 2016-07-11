@@ -888,7 +888,7 @@ class ezIBpy():
 
     # shortcuts
     # ---------------------------------------------------------
-    def createStockContract(self, symbol, currency="USD", exchange="GLOBEX"):
+    def createStockContract(self, symbol, currency="USD", exchange="SMART"):
         contract_tuple = (symbol, "STK", exchange, currency, "", 0.0, "")
         contract = self.createContract(contract_tuple)
         return contract

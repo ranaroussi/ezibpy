@@ -920,7 +920,7 @@ class ezIBpy():
     # order constructors
     # ---------------------------------------------------------
     def createOrder(self, quantity, price=0., stop=0., tif="DAY", \
-        fillorkill=False, iceberg=False, transmit=True, **kwargs):
+        fillorkill=False, iceberg=False, transmit=True, rth=False, **kwargs):
         # https://www.interactivebrokers.com/en/software/api/apiguide/java/order.htm
         order = Order()
         order.m_clientId      = self.clientId
@@ -938,6 +938,7 @@ class ezIBpy():
         order.m_allOrNone     = int(fillorkill)
         order.hidden          = iceberg
         order.m_transmit      = int(transmit)
+        order.m_outsideRth    = int(rth==False)
 
         # The publicly disclosed order size for Iceberg orders
         if iceberg & ("blockOrder" in kwargs):
@@ -975,20 +976,21 @@ class ezIBpy():
 
     # ---------------------------------------------------------
     def createTargetOrder(self, quantity, parentId=0, \
-        target=0., orderType=None, transmit=True, group=None):
+        target=0., orderType=None, transmit=True, group=None, rth=False):
         """ Creates TARGET order """
         order = self.createOrder(quantity,
             price     = target,
             transmit  = transmit,
             orderType = dataTypes["ORDER_TYPE_LIMIT"] if orderType == None else orderType,
             ocaGroup  = group,
-            parentId  = parentId
+            parentId  = parentId,
+            rth       = rth
         )
         return order
 
     # ---------------------------------------------------------
     def createStopOrder(self, quantity, parentId=0, \
-        stop=0., trail=False, transmit=True, group=None):
+        stop=0., trail=False, transmit=True, group=None, rth=False):
         """ Creates STOP order """
         if trail:
             order = self.createOrder(quantity,
@@ -996,7 +998,8 @@ class ezIBpy():
                 transmit  = transmit,
                 orderType = dataTypes["ORDER_TYPE_STOP"],
                 ocaGroup  = group,
-                parentId  = parentId
+                parentId  = parentId,
+                rth       = rth
             )
         else:
             order = self.createOrder(quantity,
@@ -1004,7 +1007,8 @@ class ezIBpy():
                 transmit  = transmit,
                 orderType = dataTypes["ORDER_TYPE_STOP"],
                 ocaGroup  = group,
-                parentId  = parentId
+                parentId  = parentId,
+                rth       = rth
             )
         return order
 
@@ -1030,7 +1034,7 @@ class ezIBpy():
     def createBracketOrder(self, \
         contract, quantity, entry=0., target=0., stop=0., \
         targetType=None, trailingStop=None, group=None, \
-        tif="DAY", fillorkill=False, iceberg=False, **kwargs):
+        tif="DAY", fillorkill=False, iceberg=False, rth=False, **kwargs):
         """
         creates One Cancels All Bracket Order
         """
@@ -1039,7 +1043,7 @@ class ezIBpy():
 
         # main order
         enteyOrder = self.createOrder(quantity, price=entry, transmit=False,
-            tif=tif, fillorkill=fillorkill, iceberg=iceberg)
+            tif=tif, fillorkill=fillorkill, iceberg=iceberg, rth=rth)
         entryOrderId = self.placeOrder(contract, enteyOrder)
 
         # target
@@ -1050,7 +1054,9 @@ class ezIBpy():
                 target    = target,
                 transmit  = False if stop > 0 else True,
                 orderType = targetType,
-                group     = group
+                group     = group,
+                rth       = rth
+
             )
             targetOrderId = self.placeOrder(contract, targetOrder, self.orderId+1)
 
@@ -1062,7 +1068,8 @@ class ezIBpy():
                 stop      = stop,
                 trail     = trailingStop,
                 transmit  = True,
-                group     = group
+                group     = group,
+                rth       = rth
             )
             stopOrderId = self.placeOrder(contract, stopOrder, self.orderId+2)
 

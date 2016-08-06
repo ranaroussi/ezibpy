@@ -50,7 +50,7 @@ class ezIBpy():
     # ---------------------------------------------------------
     def __init__(self):
 
-        self.__version__   = 0.05
+        self.__version__   = 0.09
 
         self.logging       = False
 

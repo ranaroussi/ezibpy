@@ -355,6 +355,18 @@ class ezIBpy():
             self.ibCallback(caller="handleOrders", msg=msg)
 
     # ---------------------------------------------------------
+    def group_orders(self, by="symbol"):
+        orders = {}
+        for order in self.orders:
+            if order[by] not in orders.keys():
+                orders[order[by]] = {}
+
+            del order["contract"]
+            orders[order[by]][order['id']] = order
+
+        return orders
+
+    # ---------------------------------------------------------
     # Start price handlers
     # ---------------------------------------------------------
     def handleMarketDepth(self, msg):

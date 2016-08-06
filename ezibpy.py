@@ -70,7 +70,6 @@ class ezIBpy():
         self.tickerIds     = { 0: "SYMBOL" }
         self.contracts     = {}
         self.orders        = {}
-        self.orderBook     = {}
         self.symbol_orders = {}
         self.account       = {}
         self.positions     = {}

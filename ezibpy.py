@@ -360,11 +360,13 @@ class ezIBpy():
     # ---------------------------------------------------------
     def group_orders(self, by="symbol"):
         orders = {}
-        for order in self.orders:
+        for orderId in self.orders:
+            order = self.orders[orderId]
             if order[by] not in orders.keys():
                 orders[order[by]] = {}
 
-            del order["contract"]
+            try: del order["contract"]
+            except: pass
             orders[order[by]][order['id']] = order
 
         return orders

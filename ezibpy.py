@@ -337,7 +337,7 @@ class ezIBpy():
 
         # order status
         elif msg.typeName == dataTypes["MSG_TYPE_ORDER_STATUS"]:
-            if self.orders[msg.orderId]['status'] == msg.status.upper():
+            if msg.orderId in self.orders and self.orders[msg.orderId]['status'] == msg.status.upper():
                 duplicateMessage = True
             else:
                 self.orders[msg.orderId]['status']       = msg.status.upper()

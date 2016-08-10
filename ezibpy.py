@@ -895,6 +895,9 @@ class ezIBpy():
         newContract.m_strike   = contractTuple[5]
         newContract.m_right    = contractTuple[6]
 
+        # include expired (needed for historical data)
+        newContract.m_includeExpired = True
+
         # add contract to pull
         # self.contracts[contractTuple[0]] = newContract
         self.contracts[tickerId] = newContract

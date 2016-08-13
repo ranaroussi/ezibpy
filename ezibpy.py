@@ -55,7 +55,7 @@ class ezIBpy():
         self.logging       = False
 
         self.clientId      = 0
-        self.port          = 7496 # 7496 = TWS, 4001 = IBGateway
+        self.port          = 4001 # 7496 = TWS, 4001 = IBGateway
         self.host          = "localhost"
         self.ibConn        = None
 
@@ -113,24 +113,24 @@ class ezIBpy():
         # }
 
 
-        # holds options data
+        # @TODO - options data
         # optionDF = DataFrame({ "datetime":[0], "bid":[0], "ask":[0], "last":[0], "impliedVol":[0], "delta":[0], "optPrice":[0], "pvDividend":[0], "gamma":[0], "vega":[0], "theta":[0], "undPrice":[0] })
         # optionDF.set_index('datetime', inplace=True)
 
-#         optionDF = {
-#             "bid":   DataFrame({ "impliedVol":[0], "delta":[0], "optPrice":[0], "pvDividend":[0], "gamma":[0], "vega":[0], "theta":[0], "undPrice":[0] }),
-#             "ask":   DataFrame({ "impliedVol":[0], "delta":[0], "optPrice":[0], "pvDividend":[0], "gamma":[0], "vega":[0], "theta":[0], "undPrice":[0] }),
-#             "last":  DataFrame({ "impliedVol":[0], "delta":[0], "optPrice":[0], "pvDividend":[0], "gamma":[0], "vega":[0], "theta":[0], "undPrice":[0] }),
-#             "model": DataFrame({ "impliedVol":[0], "delta":[0], "optPrice":[0], "pvDividend":[0], "gamma":[0], "vega":[0], "theta":[0], "undPrice":[0] })
-#         }
-#         self.optionsData  = { 0: optionDF }
+        # optionDF = {
+        #     "bid":   DataFrame({ "impliedVol":[0], "delta":[0], "optPrice":[0], "pvDividend":[0], "gamma":[0], "vega":[0], "theta":[0], "undPrice":[0] }),
+        #     "ask":   DataFrame({ "impliedVol":[0], "delta":[0], "optPrice":[0], "pvDividend":[0], "gamma":[0], "vega":[0], "theta":[0], "undPrice":[0] }),
+        #     "last":  DataFrame({ "impliedVol":[0], "delta":[0], "optPrice":[0], "pvDividend":[0], "gamma":[0], "vega":[0], "theta":[0], "undPrice":[0] }),
+        #     "model": DataFrame({ "impliedVol":[0], "delta":[0], "optPrice":[0], "pvDividend":[0], "gamma":[0], "vega":[0], "theta":[0], "undPrice":[0] })
+        # }
+        # self.optionsData  = { 0: optionDF }
 
         # historical data contrainer
         self.historicalData = { }  # idx = symbol
 
 
     # ---------------------------------------------------------
-    def connect(self, clientId=0, host="localhost", port=7496):
+    def connect(self, clientId=0, host="localhost", port=4001):
         """ Establish connection to TWS/IBGW """
         self.clientId = clientId
         self.host     = host

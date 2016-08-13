@@ -47,7 +47,7 @@ setup(
     ],
     platforms = ['any'],
     keywords='ezibpy',
-    packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+    packages=find_packages(exclude=['contrib', 'docs', 'tests', 'examples']),
     install_requires=['pandas'],
     entry_points={
         'console_scripts': [

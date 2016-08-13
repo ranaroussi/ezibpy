@@ -343,7 +343,7 @@ please submit a pull request.
 Legal Stuff
 ===========
 
-ezIBpy is distributed under the **GNU Lesser General Public License v3.0**. See the `LICENSE.txt <./master/LICENSE.txt>`_ file in the release for details.
+ezIBpy is distributed under the **GNU Lesser General Public License v3.0**. See the `LICENSE.txt <./LICENSE.txt>`_ file in the release for details.
 ezIBpy is not a product of Interactive Brokers, nor is it affiliated with Interactive Brokers.
 
 P.S.

@@ -1,18 +1,11 @@
 ezIBpy: Pythonic Wrapper for Troy Melhase's IbPy
 =================================================
 
-© Ran Aroussi
-
 ezIBpy is a Pythonic wrapper for Troy Melhase's `IbPy <https://github.com/blampe/IbPy>`_
 library, that was developed to speed up the development of
 trading software that relies on
 `Interactive Brokers <https://www.interactivebrokers.com>`_
 for market data and order execution.
-
-ezIBpy was originally developed by Ran Aroussi for
-`Native Alpha <http://www.nativealpha.com>`__’s
-quantitative trading team to streamline the development
-of their in-house trading strategies.
 
 Code Examples
 =============

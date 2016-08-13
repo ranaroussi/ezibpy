@@ -1,9 +1,3 @@
-.. image:: http://www.nativealpha.com/ezibpy-logo.png
-    :target: https://github.com/ranaroussi/ezIBpy
-    :width: 200px
-    :align: left
-    :alt: ezIBpy
-
 ezIBpy: Pythonic Wrapper for Troy Melhase's IbPy
 =================================================
 
@@ -329,7 +323,7 @@ Then, install ezIBpy using ``pip``:
 
 .. code:: bash
 
-    $ pip install ezibpy
+    $ pip install --user git+https://github.com/ranaroussi/ezibpy/archive/master.zip
 
 
 Requirements

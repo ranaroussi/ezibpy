@@ -27,7 +27,11 @@ Interactive Brokers’ `TWS <https://www.interactivebrokers.com/en/index.php?f=1
 - `Submit a Bracket Order & Move Stop Manually <#submit-a-bracket-order-&-move-stop-manually>`_
 - `Submit a Bracket Order with a Trailing Stop <#submit-a-bracket-order-with-a-trailing-stop>`_
 
----
+**Other Stuff**
+
+- `Using Custom Callbacks <#custom-callback>`_
+- `Account Information <#account-information>`_
+
 
 Request Market Data:
 --------------------
@@ -91,7 +95,6 @@ Request Historical Data:
 
     import ezibpy
     import time
-    import sys
 
     # initialize ezIBpy
     ibConn = ezibpy.ezIBpy()
@@ -160,7 +163,7 @@ Submit a Bracket Order:
     contract = ibConn.createFutureContract("ES", exchange="GLOBEX", expiry="201609")
 
     # submit a bracket order (entry=0 = MKT order)
-    order = ibc.createBracketOrder(contract, quantity=1, entry=0, target=2200., stop=1900.)
+    order = ibConn.createBracketOrder(contract, quantity=1, entry=0, target=2200., stop=1900.)
 
     # let order fill
     time.sleep(1)
@@ -188,7 +191,7 @@ Submit a Bracket Order & Move Stop Manually:
     contract = ibConn.createFutureContract("ES", exchange="GLOBEX", expiry="201609")
 
     # submit a bracket order (entry=0 = MKT order)
-    order = ibc.createBracketOrder(contract, quantity=1, entry=0, target=2200., stop=1900.)
+    order = ibConn.createBracketOrder(contract, quantity=1, entry=0, target=2200., stop=1900.)
 
     # let order fill
     time.sleep(1)
@@ -221,7 +224,7 @@ Submit a Bracket Order with a Trailing Stop:
     contract = ibConn.createFutureContract("ES", exchange="GLOBEX", expiry="201609")
 
     # submit a bracket order (entry=0 = MKT order)
-    order = ibc.createBracketOrder(contract, quantity=1, entry=0, target=2200., stop=1900.)
+    order = ibConn.createBracketOrder(contract, quantity=1, entry=0, target=2200., stop=1900.)
 
     # let order fill
     time.sleep(1)
@@ -252,8 +255,47 @@ Submit a Bracket Order with a Trailing Stop:
     # ibConn.disconnect()
 
 
-Other stuff:
-------------
+Custom Callback:
+----------------
+.. code:: python
+
+    import ezibpy
+    import time
+
+    # define custom callback
+    def ibCallback(caller, msg, **kwargs):
+        if caller == "handleOrders":
+            order = ibConn.orders[msg.orderId]
+            if order["status"] == "FILLED":
+                print(">>> ORDER FILLED")
+
+    # initialize ezIBpy
+    ibConn = ezibpy.ezIBpy()
+    ibConn.connect(clientId=100, host="localhost", port=4001)
+
+    # assign the custom callback
+    ibConn.ibCallback = ibCallback
+
+    # create a contract
+    contract = ibConn.createStockContract("AAPL")
+
+    # create & place order
+    order = ibConn.createOrder(quantity=100)
+    orderId = ibConn.placeOrder(contract, order)
+
+    # let order fill
+    time.sleep(1)
+
+    # see the positions
+    print("Positions")
+    print(ibConn.positions)
+
+    # disconnect
+    ibConn.disconnect()
+
+
+Account Information:
+--------------------
 .. code:: python
 
     import ezibpy

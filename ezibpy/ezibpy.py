@@ -1,11 +1,28 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
+#
+# ezIBpy: Pythonic Wrapper for Troy Melhase's IbPy
+# https://github.com/ranaroussi/ezibpy
+#
+# Copyright 2015 Ran Aroussi
+#
+# Licensed under the GNU Lesser General Public License, v3.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.gnu.org/licenses/lgpl-3.0.en.html
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import time
 from datetime import datetime
 from pandas import DataFrame
 
-from ib.opt import Connection #, message
+from ib.opt import Connection
 from ib.ext.Contract import Contract
 from ib.ext.Order import Order
 
@@ -54,8 +71,8 @@ class ezIBpy():
 
         self.logging       = False
 
-        self.clientId      = 0
-        self.port          = 4001 # 7496 = TWS, 4001 = IBGateway
+        self.clientId      = 1
+        self.port          = 4001 # 7496/7497 = TWS, 4001 = IBGateway
         self.host          = "localhost"
         self.ibConn        = None
 
@@ -111,7 +128,6 @@ class ezIBpy():
         #     trailAmount: ...
         #     quantity: ...
         # }
-
 
         # @TODO - options data
         # optionDF = DataFrame({ "datetime":[0], "bid":[0], "ask":[0], "last":[0], "impliedVol":[0], "delta":[0], "optPrice":[0], "pvDividend":[0], "gamma":[0], "vega":[0], "theta":[0], "undPrice":[0] })
@@ -180,8 +196,10 @@ class ezIBpy():
 
     # ---------------------------------------------------------
     def handleServerEvents(self, msg):
+        """ dispatch msg to the right handler """
+
         if msg.typeName == "error":
-            pass
+            self.log(mode="error", msg="[IB ERROR] "+str(msg))
 
         elif msg.typeName == dataTypes["MSG_CURRENT_TIME"]:
             if self.time < msg.time:
@@ -481,12 +499,6 @@ class ezIBpy():
         """
         holds latest tick bid/ask/last size
         """
-        # self.log(mode="debug", msg="[TICK SIZE]: " + dataTypes["SIZE_TICKS"][msg.field] + " - " + str(msg))
-        # return
-
-        # contractString = self.tickerSymbol(msg.tickerId)
-        # print("**", symbol, self.contracts[self.tickerId(msg.tickerId)].m_secType)
-
         # create tick holder for ticker
         if msg.tickerId not in self.marketData.keys():
             self.marketData[msg.tickerId] = self.marketData[0].copy()
@@ -651,8 +663,6 @@ class ezIBpy():
     # ---------------------------------------------------------
     def handleTrailingStops(self, tickerId):
         """ software-based trailing stop """
-
-        # print('*')
 
         # existing?
         if tickerId not in self.trailingStops.keys():

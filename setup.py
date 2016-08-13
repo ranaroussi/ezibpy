@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+#
+# ezIBpy: Pythonic Wrapper for Troy Melhase's IbPy
+# https://github.com/ranaroussi/ezibpy
+
+"""ezIBpy: Pythonic Wrapper for Troy Melhase's IbPy
+ezIBpy is a Pythonic wrapper for Troy Melhase's IbPy library
+(https://github.com/blampe/IbPy), that was developed to
+speed up the development of trading software that relies on
+Interactive Brokers for market data and order execution.
+"""
+
+from setuptools import setup, find_packages
+from codecs import open
+from os import path
+
+here = path.abspath(path.dirname(__file__))
+
+# Get the long description from the README file
+with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+    long_description = f.read()
+
+setup(
+    name='ezIBpy',
+    version='1.12.6',
+    description='Pythonic Wrapper for IbPy',
+    long_description=long_description,
+    url='https://github.com/ranaroussi/ezibpy',
+    author='Ran Aroussi',
+    author_email='ran@aroussi.com',
+    license='LGPL',
+    classifiers=[
+        'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',
+        'Development Status :: 5 - Production/Stable',
+
+        'Operating System :: OS Independent',
+        'Intended Audience :: Developers',
+        'Topic :: Office/Business :: Financial',
+        'Topic :: Office/Business :: Financial :: Investment',
+        'Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator',
+        'Topic :: Software Development :: Libraries',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+    ],
+
+    keywords='ezibpy',
+    packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+    install_requires=['pandas'],
+
+    entry_points={
+        'console_scripts': [
+            'sample=sample:main',
+        ],
+    },
+)

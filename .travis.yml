@@ -1,0 +1,20 @@
+language: python
+
+sudo: false
+fast_finish: true
+
+python:
+  - "3.4"
+  - "3.5"
+
+install:
+  - pip install .
+  - pip install -r requirements.txt
+  - pip install git+https://github.com/blampe/IbPy/archive/master.zip
+
+after_success:
+  - coveralls
+
+branches:
+  only:
+    - master

@@ -45,11 +45,10 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
     ],
-
+    platforms = ['any'],
     keywords='ezibpy',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     install_requires=['pandas'],
-
     entry_points={
         'console_scripts': [
             'sample=sample:main',

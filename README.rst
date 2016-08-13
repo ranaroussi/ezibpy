@@ -323,7 +323,7 @@ Then, install ezIBpy using ``pip``:
 
 .. code:: bash
 
-    $ pip install --user git+https://github.com/ranaroussi/ezibpy/archive/master.zip
+    $ pip install ezibpy
 
 
 Requirements

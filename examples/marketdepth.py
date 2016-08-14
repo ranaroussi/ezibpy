@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 #
-# ezIBpy: Pythonic Wrapper for Troy Melhase's IbPy
+# ezIBpy: Pythonic Wrapper for IbPy
 # https://github.com/ranaroussi/ezibpy
 #
 # Copyright 2015 Ran Aroussi

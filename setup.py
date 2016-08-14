@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 #
-# ezIBpy: Pythonic Wrapper for Troy Melhase's IbPy
+# ezIBpy: Pythonic Wrapper for IbPy
 # https://github.com/ranaroussi/ezibpy
 
-"""ezIBpy: Pythonic Wrapper for Troy Melhase's IbPy
-ezIBpy is a Pythonic wrapper for Troy Melhase's IbPy library
+"""ezIBpy: Pythonic Wrapper for IbPy
+ezIBpy is a Pythonic wrapper for IbPy library
 (https://github.com/blampe/IbPy), that was developed to
 speed up the development of trading software that relies on
 Interactive Brokers for market data and order execution.
@@ -46,7 +46,7 @@ setup(
         'Programming Language :: Python :: 3.5',
     ],
     platforms = ['any'],
-    keywords='ezibpy',
+    keywords='ezibpy interactive brokers tws, ibgw, ibpy',
     packages=find_packages(exclude=['contrib', 'docs', 'tests', 'examples']),
     install_requires=['pandas'],
     entry_points={

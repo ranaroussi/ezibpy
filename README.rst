@@ -1,11 +1,13 @@
-ezIBpy: Pythonic Wrapper for Troy Melhase's IbPy
+ezIBpy: Pythonic Wrapper for IbPy
 =================================================
 
-ezIBpy is a Pythonic wrapper for Troy Melhase's `IbPy <https://github.com/blampe/IbPy>`_
-library, that was developed to speed up the development of
+ezIBpy is a Pythonic wrapper for the `IbPy <https://github.com/blampe/IbPy>`_
+library by `@blampe <https://github.com/blampe/IbPy>`_,
+that was developed to speed up the development of
 trading software that relies on
 `Interactive Brokers <https://www.interactivebrokers.com>`_
 for market data and order execution.
+
 
 Code Examples
 =============
@@ -24,8 +26,8 @@ Interactive Brokers’ `TWS <https://www.interactivebrokers.com/en/index.php?f=1
 
 - `Submit an Order <#submit-an-order>`_
 - `Submit a Bracket Order <#submit-a-bracket-order>`_
-- `Submit a Bracket Order & Move Stop Manually <#submit-a-bracket-order-&-move-stop-manually>`_
-- `Submit a Bracket Order with a Trailing Stop <#submit-a-bracket-order-with-a-trailing-stop>`_
+- `Moving Stop Manually <#submit-a-bracket-order-&-move-stop-manually>`_
+- `Bracket Order with Trailing Stop <#submit-a-bracket-order-with-a-trailing-stop>`_
 
 **Other Stuff**
 
@@ -348,7 +350,7 @@ Account Information:
 Installation
 ============
 
-First, install Troy Melhase's IbPy:
+First, install IbPy:
 
 .. code:: bash
 
@@ -387,6 +389,7 @@ Legal Stuff
 
 ezIBpy is distributed under the **GNU Lesser General Public License v3.0**. See the `LICENSE.txt <./LICENSE.txt>`_ file in the release for details.
 ezIBpy is not a product of Interactive Brokers, nor is it affiliated with Interactive Brokers.
+
 
 P.S.
 ====

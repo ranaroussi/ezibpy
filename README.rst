@@ -354,7 +354,7 @@ First, install IbPy:
 
 .. code:: bash
 
-    $ pip install --user git+https://github.com/blampe/IbPy/archive/master.zip
+    $ pip install git+git://github.com/blampe/IbPy --user
 
 Then, install ezIBpy using ``pip``:
 

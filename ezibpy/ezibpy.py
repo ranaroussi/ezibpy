@@ -938,7 +938,7 @@ class ezIBpy():
         return contract
 
     # ---------------------------------------------------------
-    def createCashContract(self, symbol, currency="USD", exchange="SMART"):
+    def createCashContract(self, symbol, currency="USD", exchange="IDEALPRO"):
         """ Used for FX, etc:
         createCashContract("EUR", currency="USD")
         """

@@ -924,10 +924,13 @@ class ezIBpy():
         return contract
 
     # ---------------------------------------------------------
-    def createFutureContract(self, symbol, currency="USD", expiry=None, exchange="GLOBEX"):
+    def createFuturesContract(self, symbol, currency="USD", expiry=None, exchange="GLOBEX"):
         contract_tuple = (symbol, "FUT", exchange, currency, expiry, 0.0, "")
         contract = self.createContract(contract_tuple)
         return contract
+
+    def createFutureContract(self, symbol, currency="USD", expiry=None, exchange="GLOBEX"):
+        return self.createFuturesContract(symbol=symbol, currency=currency, expiry=expiry, exchange=exchange)
 
     # ---------------------------------------------------------
     def createOptionContract(self, symbol, secType="OPT", \

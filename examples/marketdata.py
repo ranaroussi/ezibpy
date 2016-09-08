@@ -29,7 +29,7 @@ ibConn.connect(clientId=100, host="localhost", port=4001)
 
 # create some contracts using dedicated methods
 stk_contract = ibConn.createStockContract("AAPL")
-fut_contract = ibConn.createFutureContract("ES", expiry="201606")
+fut_contract = ibConn.createFuturesContract("ES", expiry="201606")
 csh_contract = ibConn.createCashContract("EUR", currency="USD")
 opt_contract = ibConn.createOptionContract("AAPL", expiry="20160425", strike=105.0, otype="PUT")
 

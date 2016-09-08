@@ -26,7 +26,7 @@ ibConn = ezibpy.ezIBpy()
 ibConn.connect(clientId=100, host="localhost", port=4001)
 
 # create a contract
-contract = ibConn.createFutureContract("ES", exchange="GLOBEX", expiry="201609")
+contract = ibConn.createFuturesContract("ES", exchange="GLOBEX", expiry="201609")
 
 # create an order
 order = ibConn.createOrder(quantity=1) # use price=X for LMT orders

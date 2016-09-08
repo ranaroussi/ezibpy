@@ -50,7 +50,7 @@ Request Market Data:
 
     # create some contracts using dedicated methods
     stk_contract = ibConn.createStockContract("AAPL")
-    fut_contract = ibConn.createFutureContract("ES", expiry="201606")
+    fut_contract = ibConn.createFuturesContract("ES", expiry="201606")
     csh_contract = ibConn.createCashContract("EUR", currency="USD")
     opt_contract = ibConn.createOptionContract("AAPL", expiry="20160425", strike=105.0, otype="PUT")
 
@@ -131,7 +131,7 @@ Submit an Order:
     ibConn.connect(clientId=100, host="localhost", port=4001)
 
     # create a contract
-    contract = ibConn.createFutureContract("ES", exchange="GLOBEX", expiry="201609")
+    contract = ibConn.createFuturesContract("ES", exchange="GLOBEX", expiry="201609")
 
     # create an order
     order = ibConn.createOrder(quantity=1) # use price=X for LMT orders
@@ -162,7 +162,7 @@ Submit a Bracket Order:
     ibConn.connect(clientId=100, host="localhost", port=4001)
 
     # create a contract
-    contract = ibConn.createFutureContract("ES", exchange="GLOBEX", expiry="201609")
+    contract = ibConn.createFuturesContract("ES", exchange="GLOBEX", expiry="201609")
 
     # submit a bracket order (entry=0 = MKT order)
     order = ibConn.createBracketOrder(contract, quantity=1, entry=0, target=2200., stop=1900.)
@@ -190,7 +190,7 @@ Submit a Bracket Order & Move Stop Manually:
     ibConn.connect(clientId=100, host="localhost", port=4001)
 
     # create a contract
-    contract = ibConn.createFutureContract("ES", exchange="GLOBEX", expiry="201609")
+    contract = ibConn.createFuturesContract("ES", exchange="GLOBEX", expiry="201609")
 
     # submit a bracket order (entry=0 = MKT order)
     order = ibConn.createBracketOrder(contract, quantity=1, entry=0, target=2200., stop=1900.)
@@ -223,7 +223,7 @@ Submit a Bracket Order with a Trailing Stop:
     ibConn.connect(clientId=100, host="localhost", port=4001)
 
     # create a contract
-    contract = ibConn.createFutureContract("ES", exchange="GLOBEX", expiry="201609")
+    contract = ibConn.createFuturesContract("ES", exchange="GLOBEX", expiry="201609")
 
     # submit a bracket order (entry=0 = MKT order)
     order = ibConn.createBracketOrder(contract, quantity=1, entry=0, target=2200., stop=1900.)

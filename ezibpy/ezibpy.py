@@ -170,6 +170,13 @@ class ezIBpy():
         # get server time
         self.getServerTime()
 
+        # subscribe to position and account changes
+        self.subscribePositions = False
+        self.requestPositionUpdates(subscribe=True)
+
+        self.subscribeAccount = False
+        self.requestAccountUpdates(subscribe=True)
+
 
     # ---------------------------------------------------------
     def disconnect(self):
@@ -1061,6 +1068,7 @@ class ezIBpy():
             parentId   = parentId
         )
 
+        self.requestOrderIds()
         return self.placeOrder(contract, order, self.orderId+1)
 
     # ---------------------------------------------------------
@@ -1089,8 +1097,9 @@ class ezIBpy():
                 orderType = targetType,
                 group     = group,
                 rth       = rth
-
             )
+
+            self.requestOrderIds()
             targetOrderId = self.placeOrder(contract, targetOrder, self.orderId+1)
 
         # stop
@@ -1104,6 +1113,8 @@ class ezIBpy():
                 group     = group,
                 rth       = rth
             )
+
+            self.requestOrderIds()
             stopOrderId = self.placeOrder(contract, stopOrder, self.orderId+2)
 
         # triggered trailing stop?
@@ -1121,18 +1132,32 @@ class ezIBpy():
     # ---------------------------------------------------------
     def placeOrder(self, contract, order, orderId=None):
         """ Place order on IB TWS """
+
+        # get latest order id before submitting an order
+        self.requestOrderIds()
+
+        # continue...
         useOrderId = self.orderId if orderId == None else orderId
         self.ibConn.placeOrder(useOrderId, contract, order)
-        self.requestOrderIds(1)
+
+        # update order id for next time
+        self.requestOrderIds()
         return useOrderId
 
 
     # ---------------------------------------------------------
     def cancelOrder(self, orderId=None):
         """ cancel order on IB TWS """
+
+        # get latest order id before submitting an order
+        self.requestOrderIds()
+
+        # continue...
         useOrderId = self.orderId if orderId == None else orderId
         self.ibConn.cancelOrder(useOrderId)
-        self.requestOrderIds(1)
+
+        # update order id for next time
+        self.requestOrderIds()
         return useOrderId
 
     # ---------------------------------------------------------
@@ -1267,10 +1292,12 @@ class ezIBpy():
     # ---------------------------------------------------------
     def requestPositionUpdates(self, subscribe=True):
         """ Request/cancel request real-time position data for all accounts. """
-        if subscribe == True:
-            self.ibConn.reqPositions()
-        else:
-            self.ibConn.cancelPositions()
+        if self.subscribePositions != subscribe:
+            self.subscribePositions = subscribe
+            if subscribe == True:
+                self.ibConn.reqPositions()
+            else:
+                self.ibConn.cancelPositions()
 
 
     # ---------------------------------------------------------
@@ -1279,5 +1306,7 @@ class ezIBpy():
         Register to account updates
         https://www.interactivebrokers.com/en/software/api/apiguide/java/reqaccountupdates.htm
         """
-        self.ibConn.reqAccountUpdates(subscribe, self.accountCode)
+        if self.subscribeAccount != subscribe:
+            self.subscribeAccount = subscribe
+            self.ibConn.reqAccountUpdates(subscribe, self.accountCode)
 

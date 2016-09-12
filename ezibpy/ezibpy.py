@@ -20,13 +20,18 @@
 
 import time
 from datetime import datetime
-from pandas import DataFrame
+from pandas import DataFrame, read_pickle
 
 from ib.opt import Connection
 from ib.ext.Contract import Contract
 from ib.ext.Order import Order
 
 from ezibpy.utils import dataTypes
+
+import atexit
+import tempfile
+import os
+from stat import S_IWRITE
 
 # =============================================================
 # set debugging mode
@@ -177,6 +182,9 @@ class ezIBpy():
         self.subscribeAccount = False
         self.requestAccountUpdates(subscribe=True)
 
+        # force refresh of orderId upon connect
+        self.handleNextValidId(self.orderId)
+
 
     # ---------------------------------------------------------
     def disconnect(self):
@@ -244,11 +252,11 @@ class ezIBpy():
         elif msg.typeName == dataTypes["MSG_TYPE_POSITION"]:
             self.handlePosition(msg)
 
+        elif msg.typeName == dataTypes["MSG_TYPE_NEXT_ORDER_ID"]:
+            self.handleNextValidId(msg.orderId)
+
         elif msg.typeName == dataTypes["MSG_TYPE_MANAGED_ACCOUNTS"]:
             self.accountCode = msg.accountsList
-
-        elif msg.typeName == dataTypes["MSG_TYPE_NEXT_ORDER_ID"]:
-            self.orderId     = msg.orderId
 
         elif msg.typeName == dataTypes["MSG_COMMISSION_REPORT"]:
             self.commission = msg.commissionReport.m_commission
@@ -266,6 +274,52 @@ class ezIBpy():
 
     # ---------------------------------------------------------
     # Start admin handlers
+    # ---------------------------------------------------------
+    def handleNextValidId(self, orderId):
+        """
+        handle nextValidId event
+        https://www.interactivebrokers.com/en/software/api/apiguide/java/nextvalidid.htm
+        """
+        self.orderId = orderId
+
+        # cash last orderId
+        try:
+            # db file
+            dbfile = tempfile.gettempdir()+"/ezibpy.pkl"
+
+            lastOrderId = 1 # default
+            if os.path.exists(dbfile):
+                df = read_pickle(dbfile)
+                filtered = df[df['clientId']==self.clientId]
+                if len(filtered) > 0:
+                    lastOrderId = filtered['orderId'].values[0]
+
+            print(">>", self.orderId, lastOrderId)
+
+            # override with db if needed
+            if self.orderId <= 1:
+                self.orderId = lastOrderId
+            elif self.orderId < lastOrderId:
+                self.orderId = lastOrderId
+
+            # make global
+            self.orderId = self.orderId
+
+            # save in db
+            orderDB = DataFrame(index=[0], data={'clientId':self.clientId, 'orderId':self.orderId})
+            if os.path.exists(dbfile):
+                orderDB = df[df['clientId']!=self.clientId].append(orderDB[['clientId', 'orderId']])
+            orderDB.to_pickle(dbfile)
+
+            # make writeable by all users
+            try: os.chmod(dbfile, S_IWRITE) # windows (cover all)
+            except: pass
+            try: os.chmod(dbfile, 0o777) # *nix
+            except: pass
+
+        except:
+            pass
+
     # ---------------------------------------------------------
     def handleAccount(self, msg):
         """

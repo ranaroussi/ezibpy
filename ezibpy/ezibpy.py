@@ -149,6 +149,9 @@ class ezIBpy():
         # historical data contrainer
         self.historicalData = { }  # idx = symbol
 
+        # register exit
+        atexit.register(self.disconnect)
+
 
     # ---------------------------------------------------------
     def connect(self, clientId=0, host="localhost", port=4001):

@@ -1,5 +1,11 @@
 ## Change Log
 
+#### 1.12.10
+
+- Caching last ``orderId`` to keep a persistent ``orderId`` between TWS sessions (may require a one-time resetting of API Order ID Sequence, see
+[https://www.interactivebrokers.com/en/software/csharp/topics/orders.htm](https://www.interactivebrokers.com/en/software/csharp/topics/orders.htm) for more information).
+
+
 #### 1.12.9
 
 - Calls ``requestPositionUpdates(...)`` and ``requestAccountUpdates(...)`` upon connecting by default

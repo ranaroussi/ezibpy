@@ -1,5 +1,10 @@
 ## Change Log
 
+#### 1.12.11
+
+- Removed debugging code
+
+
 #### 1.12.10
 
 - Caching last ``orderId`` to keep a persistent ``orderId`` between TWS sessions (may require a one-time resetting of API Order ID Sequence, see

@@ -297,8 +297,6 @@ class ezIBpy():
                 if len(filtered) > 0:
                     lastOrderId = filtered['orderId'].values[0]
 
-            print(">>", self.orderId, lastOrderId)
-
             # override with db if needed
             if self.orderId <= 1:
                 self.orderId = lastOrderId

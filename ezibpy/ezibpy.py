@@ -1201,19 +1201,13 @@ class ezIBpy():
 
 
     # ---------------------------------------------------------
-    def cancelOrder(self, orderId=None):
+    def cancelOrder(self, orderId):
         """ cancel order on IB TWS """
-
-        # get latest order id before submitting an order
-        self.requestOrderIds()
-
-        # continue...
-        useOrderId = self.orderId if orderId == None else orderId
-        self.ibConn.cancelOrder(useOrderId)
+        self.ibConn.cancelOrder(orderId)
 
         # update order id for next time
         self.requestOrderIds()
-        return useOrderId
+        return orderId
 
     # ---------------------------------------------------------
     # data requesters

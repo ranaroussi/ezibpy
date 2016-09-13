@@ -1,5 +1,10 @@
 ## Change Log
 
+#### 1.12.12
+
+- ``cancelOrder()`` not requires ``orderId``
+- Better hadling of canceled orders
+
 #### 1.12.11
 
 - Removed debugging code

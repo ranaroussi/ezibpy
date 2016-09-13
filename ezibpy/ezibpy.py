@@ -420,11 +420,15 @@ class ezIBpy():
             if msg.orderId in self.orders and self.orders[msg.orderId]['status'] == msg.status.upper():
                 duplicateMessage = True
             else:
-                self.orders[msg.orderId]['status']       = msg.status.upper()
-                self.orders[msg.orderId]['reason']       = msg.whyHeld
-                self.orders[msg.orderId]['avgFillPrice'] = float(msg.avgFillPrice)
-                self.orders[msg.orderId]['parentId']     = int(msg.parentId)
-                self.orders[msg.orderId]['time']         = datetime.fromtimestamp(int(self.time))
+                if "CANCELLED" in msg.status.upper():
+                    try: del self.orders[msg.orderId]
+                    except: pass
+                else:
+                    self.orders[msg.orderId]['status']       = msg.status.upper()
+                    self.orders[msg.orderId]['reason']       = msg.whyHeld
+                    self.orders[msg.orderId]['avgFillPrice'] = float(msg.avgFillPrice)
+                    self.orders[msg.orderId]['parentId']     = int(msg.parentId)
+                    self.orders[msg.orderId]['time']         = datetime.fromtimestamp(int(self.time))
 
             # remove from orders?
             # if msg.status.upper() == 'CANCELLED':

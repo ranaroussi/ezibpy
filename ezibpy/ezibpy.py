@@ -292,31 +292,28 @@ class ezIBpy():
 
             lastOrderId = 1 # default
             if os.path.exists(dbfile):
-                df = read_pickle(dbfile)
+                df = read_pickle(dbfile).groupby("clientId").last()
                 filtered = df[df['clientId']==self.clientId]
                 if len(filtered) > 0:
                     lastOrderId = filtered['orderId'].values[0]
 
             # override with db if needed
-            if self.orderId <= 1:
-                self.orderId = lastOrderId
-            elif self.orderId < lastOrderId:
-                self.orderId = lastOrderId
-
-            # make global
-            self.orderId = self.orderId
+            if self.orderId <= 1 or self.orderId < lastOrderId+1:
+                self.orderId = lastOrderId+1
 
             # save in db
             orderDB = DataFrame(index=[0], data={'clientId':self.clientId, 'orderId':self.orderId})
             if os.path.exists(dbfile):
                 orderDB = df[df['clientId']!=self.clientId].append(orderDB[['clientId', 'orderId']])
-            orderDB.to_pickle(dbfile)
+            orderDB.groupby("clientId").last().to_pickle(dbfile)
 
             # make writeable by all users
             try: os.chmod(dbfile, S_IWRITE) # windows (cover all)
             except: pass
             try: os.chmod(dbfile, 0o777) # *nix
             except: pass
+
+            time.sleep(.001)
 
         except:
             pass

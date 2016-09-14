@@ -1,5 +1,9 @@
 ## Change Log
 
+#### 1.12.13
+
+- Fixed bug that caused multiple ``clientId``s to be saved in the orderIds cache file. Now forcing saving of unique orderId in cache file.
+
 #### 1.12.12
 
 - ``cancelOrder()`` not requires ``orderId``

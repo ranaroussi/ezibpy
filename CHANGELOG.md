@@ -1,5 +1,11 @@
 ## Change Log
 
+#### 1.12.14
+
+- Callback now fires on TWS errors and and passes one of IB's [error codes](https://www.interactivebrokers.com/en/software/api/apiguide/tables/api_message_codes.htm).
+- Callback fires upon lost connection to IB TWS/GW with the ``handleConnectionClosed`` event
+- ``self.connected`` holds latest connection status (``True``/``False``)
+
 #### 1.12.13
 
 - Fixed bug that caused multiple ``clientId``s to be saved in the orderIds cache file. Now forcing saving of unique orderId in cache file.

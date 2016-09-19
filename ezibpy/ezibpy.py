@@ -211,7 +211,7 @@ class ezIBpy():
         # https://www.interactivebrokers.com/en/software/api/apiguide/tables/api_message_codes.htm
         if msg.errorCode != -1: # and msg.errorCode != 2104 and msg.errorCode != 2106:
             self.log(mode="error", msg=msg)
-
+            self.ibCallback(caller="handleError", msg=msg.errorCode)
 
     # ---------------------------------------------------------
     def handleServerEvents(self, msg):

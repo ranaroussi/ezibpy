@@ -444,10 +444,10 @@ class ezIBpy():
 
         # fire callback
         if duplicateMessage == False:
-            self.ibCallback(caller="handleOrders", msg=msg)
-
             # group orders by symbol
             self.symbol_orders = self.group_orders("symbol")
+
+            self.ibCallback(caller="handleOrders", msg=msg)
 
     # ---------------------------------------------------------
     def group_orders(self, by="symbol"):

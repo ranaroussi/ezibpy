@@ -85,6 +85,7 @@ dataTypes = {
 
     "MSG_CURRENT_TIME"                : "currentTime",
     "MSG_COMMISSION_REPORT"           : "commissionReport",
+    "MSG_CONNECTION_CLOSED"           : "connectionClosed",
 
     "MSG_TYPE_HISTORICAL_DATA"        : "historicalData",
     "MSG_TYPE_ACCOUNT_UPDATES"        : "updateAccountValue",

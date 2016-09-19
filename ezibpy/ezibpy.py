@@ -84,6 +84,7 @@ class ezIBpy():
         self.time          = 0
         self.commission    = 0
 
+        self.connected     = False
 
         self.accountCode   = 0
         self.orderId       = 1
@@ -222,6 +223,7 @@ class ezIBpy():
         elif msg.typeName == dataTypes["MSG_CURRENT_TIME"]:
             if self.time < msg.time:
                 self.time = msg.time
+                self.connected = True
 
         elif (msg.typeName == dataTypes["MSG_TYPE_MKT_DEPTH"] or
                 msg.typeName == dataTypes["MSG_TYPE_MKT_DEPTH_L2"]):
@@ -258,6 +260,9 @@ class ezIBpy():
         elif msg.typeName == dataTypes["MSG_TYPE_NEXT_ORDER_ID"]:
             self.handleNextValidId(msg.orderId)
 
+        elif msg.typeName == dataTypes["MSG_CONNECTION_CLOSED"]:
+            self.handleConnectionClosed(msg)
+
         elif msg.typeName == dataTypes["MSG_TYPE_MANAGED_ACCOUNTS"]:
             self.accountCode = msg.accountsList
 
@@ -277,6 +282,12 @@ class ezIBpy():
 
     # ---------------------------------------------------------
     # Start admin handlers
+    # ---------------------------------------------------------
+    def handleConnectionClosed(self, msg):
+        self.connected = False
+        self.ibCallback(caller="handleConnectionClosed", msg=msg)
+
+
     # ---------------------------------------------------------
     def handleNextValidId(self, orderId):
         """

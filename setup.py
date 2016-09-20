@@ -21,11 +21,11 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
-import ezibpy
+from ezibpy import __version__
 
 setup(
     name='ezIBpy',
-    version=ezibpy.__version__,
+    version=__version__,
     description='Pythonic Wrapper for IbPy',
     long_description=long_description,
     url='https://github.com/ranaroussi/ezibpy',

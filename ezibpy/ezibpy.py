@@ -1097,13 +1097,13 @@ class ezIBpy():
 
     # ---------------------------------------------------------
     def createStopOrder(self, quantity, parentId=0, \
-        stop=0., trail=False, transmit=True, group=None, rth=False):
+        stop=0., trail=False, transmit=True, group=None, rth=False, stop_limit=False):
         """ Creates STOP order """
         if trail:
             order = self.createOrder(quantity,
                 trailingPercent = stop,
                 transmit  = transmit,
-                orderType = dataTypes["ORDER_TYPE_STOP"],
+                orderType = dataTypes["ORDER_TYPE_STOP_LIMIT"] if stop_limit else dataTypes["ORDER_TYPE_STOP"],
                 ocaGroup  = group,
                 parentId  = parentId,
                 rth       = rth
@@ -1112,7 +1112,7 @@ class ezIBpy():
             order = self.createOrder(quantity,
                 stop      = stop,
                 transmit  = transmit,
-                orderType = dataTypes["ORDER_TYPE_STOP"],
+                orderType = dataTypes["ORDER_TYPE_STOP_LIMIT"] if stop_limit else dataTypes["ORDER_TYPE_STOP"],
                 ocaGroup  = group,
                 parentId  = parentId,
                 rth       = rth
@@ -1142,7 +1142,8 @@ class ezIBpy():
     def createBracketOrder(self, \
         contract, quantity, entry=0., target=0., stop=0., \
         targetType=None, trailingStop=None, group=None, \
-        tif="DAY", fillorkill=False, iceberg=False, rth=False, **kwargs):
+        tif="DAY", fillorkill=False, iceberg=False, rth=False, \
+        stop_limit=False, **kwargs):
         """
         creates One Cancels All Bracket Order
         """
@@ -1173,12 +1174,13 @@ class ezIBpy():
         stopOrderId = 0
         if stop > 0:
             stopOrder = self.createStopOrder(-quantity,
-                parentId  = entryOrderId,
-                stop      = stop,
-                trail     = trailingStop,
-                transmit  = True,
-                group     = group,
-                rth       = rth
+                parentId   = entryOrderId,
+                stop       = stop,
+                trail      = trailingStop,
+                transmit   = True,
+                group      = group,
+                rth        = rth,
+                stop_limit = stop_limit
             )
 
             self.requestOrderIds()

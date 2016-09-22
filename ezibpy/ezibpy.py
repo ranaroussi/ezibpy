@@ -1106,8 +1106,7 @@ class ezIBpy():
                 order = self.createOrder(quantity,
                     trailingPercent = stop,
                     transmit  = transmit,
-                    # orderType = dataTypes["ORDER_TYPE_TRAIL_STOP"],
-                    orderType = dataTypes["ORDER_TYPE_TRAIL_STOP_LIT"] if stop_limit else dataTypes["ORDER_TYPE_TRAIL_STOP"],
+                    orderType = dataTypes["ORDER_TYPE_TRAIL_STOP"],
                     ocaGroup  = group,
                     parentId  = parentId,
                     rth       = rth
@@ -1117,8 +1116,7 @@ class ezIBpy():
                     trailStopPrice = stop,
                     stop      = stop,
                     transmit  = transmit,
-                    # orderType = dataTypes["ORDER_TYPE_TRAIL_STOP"],
-                    orderType = dataTypes["ORDER_TYPE_TRAIL_STOP_LIT"] if stop_limit else dataTypes["ORDER_TYPE_TRAIL_STOP"],
+                    orderType = dataTypes["ORDER_TYPE_TRAIL_STOP"],
                     ocaGroup  = group,
                     parentId  = parentId,
                     rth       = rth

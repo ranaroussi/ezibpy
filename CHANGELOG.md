@@ -1,8 +1,8 @@
 ## Change Log
 
-#### 1.12.18
+#### 1.12.18-1.12.19
 
-- Fixed some issues with stop limit, trailing stop limit orders
+- Fixed some issues with stop limit and trailing stop orders
 
 #### 1.12.17
 

@@ -1097,20 +1097,37 @@ class ezIBpy():
 
     # ---------------------------------------------------------
     def createStopOrder(self, quantity, parentId=0, \
-        stop=0., trail=False, transmit=True, group=None, rth=False, stop_limit=False):
+        stop=0., trail=None, transmit=True,
+        group=None, rth=False, stop_limit=False):
+
         """ Creates STOP order """
-        if trail:
-            order = self.createOrder(quantity,
-                trailingPercent = stop,
-                transmit  = transmit,
-                orderType = dataTypes["ORDER_TYPE_STOP_LIMIT"] if stop_limit else dataTypes["ORDER_TYPE_STOP"],
-                ocaGroup  = group,
-                parentId  = parentId,
-                rth       = rth
-            )
+        if trail is not None:
+            if trail == "percent":
+                order = self.createOrder(quantity,
+                    trailingPercent = stop,
+                    transmit  = transmit,
+                    # orderType = dataTypes["ORDER_TYPE_TRAIL_STOP"],
+                    orderType = dataTypes["ORDER_TYPE_TRAIL_STOP_LIT"] if stop_limit else dataTypes["ORDER_TYPE_TRAIL_STOP"],
+                    ocaGroup  = group,
+                    parentId  = parentId,
+                    rth       = rth
+                )
+            else:
+                order = self.createOrder(quantity,
+                    trailStopPrice = stop,
+                    stop      = stop,
+                    transmit  = transmit,
+                    # orderType = dataTypes["ORDER_TYPE_TRAIL_STOP"],
+                    orderType = dataTypes["ORDER_TYPE_TRAIL_STOP_LIT"] if stop_limit else dataTypes["ORDER_TYPE_TRAIL_STOP"],
+                    ocaGroup  = group,
+                    parentId  = parentId,
+                    rth       = rth
+                )
+
         else:
             order = self.createOrder(quantity,
                 stop      = stop,
+                price     = stop if stop_limit else 0.,
                 transmit  = transmit,
                 orderType = dataTypes["ORDER_TYPE_STOP_LIMIT"] if stop_limit else dataTypes["ORDER_TYPE_STOP"],
                 ocaGroup  = group,
@@ -1146,6 +1163,7 @@ class ezIBpy():
         stop_limit=False, **kwargs):
         """
         creates One Cancels All Bracket Order
+        trailingStop = None (regular stop) / percent / amount
         """
         if group == None:
             group = "bracket_"+str(int(time.time()))

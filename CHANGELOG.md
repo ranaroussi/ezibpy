@@ -1,5 +1,22 @@
 ## Change Log
 
+#### 1.12.18
+
+- Fixed some issues with stop limit, trailing stop limit orders
+
+#### 1.12.17
+
+- Added flag for stop limit orders
+- Misc code improvements and minor bug fixes
+
+#### 1.12.16
+
+- Misc code improvements and minor bug fixes
+
+#### 1.12.15
+
+- Misc code improvements and minor bug fixes
+
 #### 1.12.14
 
 - Callback now fires on TWS errors and and passes one of IB's [error codes](https://www.interactivebrokers.com/en/software/api/apiguide/tables/api_message_codes.htm).

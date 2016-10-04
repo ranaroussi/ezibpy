@@ -32,7 +32,7 @@ contract = ibConn.createFuturesContract("ES", exchange="GLOBEX", expiry="201609"
 order = ibConn.createBracketOrder(contract, quantity=1, entry=0, target=2200., stop=1900.)
 
 # let order fill
-time.sleep(1)
+time.sleep(3)
 
 # see the positions
 print("Positions")

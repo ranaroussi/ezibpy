@@ -35,7 +35,7 @@ order = ibConn.createOrder(quantity=1) # use price=X for LMT orders
 orderId = ibConn.placeOrder(contract, order)
 
 # let order fill
-time.sleep(1)
+time.sleep(3)
 
 # see the positions
 print("Positions")

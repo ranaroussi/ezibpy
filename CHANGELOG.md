@@ -1,5 +1,9 @@
 ## Change Log
 
+### 1.12.20
+
+- Setting correct ``m_includeExpired`` for each asset class (solved a problem with historical data request not being acknowledged by TWS)
+
 ### 1.12.19
 
 - Fixed some issues with stop limit and trailing stop orders

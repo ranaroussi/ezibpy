@@ -980,7 +980,7 @@ class ezIBpy():
         newContract.m_right    = contractTuple[6]
 
         # include expired (needed for historical data)
-        newContract.m_includeExpired = True
+        newContract.m_includeExpired = (newContract.m_secType == "FUT")
 
         # add contract to pull
         # self.contracts[contractTuple[0]] = newContract

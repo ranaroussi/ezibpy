@@ -1,5 +1,9 @@
 ## Change Log
 
+### 1.12.22
+
+- Misc code improvements and minor bug fixes
+
 ### 1.12.21
 
 - Complete Options and Futures Options market data available via ``optionsData``

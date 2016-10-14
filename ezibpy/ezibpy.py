@@ -558,12 +558,11 @@ class ezIBpy():
         if msg.tickerId not in df2use.keys():
             df2use[msg.tickerId] = df2use[0].copy()
 
+        if msg.tickType == dataTypes["FIELD_OPTION_IMPLIED_VOL"]:
+            df2use[msg.tickerId]['iv'] = round(float(msg.value), 2)
 
-        if msg.field == dataTypes["FIELD_OPTION_IMPLIED_VOL"]:
-            df2use[msg.tickerId]['iv'] = round(float(msg.size), 2)
-
-        elif msg.field == dataTypes["FIELD_OPTION_HISTORICAL_VOL"]:
-            df2use[msg.tickerId]['historical_iv'] = round(float(msg.size), 2)
+        elif msg.tickType == dataTypes["FIELD_OPTION_HISTORICAL_VOL"]:
+            df2use[msg.tickerId]['historical_iv'] = round(float(msg.value), 2)
 
         # fire callback
         self.ibCallback(caller="handleTickGeneric", msg=msg)

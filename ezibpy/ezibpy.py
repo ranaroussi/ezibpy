@@ -135,17 +135,18 @@ class ezIBpy():
         #     quantity: ...
         # }
 
-        # @TODO - options data
-        # optionDF = DataFrame({ "datetime":[0], "bid":[0], "ask":[0], "last":[0], "impliedVol":[0], "delta":[0], "optPrice":[0], "pvDividend":[0], "gamma":[0], "vega":[0], "theta":[0], "undPrice":[0] })
-        # optionDF.set_index('datetime', inplace=True)
-
-        # optionDF = {
-        #     "bid":   DataFrame({ "impliedVol":[0], "delta":[0], "optPrice":[0], "pvDividend":[0], "gamma":[0], "vega":[0], "theta":[0], "undPrice":[0] }),
-        #     "ask":   DataFrame({ "impliedVol":[0], "delta":[0], "optPrice":[0], "pvDividend":[0], "gamma":[0], "vega":[0], "theta":[0], "undPrice":[0] }),
-        #     "last":  DataFrame({ "impliedVol":[0], "delta":[0], "optPrice":[0], "pvDividend":[0], "gamma":[0], "vega":[0], "theta":[0], "undPrice":[0] }),
-        #     "model": DataFrame({ "impliedVol":[0], "delta":[0], "optPrice":[0], "pvDividend":[0], "gamma":[0], "vega":[0], "theta":[0], "undPrice":[0] })
-        # }
-        # self.optionsData  = { 0: optionDF }
+        # holds options data
+        optionsDF = DataFrame({
+            "datetime":[0],
+            "bid":[0], "bidsize":[0], "bidIV": [0], "bidDividend": [0], "bidUnderlying": [0],
+            "bidDelta": [0], "bidGamma": [0], "bidVega": [0], "bidTheta": [0],
+            "ask":[0], "asksize":[0], "askIV": [0], "askDividend": [0], "askUnderlying": [0],
+            "askDelta": [0], "askGamma": [0], "askVega": [0], "askTheta": [0],
+            "last":[0], "lastsize":[0], "lastIV": [0], "lastDividend": [0], "lastUnderlying": [0],
+            "lastDelta": [0], "lastGamma": [0], "lastVega": [0], "lastTheta": [0],
+        })
+        optionsDF.set_index('datetime', inplace=True)
+        self.optionsData  = { 0: optionsDF } # idx = tickerId
 
         # historical data contrainer
         self.historicalData = { }  # idx = symbol

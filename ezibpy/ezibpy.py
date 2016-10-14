@@ -106,7 +106,6 @@ class ezIBpy():
         tickDF.set_index('datetime', inplace=True)
         self.marketData  = { 0: tickDF } # idx = tickerId
 
-
         # holds orderbook data
         l2DF = DataFrame(index=range(5), data={
             "bid":0, "bidsize":0,
@@ -137,13 +136,10 @@ class ezIBpy():
 
         # holds options data
         optionsDF = DataFrame({
-            "datetime":[0],
-            "bid":[0], "bidsize":[0], "bidIV": [0], "bidDividend": [0], "bidUnderlying": [0],
-            "bidDelta": [0], "bidGamma": [0], "bidVega": [0], "bidTheta": [0],
-            "ask":[0], "asksize":[0], "askIV": [0], "askDividend": [0], "askUnderlying": [0],
-            "askDelta": [0], "askGamma": [0], "askVega": [0], "askTheta": [0],
-            "last":[0], "lastsize":[0], "lastIV": [0], "lastDividend": [0], "lastUnderlying": [0],
-            "lastDelta": [0], "lastGamma": [0], "lastVega": [0], "lastTheta": [0],
+            "datetime":[0], "oi": [0], "volume": [0],
+            "bid":[0], "bidsize":[0],"ask":[0], "asksize":[0], "last":[0], "lastsize":[0],
+            "historical_iv": [0], "iv": [0], "dividend": [0], "underlying": [0],
+            "delta": [0], "gamma": [0], "vega": [0], "theta": [0],
         })
         optionsDF.set_index('datetime', inplace=True)
         self.optionsData  = { 0: optionsDF } # idx = tickerId
@@ -235,6 +231,9 @@ class ezIBpy():
 
         elif msg.typeName == dataTypes["MSG_TYPE_TICK_PRICE"]:
             self.handleTickPrice(msg)
+
+        elif msg.typeName == dataTypes["MSG_TYPE_TICK_GENERIC"]:
+            self.handleTickGeneric(msg)
 
         elif msg.typeName == dataTypes["MSG_TYPE_TICK_SIZE"]:
             self.handleTickSize(msg)
@@ -546,47 +545,111 @@ class ezIBpy():
             self.ibCallback(caller="handleHistoricalData", msg=msg, completed=False)
 
     # ---------------------------------------------------------
+    def handleTickGeneric(self, msg):
+        """
+        holds latest tick bid/ask/last price
+        """
+
+        df2use = self.marketData
+        if self.contracts[msg.tickerId].m_secType in ("OPT", "FOP"):
+            df2use = self.optionsData
+
+        # create tick holder for ticker
+        if msg.tickerId not in df2use.keys():
+            df2use[msg.tickerId] = df2use[0].copy()
+
+
+        if msg.field == dataTypes["FIELD_OPTION_IMPLIED_VOL"]:
+            df2use[msg.tickerId]['iv'] = round(float(msg.size), 2)
+
+        elif msg.field == dataTypes["FIELD_OPTION_HISTORICAL_VOL"]:
+            df2use[msg.tickerId]['historical_iv'] = round(float(msg.size), 2)
+
+        # fire callback
+        self.ibCallback(caller="handleTickGeneric", msg=msg)
+
+    # ---------------------------------------------------------
     def handleTickPrice(self, msg):
         """
         holds latest tick bid/ask/last price
         """
         # self.log(mode="debug", msg="[TICK PRICE]: " + dataTypes["PRICE_TICKS"][msg.field] + " - " + str(msg))
         # return
+
+        df2use = self.marketData
+        if self.contracts[msg.tickerId].m_secType in ("OPT", "FOP"):
+            df2use = self.optionsData
+
         # create tick holder for ticker
-        if msg.tickerId not in self.marketData.keys():
-            self.marketData[msg.tickerId] = self.marketData[0].copy()
+        if msg.tickerId not in df2use.keys():
+            df2use[msg.tickerId] = df2use[0].copy()
 
         # bid price
         if msg.canAutoExecute == 1 and msg.field == dataTypes["FIELD_BID_PRICE"]:
-            self.marketData[msg.tickerId]['bid'] = float(msg.price)
+            df2use[msg.tickerId]['bid'] = float(msg.price)
         # ask price
         elif msg.canAutoExecute == 1 and msg.field == dataTypes["FIELD_ASK_PRICE"]:
-            self.marketData[msg.tickerId]['ask'] = float(msg.price)
+            df2use[msg.tickerId]['ask'] = float(msg.price)
         # last price
         elif msg.field == dataTypes["FIELD_LAST_PRICE"]:
-            self.marketData[msg.tickerId]['last'] = float(msg.price)
+            df2use[msg.tickerId]['last'] = float(msg.price)
 
         # fire callback
         self.ibCallback(caller="handleTickPrice", msg=msg)
 
-        # ---------------------------------------------------------
+    # ---------------------------------------------------------
     def handleTickSize(self, msg):
         """
         holds latest tick bid/ask/last size
         """
-        # create tick holder for ticker
-        if msg.tickerId not in self.marketData.keys():
-            self.marketData[msg.tickerId] = self.marketData[0].copy()
 
+        df2use = self.marketData
+        if self.contracts[msg.tickerId].m_secType in ("OPT", "FOP"):
+            df2use = self.optionsData
+
+        # create tick holder for ticker
+        if msg.tickerId not in df2use.keys():
+            df2use[msg.tickerId] = df2use[0].copy()
+
+        # ---------------------
+        # market data
+        # ---------------------
         # bid size
         if msg.field == dataTypes["FIELD_BID_SIZE"]:
-            self.marketData[msg.tickerId]['bidsize'] = int(msg.size)
+            df2use[msg.tickerId]['bidsize'] = int(msg.size)
         # ask size
         elif msg.field == dataTypes["FIELD_ASK_SIZE"]:
-            self.marketData[msg.tickerId]['asksize'] = int(msg.size)
+            df2use[msg.tickerId]['asksize'] = int(msg.size)
         # last size
         elif msg.field == dataTypes["FIELD_LAST_SIZE"]:
-            self.marketData[msg.tickerId]['lastsize'] = int(msg.size)
+            df2use[msg.tickerId]['lastsize'] = int(msg.size)
+
+        # ---------------------
+        # options data
+        # ---------------------
+        # open interest
+        elif msg.field == dataTypes["FIELD_OPEN_INTEREST"]:
+            df2use[msg.tickerId]['oi'] = int(msg.size)
+
+        elif msg.field == dataTypes["FIELD_OPTION_CALL_OPEN_INTEREST"] and \
+            self.contracts[msg.tickerId].m_right == "CALL":
+            df2use[msg.tickerId]['oi'] = int(msg.size)
+
+        elif msg.field == dataTypes["FIELD_OPTION_PUT_OPEN_INTEREST"] and \
+            self.contracts[msg.tickerId].m_right == "PUT":
+            df2use[msg.tickerId]['oi'] = int(msg.size)
+
+        # volume
+        elif msg.field == dataTypes["FIELD_VOLUME"]:
+            df2use[msg.tickerId]['volume'] = int(msg.size)
+
+        elif msg.field == dataTypes["FIELD_OPTION_CALL_VOLUME"] and \
+            self.contracts[msg.tickerId].m_right == "CALL":
+            df2use[msg.tickerId]['volume'] = int(msg.size)
+
+        elif msg.field == dataTypes["FIELD_OPTION_PUT_VOLUME"] and \
+            self.contracts[msg.tickerId].m_right == "PUT":
+            df2use[msg.tickerId]['volume'] = int(msg.size)
 
         # fire callback
         self.ibCallback(caller="handleTickSize", msg=msg)
@@ -596,20 +659,26 @@ class ezIBpy():
         """
         holds latest tick bid/ask/last timestamp
         """
+
+        df2use = self.marketData
+        if self.contracts[msg.tickerId].m_secType in ("OPT", "FOP"):
+            df2use = self.optionsData
+
         # create tick holder for ticker
-        if msg.tickerId not in self.marketData.keys():
-            self.marketData[msg.tickerId] = self.marketData[0].copy()
+        if msg.tickerId not in df2use.keys():
+            df2use[msg.tickerId] = df2use[0].copy()
 
         # update timestamp
         if msg.tickType == dataTypes["FIELD_LAST_TIMESTAMP"]:
             ts = datetime.fromtimestamp(int(msg.value)) \
                 .strftime(dataTypes["DATE_TIME_FORMAT_LONG_MILLISECS"])
-            self.marketData[msg.tickerId].index = [ts]
+            df2use[msg.tickerId].index = [ts]
             # self.log(mode="debug", msg="[TICK TS]: " + ts)
 
             # handle trailing stop orders
-            self.triggerTrailingStops(msg.tickerId)
-            self.handleTrailingStops(msg.tickerId)
+            if self.contracts[msg.tickerId].m_secType not in ("OPT", "FOP"):
+                self.triggerTrailingStops(msg.tickerId)
+                self.handleTrailingStops(msg.tickerId)
 
             # fire callback
             self.ibCallback(caller="handleTickString", msg=msg)
@@ -636,10 +705,10 @@ class ezIBpy():
                     time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(s)), ms)
 
                 # add most recent bid/ask to "tick"
-                tick['bid']     = self.marketData[msg.tickerId]['bid'][0]
-                tick['bidsize'] = int(self.marketData[msg.tickerId]['bidsize'][0])
-                tick['ask']     = self.marketData[msg.tickerId]['ask'][0]
-                tick['asksize'] = int(self.marketData[msg.tickerId]['asksize'][0])
+                tick['bid']     = df2use[msg.tickerId]['bid'][0]
+                tick['bidsize'] = int(df2use[msg.tickerId]['bidsize'][0])
+                tick['ask']     = df2use[msg.tickerId]['ask'][0]
+                tick['asksize'] = int(df2use[msg.tickerId]['asksize'][0])
 
                 # self.log(mode="debug", msg=tick['time'] + ':' + self.tickerSymbol(msg.tickerId) + "-" + str(tick))
 
@@ -663,20 +732,18 @@ class ezIBpy():
         only option price is kept at the moment
         https://www.interactivebrokers.com/en/software/api/apiguide/java/tickoptioncomputation.htm
         """
+
         # create tick holder for ticker
-        if msg.tickerId not in self.marketData.keys():
-            self.marketData[msg.tickerId] = self.marketData[0].copy()
+        if msg.tickerId not in self.optionsData.keys():
+            self.optionsData[msg.tickerId] = self.optionsData[0].copy()
 
-        # bid
-        if msg.field == dataTypes["FIELD_BID_OPTION_COMPUTATION"]:
-            self.marketData[msg.tickerId]['bid'] = float(msg.optPrice)
-        # ask
-        elif msg.field == dataTypes["FIELD_ASK_OPTION_COMPUTATION"]:
-            self.marketData[msg.tickerId]['ask'] = float(msg.optPrice)
-        # last
-        elif msg.field == dataTypes["FIELD_LAST_OPTION_COMPUTATION"]:
-            self.marketData[msg.tickerId]['last'] = float(msg.optPrice)
-
+        self.optionsData[msg.tickerId]['iv']         = round(float(msg.impliedVol), 2)
+        self.optionsData[msg.tickerId]['dividend']   = round(float(msg.pvDividend), 2)
+        self.optionsData[msg.tickerId]['delta']      = round(float(msg.delta), 2)
+        self.optionsData[msg.tickerId]['gamma']      = round(float(msg.gamma), 2)
+        self.optionsData[msg.tickerId]['vega']       = round(float(msg.vega), 2)
+        self.optionsData[msg.tickerId]['theta']      = round(float(msg.theta), 2)
+        self.optionsData[msg.tickerId]['underlying'] = float(msg.undPrice)
         # print(msg)
 
         # fire callback
@@ -1302,10 +1369,13 @@ class ezIBpy():
             contracts = [contracts]
 
         for contract in contracts:
+            reqType = dataTypes["GENERIC_TICKS_RTVOLUME"]
+            if contract.m_secType in ("OPT", "FOP"):
+                reqType = dataTypes["GENERIC_TICKS_NONE"]
+
             # tickerId = self.tickerId(contract.m_symbol)
             tickerId = self.tickerId(self.contractString(contract))
-            self.ibConn.reqMktData(
-                tickerId, contract, dataTypes["GENERIC_TICKS_RTVOLUME"], False)
+            self.ibConn.reqMktData(tickerId, contract, reqType, False)
 
     # ---------------------------------------------------------
     def cancelMarketData(self, contracts=None):

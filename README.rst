@@ -377,11 +377,10 @@ To-Do:
 ======
 
 In regards to Options, ezIBpy currently supports market
-data retrieval and order execution. IV, Greeks, and other
-Option-related data isn't being procesed by ezIBpy.
+data retrieval and order execution.
 
-If you want to add this functionality, be my guest and
-please submit a pull request.
+If you want to add more functionality (such as news retreival, etc)
+be my guest and please submit a pull request.
 
 
 Legal Stuff

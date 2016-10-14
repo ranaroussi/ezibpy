@@ -28,13 +28,8 @@ ibConn = ezibpy.ezIBpy()
 ibConn.connect(clientId=100, host="localhost", port=4001)
 
 # create some contracts using dedicated methods
-stk_contract = ibConn.createStockContract("AAPL")
-fut_contract = ibConn.createFuturesContract("ES", expiry="201606")
-csh_contract = ibConn.createCashContract("EUR", currency="USD")
-opt_contract = ibConn.createOptionContract("AAPL", expiry="20160425", strike=105.0, otype="PUT")
-
-# ...or using a contract tuple
-oil_contract = ibConn.createContract(("CL", "FUT", "NYMEX", "USD", "201606", 0.0, ""))
+put  = ibConn.createOptionContract("AAPL", expiry="20161021", strike=117.0, otype="PUT")
+call = ibConn.createOptionContract("AAPL", expiry="20161021", strike=117.0, otype="CALL")
 
 # request market data for all created contracts
 ibConn.requestMarketData()
@@ -43,11 +38,6 @@ ibConn.requestMarketData()
 time.sleep(30)
 
 # print market data
-print("Market Data")
-print(ibConn.marketData)
-
-print("")
-
 print("Options Data")
 print(ibConn.optionsData)
 

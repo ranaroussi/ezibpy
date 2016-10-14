@@ -1,5 +1,9 @@
 ## Change Log
 
+### 1.12.21
+
+- Complete Options and Futures Options market data available via ``optionsData``
+
 ### 1.12.20
 
 - Setting correct ``m_includeExpired`` for each asset class (solved a problem with historical data request not being acknowledged by TWS)

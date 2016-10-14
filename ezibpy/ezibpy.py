@@ -635,10 +635,10 @@ class ezIBpy():
                     time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(s)), ms)
 
                 # add most recent bid/ask to "tick"
-                tick['bid']     = round(self.marketData[msg.tickerId]['bid'][0], 2)
-                tick['bidsize'] = round(self.marketData[msg.tickerId]['bidsize'][0], 2)
-                tick['ask']     = round(self.marketData[msg.tickerId]['ask'][0], 2)
-                tick['asksize'] = round(self.marketData[msg.tickerId]['asksize'][0], 2)
+                tick['bid']     = self.marketData[msg.tickerId]['bid'][0]
+                tick['bidsize'] = int(self.marketData[msg.tickerId]['bidsize'][0])
+                tick['ask']     = self.marketData[msg.tickerId]['ask'][0]
+                tick['asksize'] = int(self.marketData[msg.tickerId]['asksize'][0])
 
                 # self.log(mode="debug", msg=tick['time'] + ':' + self.tickerSymbol(msg.tickerId) + "-" + str(tick))
 

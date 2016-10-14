@@ -46,6 +46,14 @@ dataTypes = {
     "FIELD_LAST_OPTION_COMPUTATION"   : 12,
     "FIELD_MODEL_OPTION_COMPUTATION"  : 13,
 
+    "FIELD_OPEN_INTEREST"             : 22, #  tickSize()
+    "FIELD_OPTION_HISTORICAL_VOL"     : 23, #  tickGeneric()
+    "FIELD_OPTION_IMPLIED_VOL"        : 24, #  tickGeneric()
+    "FIELD_OPTION_CALL_OPEN_INTEREST" : 27, #  tickSize()
+    "FIELD_OPTION_PUT_OPEN_INTEREST"  : 28, #  tickSize()
+    "FIELD_OPTION_CALL_VOLUME"        : 29, #  tickSize()
+    "FIELD_OPTION_PUT_VOLUME"         : 30, #  tickSize()
+
     "FIELD_AVG_VOLUME"                : 21,
     "FIELD_BID_EXCH"                  : 32,
     "FIELD_ASK_EXCH"                  : 33,
@@ -103,6 +111,7 @@ dataTypes = {
 
     "MSG_TYPE_TICK_PRICE"             : "tickPrice",
     "MSG_TYPE_TICK_STRING"            : "tickString",
+    "MSG_TYPE_TICK_GENERIC"           : "tickGeneric",
     "MSG_TYPE_TICK_SIZE"              : "tickSize",
     "MSG_TYPE_TICK_OPTION"            : "tickOptionComputation",
 

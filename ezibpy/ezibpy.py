@@ -138,7 +138,7 @@ class ezIBpy():
         optionsDF = DataFrame({
             "datetime":[0], "oi": [0], "volume": [0],
             "bid":[0], "bidsize":[0],"ask":[0], "asksize":[0], "last":[0], "lastsize":[0],
-            "historical_iv": [0], "iv": [0], "dividend": [0], "underlying": [0],
+            "iv": [0], "dividend": [0], "underlying": [0], "price": [0],
             "delta": [0], "gamma": [0], "vega": [0], "theta": [0],
         })
         optionsDF.set_index('datetime', inplace=True)
@@ -561,8 +561,8 @@ class ezIBpy():
         if msg.tickType == dataTypes["FIELD_OPTION_IMPLIED_VOL"]:
             df2use[msg.tickerId]['iv'] = round(float(msg.value), 2)
 
-        elif msg.tickType == dataTypes["FIELD_OPTION_HISTORICAL_VOL"]:
-            df2use[msg.tickerId]['historical_iv'] = round(float(msg.value), 2)
+        # elif msg.tickType == dataTypes["FIELD_OPTION_HISTORICAL_VOL"]:
+        #     df2use[msg.tickerId]['historical_iv'] = round(float(msg.value), 2)
 
         # fire callback
         self.ibCallback(caller="handleTickGeneric", msg=msg)

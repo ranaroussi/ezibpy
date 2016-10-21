@@ -1,5 +1,10 @@
 ## Change Log
 
+### 1.12.23
+
+- Uniformed options symbol construction (eg ``AAPL20161028P00115000``, ``SPX20161024P02150000``)
+- Misc code improvements and minor bug fixes
+
 ### 1.12.22
 
 - Misc code improvements and minor bug fixes

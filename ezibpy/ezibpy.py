@@ -575,6 +575,9 @@ class ezIBpy():
         # self.log(mode="debug", msg="[TICK PRICE]: " + dataTypes["PRICE_TICKS"][msg.field] + " - " + str(msg))
         # return
 
+        if msg.price < 0:
+            return
+
         df2use = self.marketData
         if self.contracts[msg.tickerId].m_secType in ("OPT", "FOP"):
             df2use = self.optionsData
@@ -601,6 +604,9 @@ class ezIBpy():
         """
         holds latest tick bid/ask/last size
         """
+
+        if msg.size < 0:
+            return
 
         df2use = self.marketData
         if self.contracts[msg.tickerId].m_secType in ("OPT", "FOP"):

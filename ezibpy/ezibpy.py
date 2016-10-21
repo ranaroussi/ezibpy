@@ -744,14 +744,27 @@ class ezIBpy():
         if msg.tickerId not in self.optionsData.keys():
             self.optionsData[msg.tickerId] = self.optionsData[0].copy()
 
-        self.optionsData[msg.tickerId]['iv']         = round(float(msg.impliedVol), 2)
-        self.optionsData[msg.tickerId]['dividend']   = round(float(msg.pvDividend), 2)
-        self.optionsData[msg.tickerId]['delta']      = round(float(msg.delta), 2)
-        self.optionsData[msg.tickerId]['gamma']      = round(float(msg.gamma), 2)
-        self.optionsData[msg.tickerId]['vega']       = round(float(msg.vega), 2)
-        self.optionsData[msg.tickerId]['theta']      = round(float(msg.theta), 2)
-        self.optionsData[msg.tickerId]['underlying'] = float(msg.undPrice)
-        # print(msg)
+        if msg.impliedVol < 1000000000:
+            self.optionsData[msg.tickerId]['iv'] = round(float(msg.impliedVol), 2)
+        if msg.pvDividend < 1000000000:
+            self.optionsData[msg.tickerId]['dividend'] = round(float(msg.pvDividend), 2)
+        if msg.delta < 1000000000:
+            self.optionsData[msg.tickerId]['delta'] = round(float(msg.delta), 2)
+        if msg.gamma < 1000000000:
+            self.optionsData[msg.tickerId]['gamma'] = round(float(msg.gamma), 2)
+        if msg.vega < 1000000000:
+            self.optionsData[msg.tickerId]['vega'] = round(float(msg.vega), 2)
+        if msg.theta < 1000000000:
+            self.optionsData[msg.tickerId]['theta'] = round(float(msg.theta), 2)
+        if msg.undPrice < 1000000000:
+            self.optionsData[msg.tickerId]['underlying'] = float(msg.undPrice)
+        if msg.optPrice < 1000000000:
+            self.optionsData[msg.tickerId]['price'] = float(msg.optPrice)
+
+
+        # print("----------------------------")
+        # print(self.optionsData[msg.tickerId])
+        # print("----------------------------")
 
         # fire callback
         self.ibCallback(caller="handleTickOptionComputation", msg=msg)

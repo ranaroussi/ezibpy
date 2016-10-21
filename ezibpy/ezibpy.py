@@ -996,14 +996,16 @@ class ezIBpy():
         # build identifier
         try:
             if contractTuple[1] in ("OPT", "FOP"):
-                # contractString = (contractTuple[0], contractTuple[1], contractTuple[6], contractTuple[4], contractTuple[5])
-                if contractTuple[5]*100 - int(contractTuple[5]*100):
-                    strike = contractTuple[5]
-                else:
-                    strike = "{0:.2f}".format(contractTuple[5])
+                # if contractTuple[5]*100 - int(contractTuple[5]*100):
+                #     strike = contractTuple[5]
+                # else:
+                #     strike = "{0:.2f}".format(contractTuple[5])
+                strike = '{:0>5d}'.format(int(contractTuple[5])) + \
+                    format(contractTuple[5], '.3f').split('.')[1]
 
                 contractString = (contractTuple[0] + str(contractTuple[4]) + \
-                    contractTuple[6], str(strike).replace(".", ""))
+                    contractTuple[6][0] + strike, contractTuple[1])
+                    # contractTuple[6], str(strike).replace(".", ""))
 
             elif contractTuple[1] == "FUT":
                 # round expiry day to expiry month

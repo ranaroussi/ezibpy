@@ -850,7 +850,7 @@ class ezIBpy():
         # valid newStop
         newStop = self.roundClosestValid(newStop, ticksize)
 
-        print("\n\n", trailingStop['lastPrice'], newStop, price, "\n\n")
+        # print("\n\n", trailingStop['lastPrice'], newStop, price, "\n\n")
 
         # no change?
         if newStop == trailingStop['lastPrice']:

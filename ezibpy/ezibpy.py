@@ -579,18 +579,20 @@ class ezIBpy():
             return
 
         df2use = self.marketData
+        canAutoExecute = msg.canAutoExecute == 1
         if self.contracts[msg.tickerId].m_secType in ("OPT", "FOP"):
             df2use = self.optionsData
+            canAutoExecute = True
 
         # create tick holder for ticker
         if msg.tickerId not in df2use.keys():
             df2use[msg.tickerId] = df2use[0].copy()
 
         # bid price
-        if msg.canAutoExecute == 1 and msg.field == dataTypes["FIELD_BID_PRICE"]:
+        if canAutoExecute and msg.field == dataTypes["FIELD_BID_PRICE"]:
             df2use[msg.tickerId]['bid'] = float(msg.price)
         # ask price
-        elif msg.canAutoExecute == 1 and msg.field == dataTypes["FIELD_ASK_PRICE"]:
+        elif canAutoExecute and msg.field == dataTypes["FIELD_ASK_PRICE"]:
             df2use[msg.tickerId]['ask'] = float(msg.price)
         # last price
         elif msg.field == dataTypes["FIELD_LAST_PRICE"]:

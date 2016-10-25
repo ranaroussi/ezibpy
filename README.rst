@@ -1,6 +1,32 @@
 ezIBpy: Pythonic Wrapper for IbPy
 =================================================
 
+.. image:: https://img.shields.io/pypi/pyversions/ezibpy.svg?maxAge=2592000
+    :target: https://pypi.python.org/pypi/ezibpy
+    :alt: Python version
+
+.. image:: https://img.shields.io/travis/ranaroussi/ezibpy/master.svg?
+    :target: https://travis-ci.org/ranaroussi/ezibpy
+    :alt: Travis-CI build status
+
+.. image:: https://img.shields.io/pypi/v/ezibpy.svg?maxAge=60
+    :target: https://pypi.python.org/pypi/ezibpy
+    :alt: PyPi version
+
+.. image:: https://img.shields.io/pypi/status/ezibpy.svg?maxAge=2592000
+    :target: https://pypi.python.org/pypi/ezibpy
+    :alt: PyPi status
+
+.. image:: https://img.shields.io/github/stars/ranaroussi/ezibpy.svg?style=social&label=Star&maxAge=60
+    :target: https://github.com/ranaroussi/ezibpy
+    :alt: Star this repo
+
+.. image:: https://img.shields.io/twitter/follow/aroussi.svg?style=social&label=Follow%20Me&maxAge=60
+    :target: https://twitter.com/aroussi
+    :alt: Follow me on twitter
+
+\
+
 ezIBpy is a Pythonic wrapper for the `IbPy <https://github.com/blampe/IbPy>`_
 library by `@blampe <https://github.com/blampe/IbPy>`_,
 that was developed to speed up the development of
@@ -8,6 +34,9 @@ trading software that relies on
 `Interactive Brokers <https://www.interactivebrokers.com>`_
 for market data and order execution.
 
+`Changelog » <./CHANGELOG.rst>`__
+
+-----
 
 Code Examples
 =============

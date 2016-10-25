@@ -8,9 +8,13 @@ python:
   - "3.5"
 
 install:
-  - pip install .
+  - pip install Cython
   - pip install -r requirements.txt
   - pip install git+https://github.com/blampe/IbPy/archive/master.zip
+  - pip install .
+
+script:
+  - nosetests
 
 after_success:
   - coveralls

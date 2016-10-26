@@ -1,6 +1,12 @@
 Change Log
 ===========
 
+1.12.24
+-------
+
+- Fixed bug that casued malformed ``contractString`` for Asian Futures
+
+
 1.12.23
 -------
 

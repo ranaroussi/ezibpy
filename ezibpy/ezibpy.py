@@ -1023,7 +1023,7 @@ class ezIBpy():
             elif contractTuple[1] == "FUT":
                 # round expiry day to expiry month
                 if localSymbol != "":
-                    exp = localSymbol[2:-1]+str(contractTuple[4][:4])
+                    exp = localSymbol[2:3]+str(contractTuple[4][:4])
                 else:
                     exp = str(contractTuple[4])[:6]
                     exp = dataTypes["MONTH_CODES"][int(exp[4:6])] + str(int(exp[:4]))

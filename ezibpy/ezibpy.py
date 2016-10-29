@@ -1380,7 +1380,7 @@ class ezIBpy():
 
 
     # ---------------------------------------------------------
-    def requestMarketData(self, contracts=None):
+    def requestMarketData(self, contracts=None, snapshot=False):
         """
         Register to streaming market data updates
         https://www.interactivebrokers.com/en/software/api/apiguide/java/reqmktdata.htm
@@ -1391,13 +1391,16 @@ class ezIBpy():
             contracts = [contracts]
 
         for contract in contracts:
-            reqType = dataTypes["GENERIC_TICKS_RTVOLUME"]
-            if contract.m_secType in ("OPT", "FOP"):
-                reqType = dataTypes["GENERIC_TICKS_NONE"]
+            if snapshot:
+                reqType = ""
+            else:
+                reqType = dataTypes["GENERIC_TICKS_RTVOLUME"]
+                if contract.m_secType in ("OPT", "FOP"):
+                    reqType = dataTypes["GENERIC_TICKS_NONE"]
 
             # tickerId = self.tickerId(contract.m_symbol)
             tickerId = self.tickerId(self.contractString(contract))
-            self.ibConn.reqMktData(tickerId, contract, reqType, False)
+            self.ibConn.reqMktData(tickerId, contract, reqType, snapshot)
 
     # ---------------------------------------------------------
     def cancelMarketData(self, contracts=None):

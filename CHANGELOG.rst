@@ -1,6 +1,12 @@
 Change Log
 ===========
 
+1.12.25
+-------
+
+- Added ``snapshot`` parameter to ``requestMarketData()`` to allow request of single snapshot of market data and have the market data subscription cancel (defaults to ``False``)
+
+
 1.12.24
 -------
 

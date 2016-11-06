@@ -10,7 +10,6 @@ python:
 install:
   - pip install Cython
   - pip install -r requirements.txt
-  - pip install git+git://github.com/blampe/IbPy
   - pip install .
 
 script:

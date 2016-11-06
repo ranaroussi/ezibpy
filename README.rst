@@ -379,13 +379,7 @@ Account Information:
 Installation
 ============
 
-First, install IbPy:
-
-.. code:: bash
-
-    $ pip install git+git://github.com/blampe/IbPy --user
-
-Then, install ezIBpy using ``pip``:
+Install ezIBpy using ``pip``:
 
 .. code:: bash
 

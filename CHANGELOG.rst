@@ -1,6 +1,11 @@
 Change Log
 ===========
 
+1.12.26
+-------
+
+- Using ``IbPy2`` installer from `PyPI <https://pypi.python.org/pypi/IbPy2>`_ (no need to install ``IbPy`` seperately anymore)
+
 1.12.25
 -------
 

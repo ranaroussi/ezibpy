@@ -391,7 +391,7 @@ Requirements
 
 * `Python <https://www.python.org>`_ >=3.4
 * `Pandas <https://github.com/pydata/pandas>`_ (tested to work with >=0.18.1)
-* `IbPy2 <https://github.com/blampe/IbPy>`_ (tested to work with >=0.0.8)
+* `IbPy2 <https://github.com/blampe/IbPy>`_ (tested to work with >=0.8.0)
 * Latest Interactive Brokers’ `TWS <https://www.interactivebrokers.com/en/index.php?f=15875>`_ or `IB Gateway <https://www.interactivebrokers.com/en/index.php?f=16457>`_ installed and running on the machine
 
 

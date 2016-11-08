@@ -4,8 +4,9 @@ Change Log
 1.12.27
 -------
 
-- Pass entire message to handleError callback
-- Add ezIBpy logging kwarg to enable logging
+- Added two optional parameters to ``__init__()`` for auto-logging: ``logger`` as the log type (either "stream" for stdout or "file") and ``logger_file`` as log file path (if logger == "file")
+- Pass entire message to ``handleError`` Callback
+
 
 1.12.26
 -------

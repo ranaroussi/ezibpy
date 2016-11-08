@@ -1,6 +1,11 @@
 Change Log
 ===========
 
+1.12.28
+-------
+
+- Fixed bug that casued error when no ``logger`` specified
+
 1.12.27
 -------
 

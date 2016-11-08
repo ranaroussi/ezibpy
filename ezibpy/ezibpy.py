@@ -81,7 +81,7 @@ class ezIBpy():
         log_format = "%(asctime)s [%(levelname)s]: %(message)s"
 
         # log to file path
-        if "file" in logger and logger_file is not None:
+        if (logger == "file" or logger == "filename") and logger_file is not None:
             logging.basicConfig(filename=logger_file, filemode='a', level=logging.DEBUG, format=log_format)
 
         # log to stdout

@@ -33,18 +33,13 @@ import tempfile
 import os
 from stat import S_IWRITE
 
-# =============================================================
-# set debugging mode
-# levels: DEBUG, INFO, WARNING, ERROR, CRITICAL
-# filename=LOG_FILENAME
-# =============================================================
 import logging
-# import sys
-# logging.basicConfig(stream=sys.stderr, level=logging.DEBUG, format='%(asctime)s [%(levelname)s]: %(message)s')
+import sys
 
 
 class ezIBpy():
 
+    # ---------------------------------------------------------
     def log(self, mode, msg):
         if self.logging:
             if mode == "debug":
@@ -59,7 +54,7 @@ class ezIBpy():
                 logging.critical(msg)
 
 
-
+    # ---------------------------------------------------------
     def roundClosestValid(self, val, res, decimals=2):
         """ round to closest resolution """
         return round(round(val / res)*res, decimals)
@@ -69,11 +64,31 @@ class ezIBpy():
     https://www.interactivebrokers.com/en/software/api/apiguide/java/java_eclientsocket_methods.htm
     """
     # ---------------------------------------------------------
-    def __init__(self, logging=False):
+    def __init__(self, logger=None, logger_file=None):
 
-        self.__version__   = 0.09
+        """ Class Initilizer
 
-        self.logging       = logging
+     -    :Optioanl:
+
+            logger : string
+                logger type. "stream" for stdout or "file"
+            logger_file : string
+                log file path (if logger == "file")
+        """
+
+        # -----------------------------------------------------
+        self.logging = logger is not None
+        log_format = "%(asctime)s [%(levelname)s]: %(message)s"
+
+        # log to file path
+        if "file" in logger and logger_file is not None:
+            logging.basicConfig(filename=logger_file, filemode='a', level=logging.DEBUG, format=log_format)
+
+        # log to stdout
+        elif logger == "stream" or logger == "stdout":
+            logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format=log_format)
+
+        # -----------------------------------------------------
 
         self.clientId      = 1
         self.port          = 4001 # 7496/7497 = TWS, 4001 = IBGateway

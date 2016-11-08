@@ -1,6 +1,12 @@
 Change Log
 ===========
 
+1.12.27
+-------
+
+- Pass entire message to handleError callback
+- Add ezIBpy logging kwarg to enable logging
+
 1.12.26
 -------
 

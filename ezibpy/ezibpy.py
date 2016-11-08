@@ -40,8 +40,7 @@ from stat import S_IWRITE
 # =============================================================
 import logging
 # import sys
-# logging.basicConfig(stream=sys.stdout, level=self.log(mode="debug", msg=
-    # format='%(asctime)s [%(levelname)s]: %(message)s')
+# logging.basicConfig(stream=sys.stderr, level=logging.DEBUG, format='%(asctime)s [%(levelname)s]: %(message)s')
 
 
 class ezIBpy():
@@ -70,11 +69,11 @@ class ezIBpy():
     https://www.interactivebrokers.com/en/software/api/apiguide/java/java_eclientsocket_methods.htm
     """
     # ---------------------------------------------------------
-    def __init__(self):
+    def __init__(self, logging=False):
 
         self.__version__   = 0.09
 
-        self.logging       = False
+        self.logging       = logging
 
         self.clientId      = 1
         self.port          = 4001 # 7496/7497 = TWS, 4001 = IBGateway
@@ -208,7 +207,7 @@ class ezIBpy():
         # https://www.interactivebrokers.com/en/software/api/apiguide/tables/api_message_codes.htm
         if msg.errorCode != -1: # and msg.errorCode != 2104 and msg.errorCode != 2106:
             self.log(mode="error", msg=msg)
-            self.ibCallback(caller="handleError", msg=msg.errorCode)
+            self.ibCallback(caller="handleError", msg=msg)
 
     # ---------------------------------------------------------
     def handleServerEvents(self, msg):

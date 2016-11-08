@@ -62,6 +62,7 @@ Interactive Brokers’ `TWS <https://www.interactivebrokers.com/en/index.php?f=1
 
 - `Using Custom Callbacks <#custom-callback>`_
 - `Account Information <#account-information>`_
+- `Logging <#logging>`_
 
 
 Request Market Data:
@@ -374,6 +375,25 @@ Account Information:
 
     # disconnect
     ibConn.disconnect()
+
+
+Logging:
+--------
+
+You can enable logging to either ``stdout`` or a log file when initilizing ezIBpy:
+
+**Initialize ezIBpy with ``stdout`` logger**
+
+.. code:: python
+
+    ibConn = ezibpy.ezIBpy(logger="stream") # logger also accepts "stdout" as value
+
+
+**Initialize ezIBpy with log file**
+
+.. code:: python
+
+    ibConn = ezibpy.ezIBpy(logger="file", logger_file="path/to/file.log") # logger also accepts "filename" as value
 
 
 Installation

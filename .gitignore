@@ -2,3 +2,4 @@ __pycache__/*
 ezibpy/__pycache__/*
 dist
 ezIBpy.egg-info
+*.pyc

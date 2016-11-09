@@ -380,20 +380,28 @@ Account Information:
 Logging:
 --------
 
-You can enable logging to either ``stdout`` or a log file when initilizing ezIBpy:
+ezIBpy logs via the standard `Python logging facilities <https://docs.python.org/3/howto/logging.html#logging-basic-tutorial>`__
+under the logger name ``ezibpy`` at the level of ``ERROR`` by default.
 
-**Initialize ezIBpy with ``stdout`` logger**
-
-.. code:: python
-
-    ibConn = ezibpy.ezIBpy(logger="stream") # logger also accepts "stdout" as value
-
-
-**Initialize ezIBpy with log file**
+You can change the log level:
 
 .. code:: python
 
-    ibConn = ezibpy.ezIBpy(logger="file", logger_file="path/to/file.log") # logger also accepts "filename" as value
+    import logging
+    import ezibpy       # Have to import before configuring logging
+
+    logging.getLogger('ezibpy').setLevel(logging.CRITICAL)      # Silence error logging
+
+
+Or log to a file:
+
+.. code:: python
+
+    logger = logging.getLogger('ezibpy')
+    logger.setLevel(logging.INFO)
+    logger.addHandler(logging.FileHandler('ezibpy.log'))
+    logger.propagate = False        # Don't also log to stderr
+
 
 
 Installation

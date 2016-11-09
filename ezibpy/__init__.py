@@ -21,7 +21,7 @@
 __version__ = "1.12.28"
 __author__ = "Ran Aroussi"
 
-__all__ = ['ezIBpy', 'dataTypes']
+__all__ = ['ezIBpy', 'dataTypes', 'IB_BENIGN_ERROR_CODES']
 
-from ezibpy.ezibpy import ezIBpy
+from ezibpy.ezibpy import ezIBpy, IB_BENIGN_ERROR_CODES
 from ezibpy.utils import dataTypes

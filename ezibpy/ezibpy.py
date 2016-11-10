@@ -138,9 +138,6 @@ class ezIBpy():
                             clientId = self.clientId
                             )
 
-        # Assign error handling function.
-        self.ibConn.register(self.handleErrorEvents, 'Error')
-
         # Assign server messages handling function.
         self.ibConn.registerAll(self.handleServerEvents)
 

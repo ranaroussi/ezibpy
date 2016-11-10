@@ -176,8 +176,8 @@ class ezIBpy():
     def handleErrorEvents(self, msg):
         """ logs error messages """
         # https://www.interactivebrokers.com/en/software/api/apiguide/tables/api_message_codes.htm
-        if msg.errorCode != -1:
-            # self.log.error(str(msg))       # Message is also logged in handleServerEvents(), don't print it twice
+        if msg.errorCode != -1 and msg.errorCode not in dataTypes["BENIGN_ERROR_CODES"]:
+            self.log.error("[IB ERROR] %s", msg)
             self.ibCallback(caller="handleError", msg=msg)
 
     # ---------------------------------------------------------
@@ -185,8 +185,7 @@ class ezIBpy():
         """ dispatch msg to the right handler """
 
         if msg.typeName == "error":
-            if msg.errorCode not in IB_BENIGN_ERROR_CODES:
-                self.log.error("[IB ERROR] %s", msg)
+            self.handleErrorEvents(msg)
 
         elif msg.typeName == dataTypes["MSG_CURRENT_TIME"]:
             if self.time < msg.time:

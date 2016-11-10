@@ -19,77 +19,36 @@
 # limitations under the License.
 
 import time
+import logging
 from datetime import datetime
-from pandas import DataFrame, read_pickle
-
-from ib.opt import Connection
-from ib.ext.Contract import Contract
-from ib.ext.Order import Order
-
-from ezibpy.utils import dataTypes
-
 import atexit
 import tempfile
 import os
 from stat import S_IWRITE
 
-import logging
-import sys
+from pandas import DataFrame, read_pickle
+from ib.opt import Connection
+from ib.ext.Contract import Contract
+from ib.ext.Order import Order
+
+from .utils import dataTypes
+
+# IB API warning codes that are not actually problems; will not be logged.
+IB_BENIGN_ERROR_CODES = (2104, 2106)
+
+logging.getLogger('ezibpy').setLevel(logging.ERROR)
 
 
 class ezIBpy():
-
-    # ---------------------------------------------------------
-    def log(self, mode, msg):
-        if self.logging:
-            if mode == "debug":
-                logging.debug(msg)
-            elif mode == "info":
-                logging.info(msg)
-            elif mode == "warning":
-                logging.warning(msg)
-            elif mode == "error":
-                logging.error(msg)
-            elif mode == "critical":
-                logging.critical(msg)
-
-
-    # ---------------------------------------------------------
-    def roundClosestValid(self, val, res, decimals=2):
+    @staticmethod
+    def roundClosestValid(val, res, decimals=2):
         """ round to closest resolution """
         return round(round(val / res)*res, decimals)
 
-
-    """
-    https://www.interactivebrokers.com/en/software/api/apiguide/java/java_eclientsocket_methods.htm
-    """
     # ---------------------------------------------------------
-    def __init__(self, logger=None, logger_file=None):
-
-        """ Class Initilizer
-
-     -    :Optioanl:
-
-            logger : string
-                logger type. "stream" for stdout or "file"
-            logger_file : string
-                log file path (if logger == "file")
-        """
-
-        # -----------------------------------------------------
-        self.logging = logger is not None
-        log_format = "%(asctime)s [%(levelname)s]: %(message)s"
-
-        # log to file path
-        if (logger == "file" or logger == "filename") and logger_file is not None:
-            logging.basicConfig(filename=logger_file, filemode='a', level=logging.DEBUG, format=log_format)
-
-        # log to stdout
-        elif logger == "stream" or logger == "stdout":
-            logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format=log_format)
-
-        # -----------------------------------------------------
-
+    # https://www.interactivebrokers.com/en/software/api/apiguide/java/java_eclientsocket_methods.htm
+    def __init__(self):
+        """Initialize a new ezIBpy object."""
         self.clientId      = 1
         self.port          = 4001 # 7496/7497 = TWS, 4001 = IBGateway
         self.host          = "localhost"
@@ -111,6 +70,8 @@ class ezIBpy():
         self.account       = {}
         self.positions     = {}
         self.portfolio     = {}
+
+        self.log = logging.getLogger('ezibpy')
 
         # holds market data
         tickDF = DataFrame({
@@ -184,7 +145,7 @@ class ezIBpy():
         self.ibConn.registerAll(self.handleServerEvents)
 
         # connect
-        self.log(mode="info", msg="[CONNECTING TO IB]")
+        self.log.info("[CONNECTING TO IB]")
         self.ibConn.connect()
 
         # get server time
@@ -205,7 +166,7 @@ class ezIBpy():
     def disconnect(self):
         """ Disconnect from TWS/IBGW """
         if self.ibConn is not None:
-            self.log(mode="info", msg="[DISCONNECT TO IB]")
+            self.log.info("[DISCONNECT FROM IB]")
             self.ibConn.disconnect()
 
 
@@ -220,8 +181,8 @@ class ezIBpy():
     def handleErrorEvents(self, msg):
         """ logs error messages """
         # https://www.interactivebrokers.com/en/software/api/apiguide/tables/api_message_codes.htm
-        if msg.errorCode != -1: # and msg.errorCode != 2104 and msg.errorCode != 2106:
-            self.log(mode="error", msg=msg)
+        if msg.errorCode != -1:
+            # self.log.error(str(msg))       # Message is also logged in handleServerEvents(), don't print it twice
             self.ibCallback(caller="handleError", msg=msg)
 
     # ---------------------------------------------------------
@@ -229,7 +190,8 @@ class ezIBpy():
         """ dispatch msg to the right handler """
 
         if msg.typeName == "error":
-            self.log(mode="error", msg="[IB ERROR] "+str(msg))
+            if msg.errorCode not in IB_BENIGN_ERROR_CODES:
+                self.log.error("[IB ERROR] %s", msg)
 
         elif msg.typeName == dataTypes["MSG_CURRENT_TIME"]:
             if self.time < msg.time:
@@ -284,7 +246,7 @@ class ezIBpy():
             self.commission = msg.commissionReport.m_commission
 
         else:
-            self.log(mode="info", msg="[SERVER]: "+ str(msg))
+            self.log.info("[SERVER]: %s", msg)
             pass
 
     # ---------------------------------------------------------
@@ -354,7 +316,7 @@ class ezIBpy():
                  "AvailableFunds", "AvailableFunds-C", "AvailableFunds-S"]
 
         if msg.key in track:
-            # self.log(mode="info", msg="[ACCOUNT]: " + str(msg))
+            # self.log.info("[ACCOUNT]: %s", msg)
             self.account[msg.key] = float(msg.value)
 
             # fire callback
@@ -368,7 +330,7 @@ class ezIBpy():
         contractString = self.contractString(msg.contract)
 
         # if msg.pos != 0 or contractString in self.contracts.keys():
-        self.log(mode="info", msg="[POSITION]: " + str(msg))
+        self.log.info("[POSITION]: %s", msg)
         self.positions[contractString] = {
             "symbol":        contractString,
             "position":      int(msg.pos),
@@ -382,7 +344,7 @@ class ezIBpy():
     # ---------------------------------------------------------
     def handlePortfolio(self, msg):
         """ handle portfolio updates """
-        self.log(mode="info", msg="[PORTFOLIO]: " + str(msg))
+        self.log.info("[PORTFOLIO]: %s", msg)
 
         # contract identifier
         contractString = self.contractString(msg.contract)
@@ -409,14 +371,14 @@ class ezIBpy():
         It is possible that orderStatus() may return duplicate messages.
         It is essential that you filter the message accordingly.
         """
-        self.log(mode="info", msg="[ORDER]: " + str(msg))
+        self.log.info("[ORDER]: %s", msg)
 
         # get server time
         self.getServerTime()
         time.sleep(0.001)
 
         # we need to handle mutiple events for the same order status
-        duplicateMessage = False;
+        duplicateMessage = False
 
         # open order
         if msg.typeName == dataTypes["MSG_TYPE_OPEN_ORDER"]:
@@ -515,7 +477,7 @@ class ezIBpy():
 
     # ---------------------------------------------------------
     def handleHistoricalData(self, msg):
-        # self.log(mode="debug", msg="[HISTORY]: " + str(msg))
+        # self.log.debug("[HISTORY]: %s", msg)
         print('.', end="",flush=True)
 
         if msg.date[:8].lower() == 'finished':
@@ -528,7 +490,7 @@ class ezIBpy():
                     print("[HISTORY FINISHED]: " + contractString)
                     self.historicalData[sym].to_csv(
                         self.csv_path + contractString +'.csv'
-                        );
+                        )
 
             print('.')
             # fire callback
@@ -586,7 +548,7 @@ class ezIBpy():
         """
         holds latest tick bid/ask/last price
         """
-        # self.log(mode="debug", msg="[TICK PRICE]: " + dataTypes["PRICE_TICKS"][msg.field] + " - " + str(msg))
+        # self.log.debug("[TICK PRICE]: %s - %s", dataTypes["PRICE_TICKS"][msg.field], msg)
         # return
 
         if msg.price < 0:
@@ -694,7 +656,7 @@ class ezIBpy():
             ts = datetime.fromtimestamp(int(msg.value)) \
                 .strftime(dataTypes["DATE_TIME_FORMAT_LONG_MILLISECS"])
             df2use[msg.tickerId].index = [ts]
-            # self.log(mode="debug", msg="[TICK TS]: " + ts)
+            # self.log.debug("[TICK TS]: %s", ts)
 
             # handle trailing stop orders
             if self.contracts[msg.tickerId].m_secType not in ("OPT", "FOP"):
@@ -706,9 +668,9 @@ class ezIBpy():
 
 
         elif (msg.tickType == dataTypes["FIELD_RTVOLUME"]):
-            # self.log(mode="info", msg="[RTVOL]: " + str(msg))
+            # self.log.info("[RTVOL]: %s", msg)
 
-            tick = dataTypes["RTVOL_TICKS"]
+            tick = dict(dataTypes["RTVOL_TICKS"])
             (tick['price'], tick['size'], tick['time'], tick['volume'],
                 tick['wap'], tick['single']) = msg.value.split(';')
 
@@ -731,7 +693,7 @@ class ezIBpy():
                 tick['ask']     = df2use[msg.tickerId]['ask'][0]
                 tick['asksize'] = int(df2use[msg.tickerId]['asksize'][0])
 
-                # self.log(mode="debug", msg=tick['time'] + ':' + self.tickerSymbol(msg.tickerId) + "-" + str(tick))
+                # self.log.debug("%s: %s\n%s", tick['time'], self.tickerSymbol(msg.tickerId), tick)
 
                 # fire callback
                 self.ibCallback(caller="handleTickString", msg=msg, tick=tick)
@@ -740,7 +702,7 @@ class ezIBpy():
                 pass
 
         else:
-            # self.log(mode="info", msg="tickString" + "-" + msg)
+            # self.log.info("tickString-%s", msg)
             # fire callback
             self.ibCallback(caller="handleTickString", msg=msg)
 
@@ -787,8 +749,8 @@ class ezIBpy():
     # ---------------------------------------------------------
     # trailing stops
     # ---------------------------------------------------------
-    def createTriggerableTrailingStop(self, symbol, quantity=1, \
-        triggerPrice=0, trailPercent=100., trailAmount=0., \
+    def createTriggerableTrailingStop(self, symbol, quantity=1,
+        triggerPrice=0, trailPercent=100., trailAmount=0.,
         parentId=0, stopOrderId=None, ticksize=0.01):
         """ adds order to triggerable list """
 
@@ -805,7 +767,7 @@ class ezIBpy():
         return self.triggerableTrailingStops[symbol]
 
     # ---------------------------------------------------------
-    def registerTrailingStop(self, tickerId, orderId=0, quantity=1, \
+    def registerTrailingStop(self, tickerId, orderId=0, quantity=1,
         lastPrice=0, trailPercent=100., trailAmount=0., parentId=0, ticksize=0.01):
         """ adds trailing stop to monitor list """
 
@@ -992,7 +954,6 @@ class ezIBpy():
         for tickerId in self.tickerIds:
             if symbol == self.tickerIds[tickerId]:
                 return tickerId
-                break
         else:
             tickerId = len(self.tickerIds)
             self.tickerIds[tickerId] = symbol
@@ -1111,7 +1072,7 @@ class ezIBpy():
         return self.createFuturesContract(symbol=symbol, currency=currency, expiry=expiry, exchange=exchange)
 
     # ---------------------------------------------------------
-    def createOptionContract(self, symbol, secType="OPT", \
+    def createOptionContract(self, symbol, secType="OPT",
         currency="USD", expiry=None, strike=0.0, otype="CALL", exchange="SMART"):
         # secType = OPT (Option) / FOP (Options on Futures)
         contract_tuple = (symbol, secType, exchange, currency, expiry, float(strike), otype)
@@ -1130,7 +1091,7 @@ class ezIBpy():
     # ---------------------------------------------------------
     # order constructors
     # ---------------------------------------------------------
-    def createOrder(self, quantity, price=0., stop=0., tif="DAY", \
+    def createOrder(self, quantity, price=0., stop=0., tif="DAY",
         fillorkill=False, iceberg=False, transmit=True, rth=False, **kwargs):
         # https://www.interactivebrokers.com/en/software/api/apiguide/java/order.htm
         order = Order()
@@ -1186,7 +1147,7 @@ class ezIBpy():
 
 
     # ---------------------------------------------------------
-    def createTargetOrder(self, quantity, parentId=0, \
+    def createTargetOrder(self, quantity, parentId=0,
         target=0., orderType=None, transmit=True, group=None, rth=False):
         """ Creates TARGET order """
         order = self.createOrder(quantity,
@@ -1200,7 +1161,7 @@ class ezIBpy():
         return order
 
     # ---------------------------------------------------------
-    def createStopOrder(self, quantity, parentId=0, \
+    def createStopOrder(self, quantity, parentId=0,
         stop=0., trail=None, transmit=True,
         group=None, rth=False, stop_limit=False):
 
@@ -1239,12 +1200,11 @@ class ezIBpy():
         return order
 
     # ---------------------------------------------------------
-    def createTrailingStopOrder(self, contract, quantity, \
+    def createTrailingStopOrder(self, contract, quantity,
         parentId=0, trailPercent=100., group=None, triggerPrice=None):
         """ convert hard stop order to trailing stop order """
         if parentId not in self.orders:
             raise ValueError("Order #"+ str(parentId) +" doesn't exist or wasn't submitted")
-            return
 
         order = self.createStopOrder(quantity,
             stop       = trailPercent,
@@ -1258,10 +1218,10 @@ class ezIBpy():
         return self.placeOrder(contract, order, self.orderId+1)
 
     # ---------------------------------------------------------
-    def createBracketOrder(self, \
-        contract, quantity, entry=0., target=0., stop=0., \
-        targetType=None, trailingStop=None, group=None, \
-        tif="DAY", fillorkill=False, iceberg=False, rth=False, \
+    def createBracketOrder(self,
+        contract, quantity, entry=0., target=0., stop=0.,
+        targetType=None, trailingStop=None, group=None,
+        tif="DAY", fillorkill=False, iceberg=False, rth=False,
         stop_limit=False, **kwargs):
         """
         creates One Cancels All Bracket Order

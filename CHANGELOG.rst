@@ -1,6 +1,12 @@
 Change Log
 ===========
 
+
+1.12.29
+-------
+* Switch to standard python logging and log errors to stderr by default.
+
+
 1.12.28
 -------
 

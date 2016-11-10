@@ -18,15 +18,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import time
-import logging
-from datetime import datetime
 import atexit
-import tempfile
 import os
+import tempfile
+import time
+
+from datetime import datetime
+from pandas import DataFrame, read_pickle
 from stat import S_IWRITE
 
-from pandas import DataFrame, read_pickle
 from ib.opt import Connection
 from ib.ext.Contract import Contract
 from ib.ext.Order import Order

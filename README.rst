@@ -388,21 +388,31 @@ You can change the log level:
 .. code:: python
 
     import logging
-    import ezibpy       # Have to import before configuring logging
+    import ezibpy
 
-    logging.getLogger('ezibpy').setLevel(logging.CRITICAL)      # Silence error logging
+    # after ezibpy is imported, we can silence error logging
+    logging.getLogger('ezibpy').setLevel(logging.CRITICAL)
 
+    # initialize with new logging configration
+    ibConn = ezibpy.ezIBpy()
+    ...
 
 Or log to a file:
 
 .. code:: python
 
+    import logging
+    import ezibpy
+
+    # after ezibpy is imported, we can change the logging handler to file
     logger = logging.getLogger('ezibpy')
+    logger.addHandler(logging.FileHandler('path/to/ezibpy.log'))
     logger.setLevel(logging.INFO)
-    logger.addHandler(logging.FileHandler('ezibpy.log'))
-    logger.propagate = False        # Don't also log to stderr
+    logger.propagate = False # do not also log to stderr
 
-
+    # initialize with new logging configration
+    ibConn = ezibpy.ezIBpy()
+    ...
 
 Installation
 ============

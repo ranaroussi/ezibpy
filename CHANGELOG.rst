@@ -4,7 +4,9 @@ Change Log
 
 1.12.29
 -------
-* Switch to standard python logging and log errors to stderr by default.
+- Switch to standard python logging and log errors to ``stderr`` by default.
+- removed ``self.ibConn.register(self.handleErrorEvents, 'Error')`` so the code now calls this method from within ``handleServerEvents``
+- disabled error callback for benign error codes (``2104`` and ``2106`` are not actually problems)
 
 
 1.12.28

@@ -33,11 +33,14 @@ from ib.ext.Order import Order
 
 from .utils import dataTypes
 
-
+# -------------------------------------------------------------
+import logging
 logging.getLogger('ezibpy').setLevel(logging.ERROR)
-
+# -------------------------------------------------------------
 
 class ezIBpy():
+
+    # ---------------------------------------------------------
     @staticmethod
     def roundClosestValid(val, res, decimals=2):
         """ round to closest resolution """
@@ -45,7 +48,8 @@ class ezIBpy():
 
     # ---------------------------------------------------------
     # https://www.interactivebrokers.com/en/software/api/apiguide/java/java_eclientsocket_methods.htm
-    def __init__(self):
+    def __init__(self:
+
         """Initialize a new ezIBpy object."""
         self.clientId      = 1
         self.port          = 4001 # 7496/7497 = TWS, 4001 = IBGateway
@@ -69,7 +73,9 @@ class ezIBpy():
         self.positions     = {}
         self.portfolio     = {}
 
-        self.log = logging.getLogger('ezibpy')
+        # -----------------------------------------------------
+        self.log = logging.getLogger('ezibpy') # get logger
+        # -----------------------------------------------------
 
         # holds market data
         tickDF = DataFrame({

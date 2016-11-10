@@ -33,8 +33,6 @@ from ib.ext.Order import Order
 
 from .utils import dataTypes
 
-# IB API warning codes that are not actually problems; will not be logged.
-IB_BENIGN_ERROR_CODES = (2104, 2106)
 
 logging.getLogger('ezibpy').setLevel(logging.ERROR)
 

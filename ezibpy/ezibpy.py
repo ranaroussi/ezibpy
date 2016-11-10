@@ -48,7 +48,7 @@ class ezIBpy():
 
     # ---------------------------------------------------------
     # https://www.interactivebrokers.com/en/software/api/apiguide/java/java_eclientsocket_methods.htm
-    def __init__(self:
+    def __init__(self):
 
         """Initialize a new ezIBpy object."""
         self.clientId      = 1

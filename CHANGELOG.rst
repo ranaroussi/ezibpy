@@ -1,6 +1,16 @@
 Change Log
 ===========
 
+1.12.31
+-------
+
+- Added ``requestContractDetails()`` method for calling IB's ``reqContractDetails()``.
+- Added container dict for contract details is stored in ``contract_details[tickerId]``
+- Auto calls ``requestContractDetails()`` for every created contract
+- Contract details is availeble via ``contract_details[tickerId]`` or ``contractDetails(contract_or_symbol_or_tickerId)``
+- No need to pass ticksize to ``createTriggerableTrailingStop()`` or ``registerTriggerableTrailingStop()`` (auto-uses data from contract details)
+
+
 1.12.30
 -------
 

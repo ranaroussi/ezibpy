@@ -1192,8 +1192,7 @@ class ezIBpy():
 
     # ---------------------------------------------------------
     def createTargetOrder(self, quantity, parentId=0,
-        target=0., orderType=None, transmit=True, group=None,
-        rth=False, tif="DAY"):
+        target=0., orderType=None, transmit=True, group=None, rth=False):
         """ Creates TARGET order """
         order = self.createOrder(quantity,
             price     = target,
@@ -1201,15 +1200,14 @@ class ezIBpy():
             orderType = dataTypes["ORDER_TYPE_LIMIT"] if orderType == None else orderType,
             ocaGroup  = group,
             parentId  = parentId,
-            rth       = rth,
-            tif       = tif
+            rth       = rth
         )
         return order
 
     # ---------------------------------------------------------
     def createStopOrder(self, quantity, parentId=0,
-        stop=0., trail=None, transmit=True, group=None, stop_limit=False,
-        rth=False, tif="DAY"):
+        stop=0., trail=None, transmit=True,
+        group=None, rth=False, stop_limit=False):
 
         """ Creates STOP order """
         if trail is not None:
@@ -1220,8 +1218,7 @@ class ezIBpy():
                     orderType = dataTypes["ORDER_TYPE_TRAIL_STOP"],
                     ocaGroup  = group,
                     parentId  = parentId,
-                    rth       = rth,
-                    tif       = tif
+                    rth       = rth
                 )
             else:
                 order = self.createOrder(quantity,
@@ -1231,8 +1228,7 @@ class ezIBpy():
                     orderType = dataTypes["ORDER_TYPE_TRAIL_STOP"],
                     ocaGroup  = group,
                     parentId  = parentId,
-                    rth       = rth,
-                    tif       = tif
+                    rth       = rth
                 )
 
         else:
@@ -1243,8 +1239,7 @@ class ezIBpy():
                 orderType = dataTypes["ORDER_TYPE_STOP_LIMIT"] if stop_limit else dataTypes["ORDER_TYPE_STOP"],
                 ocaGroup  = group,
                 parentId  = parentId,
-                rth       = rth,
-                tif       = tif
+                rth       = rth
             )
         return order
 
@@ -1293,8 +1288,7 @@ class ezIBpy():
                 transmit  = False if stop > 0 else True,
                 orderType = targetType,
                 group     = group,
-                rth       = rth,
-                tif       = tif
+                rth       = rth
             )
 
             self.requestOrderIds()
@@ -1310,8 +1304,7 @@ class ezIBpy():
                 transmit   = True,
                 group      = group,
                 rth        = rth,
-                stop_limit = stop_limit,
-                tif        = tif
+                stop_limit = stop_limit
             )
 
             self.requestOrderIds()

@@ -51,27 +51,28 @@ class ezIBpy():
     def __init__(self):
 
         """Initialize a new ezIBpy object."""
-        self.clientId      = 1
-        self.port          = 4001 # 7496/7497 = TWS, 4001 = IBGateway
-        self.host          = "localhost"
-        self.ibConn        = None
+        self.clientId         = 1
+        self.port             = 4001 # 7496/7497 = TWS, 4001 = IBGateway
+        self.host             = "localhost"
+        self.ibConn           = None
 
-        self.time          = 0
-        self.commission    = 0
+        self.time             = 0
+        self.commission       = 0
 
-        self.connected     = False
+        self.connected        = False
 
-        self.accountCode   = 0
-        self.orderId       = 1
+        self.accountCode      = 0
+        self.orderId          = 1
 
         # auto-construct for every contract/order
-        self.tickerIds     = { 0: "SYMBOL" }
-        self.contracts     = {}
-        self.orders        = {}
-        self.symbol_orders = {}
-        self.account       = {}
-        self.positions     = {}
-        self.portfolio     = {}
+        self.tickerIds        = { 0: "SYMBOL" }
+        self.contracts        = {}
+        self.contract_details = {}
+        self.orders           = {}
+        self.symbol_orders    = {}
+        self.account          = {}
+        self.positions        = {}
+        self.portfolio        = {}
 
         # -----------------------------------------------------
         self.log = logging.getLogger('ezibpy') # get logger
@@ -244,6 +245,15 @@ class ezIBpy():
 
         elif msg.typeName == dataTypes["MSG_COMMISSION_REPORT"]:
             self.commission = msg.commissionReport.m_commission
+
+        elif msg.typeName == dataTypes["MSG_CONTRACT_DETAILS"]:
+            details = vars(msg.contractDetails)
+            details["m_summary"] = vars(details["m_summary"])
+            details['m_end'] = False
+            self.contract_details[msg.reqId] = details
+
+        elif msg.typeName == dataTypes["MSG_CONTRACT_DETAILS_END"]:
+            self.contract_details[msg.reqId]['m_end'] = True
 
         else:
             self.log.info("[SERVER]: %s", msg)
@@ -1021,6 +1031,36 @@ class ezIBpy():
         return contractString
 
     # ---------------------------------------------------------
+    def contractDetails(self, contract_identifier):
+        """ returns string from contract tuple """
+
+        if isinstance(contract_identifier, Contract):
+            tickerId = self.tickerId(contract_identifier)
+        else:
+            if str(contract_identifier).isdigit():
+                tickerId = contract_identifier
+            else:
+                tickerId = self.tickerId(contract_identifier)
+
+        if tickerId in self.contract_details:
+            return self.contract_details[tickerId]
+
+        # default values
+        return {
+            'm_category': None, 'm_contractMonth': '', 'm_end': True, 'm_evMultiplier': 0,
+            'm_evRule': None, 'm_industry': None, 'm_liquidHours': '', 'm_longName': '',
+            'm_marketName': '', 'm_minTick': 0.01, 'm_orderTypes': '', 'm_priceMagnifier': 0,
+            'm_subcategory': None, 'm_timeZoneId': '', 'm_tradingHours': '', 'm_underConId': 0,
+            'm_validExchanges': 'SMART', 'm_summary': {
+                'm_conId': 0, 'm_currency': 'USD', 'm_exchange': 'SMART', 'm_expiry': '',
+                'm_includeExpired': False, 'm_localSymbol': '', 'm_multiplier': '',
+                'm_primaryExch': None, 'm_right': None, 'm_secType': '',
+                'm_strike': 0.0, 'm_symbol': '', 'm_tradingClass': '',
+            }
+        }
+
+
+    # ---------------------------------------------------------
     # contract constructors
     # ---------------------------------------------------------
     def createContract(self, contractTuple, **kwargs):
@@ -1050,6 +1090,10 @@ class ezIBpy():
         # add contract to pull
         # self.contracts[contractTuple[0]] = newContract
         self.contracts[tickerId] = newContract
+
+        # request contract details
+        self.requestContractDetails(newContract)
+        time.sleep(.5)
 
         # print(vars(newContract))
         # print('Contract Values:%s,%s,%s,%s,%s,%s,%s:' % contractTuple)
@@ -1465,4 +1509,12 @@ class ezIBpy():
         if self.subscribeAccount != subscribe:
             self.subscribeAccount = subscribe
             self.ibConn.reqAccountUpdates(subscribe, self.accountCode)
+
+    # ---------------------------------------------------------
+    def requestContractDetails(self, contract):
+        """
+        Register to contract details
+        https://www.interactivebrokers.com/en/software/api/apiguide/java/reqcontractdetails.htm
+        """
+        self.ibConn.reqContractDetails(self.tickerId(contract), contract)
 

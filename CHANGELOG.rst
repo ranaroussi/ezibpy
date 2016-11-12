@@ -1,6 +1,11 @@
 Change Log
 ===========
 
+1.12.30
+-------
+
+- ``createBracketOrder`` now passes ``tif`` to parent, target and stop child orders (closing issue #5)
+
 
 1.12.29
 -------

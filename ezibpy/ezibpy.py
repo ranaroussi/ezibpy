@@ -961,6 +961,10 @@ class ezIBpy():
         returns the tickerId for the symbol or
         sets one if it doesn't exits
         """
+        # contract passed instead of symbol?
+        if not isinstance(symbol, str):
+            symbol = self.contractString(symbol)
+
         for tickerId in self.tickerIds:
             if symbol == self.tickerIds[tickerId]:
                 return tickerId

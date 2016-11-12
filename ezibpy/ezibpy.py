@@ -761,8 +761,10 @@ class ezIBpy():
     # ---------------------------------------------------------
     def createTriggerableTrailingStop(self, symbol, quantity=1,
         triggerPrice=0, trailPercent=100., trailAmount=0.,
-        parentId=0, stopOrderId=None, ticksize=0.01):
+        parentId=0, stopOrderId=None, ticksize=None):
         """ adds order to triggerable list """
+
+        ticksize = self.contractDetails(symbol)["m_minTick"]
 
         self.triggerableTrailingStops[symbol] = {
             "parentId": parentId,
@@ -778,8 +780,10 @@ class ezIBpy():
 
     # ---------------------------------------------------------
     def registerTrailingStop(self, tickerId, orderId=0, quantity=1,
-        lastPrice=0, trailPercent=100., trailAmount=0., parentId=0, ticksize=0.01):
+        lastPrice=0, trailPercent=100., trailAmount=0., parentId=0, ticksize=None):
         """ adds trailing stop to monitor list """
+
+        ticksize = self.contractDetails(tickerId)["m_minTick"]
 
         trailingStop = self.trailingStops[tickerId] = {
             "orderId": orderId,
@@ -830,7 +834,7 @@ class ezIBpy():
             return None
 
         # continue...
-        newStop = trailingStop['lastPrice']
+        newStop  = trailingStop['lastPrice']
         ticksize = trailingStop['ticksize']
 
         # long

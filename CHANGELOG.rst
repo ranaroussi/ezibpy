@@ -1,6 +1,11 @@
 Change Log
 ===========
 
+1.12.32
+-------
+
+- Brought back (accidently) deleted ``tif`` functionality (closing issue #5)
+
 1.12.31
 -------
 

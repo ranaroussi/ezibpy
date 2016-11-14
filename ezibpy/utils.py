@@ -31,7 +31,7 @@ dataTypes = {
     "RTVOL_TICKS" : { "instrument":"", "ticketId":0, "price":0, "size":0, "time":0, "volume":0, "vwap":0, "single":0 },
 
     # API warning codes that are not actually problems and should not be logged
-    "BENIGN_ERROR_CODES"             : (2104, 2106),
+    "BENIGN_ERROR_CODES"             : (200, 2104, 2106),
 
     "FIELD_BID_SIZE"                  : 0,
     "FIELD_BID_PRICE"                 : 1,

@@ -1,6 +1,21 @@
 Change Log
 ===========
 
+1.12.34
+-------
+
+- All Futures, Options and Options on Futures contracts are now set to ``m_includeExpired=True`` by default
+- Handling ``tickSnapshotEnd`` event
+- Misc code improvements and minor bug fixes
+- Added ``getConId(contract_or_symbol_or_tickerId)`` method for getting contract's ``conId``
+- Added support for combo orders (experimental/pre-alpha; probably won't work)
+
+
+1.12.33
+-------
+
+- Added error code ``200`` to benign error codes (skip logging)
+
 1.12.32
 -------
 
@@ -25,8 +40,8 @@ Change Log
 1.12.29
 -------
 - Switch to standard python logging and log errors to ``stderr`` by default.
-- removed ``self.ibConn.register(self.handleErrorEvents, 'Error')`` so the code now calls this method from within ``handleServerEvents``
-- disabled error callback for benign error codes (``2104`` and ``2106`` are not actually problems)
+- Removed ``self.ibConn.register(self.handleErrorEvents, 'Error')`` so the code now calls this method from within ``handleServerEvents``
+- Disabled error callback for benign error codes (``2104`` and ``2106`` are not actually problems)
 
 
 1.12.28

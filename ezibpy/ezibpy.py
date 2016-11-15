@@ -398,6 +398,10 @@ class ezIBpy():
             # contract identifier
             contractString = self.contractString(msg.contract)
 
+            if self.orders[msg.orderId]["status"] == "SENT":
+                try: del self.orders[msg.orderId]
+                except: pass
+
             if msg.orderId in self.orders:
                 duplicateMessage = True
             else:
@@ -1349,6 +1353,18 @@ class ezIBpy():
         # continue...
         useOrderId = self.orderId if orderId == None else orderId
         self.ibConn.placeOrder(useOrderId, contract, order)
+
+        self.orders[useOrderId] = {
+            "id":       useOrderId,
+            "symbol":   self.contractString(contract),
+            "contract": contract,
+            "status":   "SENT",
+            "reason":   None,
+            "avgFillPrice": 0.,
+            "parentId": 0,
+            "time": datetime.fromtimestamp(int(self.time))
+        }
+
 
         # update order id for next time
         self.requestOrderIds()

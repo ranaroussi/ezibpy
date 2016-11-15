@@ -1555,7 +1555,9 @@ class ezIBpy():
     # conbo orders
     # ---------------------------------------------------------
     def createComboLeg(self, contract, action, ratio=1, exchange=None):
-
+        """ create combo leg
+        https://www.interactivebrokers.com/en/software/api/apiguide/java/comboleg.htm
+        """
         summary = self.contractDetails(contract)["m_summary"]
         if exchange is None:
             exchange = summary["m_exchange"]

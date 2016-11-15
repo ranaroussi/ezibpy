@@ -8,7 +8,7 @@ Change Log
 - Handling ``tickSnapshotEnd`` event
 - Misc code improvements and minor bug fixes
 - Added ``getConId(contract_or_symbol_or_tickerId)`` method for getting contract's ``conId``
-- Added support for combo orders (experimental/pre-alpha; probably won't work)
+- Added support for combo orders
 
 
 1.12.33

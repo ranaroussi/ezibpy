@@ -57,13 +57,13 @@ Interactive Brokers’ `TWS <https://www.interactivebrokers.com/en/index.php?f=1
 - `Submit a Bracket Order <#submit-a-bracket-order>`_
 - `Moving Stop Manually <#submit-a-bracket-order-&-move-stop-manually>`_
 - `Bracket Order with Trailing Stop <#submit-a-bracket-order-with-a-trailing-stop>`_
+- `Combo Orders <#submit-a-combo-orders>`_
 
 **Other Stuff**
 
 - `Using Custom Callbacks <#custom-callback>`_
 - `Account Information <#account-information>`_
 - `Logging <#logging>`_
-- `Combo Orders (experimental) <#combo-orders-experimental>`_
 
 
 Request Market Data:
@@ -288,6 +288,43 @@ Submit a Bracket Order with a Trailing Stop:
     # ibConn.disconnect()
 
 
+Submit a Combo Orders:
+----------------------
+.. code:: python
+
+    import ezibpy
+    import time
+
+    # initialize ezIBpy
+    ibConn = ezibpy.ezIBpy()
+    ibConn.connect(clientId=100, host="localhost", port=4001)
+
+    # create contracts for an bear call spread
+    contract_to_sell = ibConn.createOptionContract("AAPL", expiry=20161118, strike=105., otype="CALL")
+    contract_to_buy  = ibConn.createOptionContract("AAPL", expiry=20161118, strike=100., otype="CALL")
+
+    # create combo legs
+    leg1 = ibConn.createComboLeg(contract_to_sell, "SELL", ratio=1)
+    leg2 = ibConn.createComboLeg(contract_to_buy, "BUY", ratio=1)
+
+    # build a bag contract with these legs
+    contract = ibConn.createComboContract("AAPL", [leg1, leg2])
+
+    # create & place order (negative price means this is a credit spread)
+    order = ibConn.createOrder(quantity=1, price=-0.25)
+    orderId = ibConn.placeOrder(contract, order)
+
+    # let order fill
+    time.sleep(1)
+
+    # see the positions
+    print("Positions")
+    print(ibConn.positions)
+
+    # disconnect
+    ibConn.disconnect()
+
+
 Custom Callback:
 ----------------
 .. code:: python
@@ -415,42 +452,6 @@ Or log to a file:
     ibConn = ezibpy.ezIBpy()
     ...
 
-
-Combo Orders (experimental):
--------------
-.. code:: python
-
-    import ezibpy
-    import time
-
-    # initialize ezIBpy
-    ibConn = ezibpy.ezIBpy()
-    ibConn.connect(clientId=100, host="localhost", port=4001)
-
-    # create contracts for an bear call spread
-    contract_to_sell = ibConn.createOptionContract("AAPL", expiry=20161118, strike=105., otype="CALL")
-    contract_to_buy  = ibConn.createOptionContract("AAPL", expiry=20161118, strike=100., otype="CALL")
-
-    # create combo legs
-    leg1 = ibConn.createComboLeg(contract_to_sell, "SELL", ratio=1)
-    leg2 = ibConn.createComboLeg(contract_to_buy, "BUY", ratio=1)
-
-    # build a bag contract with these legs
-    contract = ibConn.createComboContract("AAPL", [leg1, leg2])
-
-    # create & place order (negative price means this is a credit spread)
-    order = ibConn.createOrder(quantity=1, price=-0.25)
-    orderId = ibConn.placeOrder(contract, order)
-
-    # let order fill
-    time.sleep(1)
-
-    # see the positions
-    print("Positions")
-    print(ibConn.positions)
-
-    # disconnect
-    ibConn.disconnect()
 
 
 Installation

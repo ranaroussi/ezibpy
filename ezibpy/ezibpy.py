@@ -247,8 +247,8 @@ class ezIBpy():
             self.commission = msg.commissionReport.m_commission
 
         elif msg.typeName == dataTypes["MSG_CONTRACT_DETAILS"]:
-            details = vars(msg.contractDetails)
-            details["m_summary"] = vars(details["m_summary"])
+            details = msg.contractDetails.__dict__
+            details["m_summary"] = details["m_summary"].__dict__
             details['m_end'] = False
             self.contract_details[msg.reqId] = details
 

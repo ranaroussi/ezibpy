@@ -30,6 +30,7 @@ from stat import S_IWRITE
 from ib.opt import Connection
 from ib.ext.Contract import Contract
 from ib.ext.Order import Order
+from ib.ext.ComboLeg import ComboLeg
 
 from .utils import dataTypes
 
@@ -1102,13 +1103,16 @@ class ezIBpy():
         # include expired (needed for historical data)
         newContract.m_includeExpired = (newContract.m_secType in ["FUT", "OPT", "FOP"])
 
+        if "comboLegs" in kwargs:
+            newContract.m_comboLegs = kwargs["comboLegs"]
+        else:
+            # request contract details
+            self.requestContractDetails(newContract)
+            time.sleep(.5)
+
         # add contract to pull
         # self.contracts[contractTuple[0]] = newContract
         self.contracts[tickerId] = newContract
-
-        # request contract details
-        self.requestContractDetails(newContract)
-        time.sleep(.5)
 
         # print(vars(newContract))
         # print('Contract Values:%s,%s,%s,%s,%s,%s,%s:' % contractTuple)
@@ -1545,4 +1549,35 @@ class ezIBpy():
         https://www.interactivebrokers.com/en/software/api/apiguide/java/reqcontractdetails.htm
         """
         self.ibConn.reqContractDetails(self.tickerId(contract), contract)
+
+
+    # ---------------------------------------------------------
+    # conbo orders
+    # ---------------------------------------------------------
+    def createComboLeg(self, contract, action, ratio=1, exchange=None):
+
+        summary = self.contractDetails(contract)["m_summary"]
+        if exchange is None:
+            exchange = summary["m_exchange"]
+
+        leg =  ComboLeg()
+
+        leg.m_conId     = summary["m_conId"]
+        leg.m_ratio     = abs(ratio)
+        leg.m_action    = action
+        leg.m_exchange  = exchange
+        leg.m_openClose = 0
+
+        leg.m_shortSaleSlot      = 0
+        leg.m_designatedLocation = ""
+
+        return leg
+
+
+    # ---------------------------------------------------------
+    def createComboContract(self, symbol, legs, currency="USD"):
+        """ Used for ComboLegs. Expecting list of legs """
+        contract_tuple = (symbol, "BAG", legs[0].m_exchange, currency, "", 0.0, "")
+        contract = self.createContract(contract_tuple, comboLegs=legs)
+        return contract
 

@@ -1043,7 +1043,7 @@ class ezIBpy():
         except:
             contractString = contractTuple[0]
 
-        return contractString
+        return contractString.replace(" ", "_").upper()
 
     # ---------------------------------------------------------
     def contractDetails(self, contract_identifier):

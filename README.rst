@@ -63,7 +63,7 @@ Interactive Brokers’ `TWS <https://www.interactivebrokers.com/en/index.php?f=1
 - `Using Custom Callbacks <#custom-callback>`_
 - `Account Information <#account-information>`_
 - `Logging <#logging>`_
-- `Combo Orders <#combo-orders>`_ (experimental!)
+- `Combo Orders (experimental) <#combo-orders-experimental>`_
 
 
 Request Market Data:

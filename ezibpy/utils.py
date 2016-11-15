@@ -100,6 +100,7 @@ dataTypes = {
 
     "MSG_CONTRACT_DETAILS"            : "contractDetails",
     "MSG_CONTRACT_DETAILS_END"        : "contractDetailsEnd",
+    "MSG_TICK_SNAPSHOT_END"           : "tickSnapshotEnd",
 
     "MSG_TYPE_HISTORICAL_DATA"        : "historicalData",
     "MSG_TYPE_ACCOUNT_UPDATES"        : "updateAccountValue",

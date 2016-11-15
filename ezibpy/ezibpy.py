@@ -255,6 +255,9 @@ class ezIBpy():
         elif msg.typeName == dataTypes["MSG_CONTRACT_DETAILS_END"]:
             self.contract_details[msg.reqId]['m_end'] = True
 
+        elif msg.typeName == dataTypes["MSG_TICK_SNAPSHOT_END"]:
+            self.ibCallback(caller="handleTickSnapshotEnd", msg=msg)
+
         else:
             self.log.info("[SERVER]: %s", msg)
             pass

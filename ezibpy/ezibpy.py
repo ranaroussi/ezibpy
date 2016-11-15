@@ -1128,6 +1128,8 @@ class ezIBpy():
         return contract
 
     def createFutureContract(self, symbol, currency="USD", expiry=None, exchange="GLOBEX"):
+        logging.warning("DEPRECATED: This method have been deprecated and will be removed in future versions. \
+            Use createFuturesContract() instead.")
         return self.createFuturesContract(symbol=symbol, currency=currency, expiry=expiry, exchange=exchange)
 
     # ---------------------------------------------------------

@@ -1552,7 +1552,13 @@ class ezIBpy():
 
 
     # ---------------------------------------------------------
-    # conbo orders
+    def getConId(self, contract_identifier):
+        """ Get contracts conId """
+        details = self.contractDetails(contract_identifier)
+        return details["m_summary"]["m_conId"]
+
+    # ---------------------------------------------------------
+    # combo orders
     # ---------------------------------------------------------
     def createComboLeg(self, contract, action, ratio=1, exchange=None):
         """ create combo leg

@@ -1137,8 +1137,8 @@ class ezIBpy():
         return self.createFuturesContract(symbol=symbol, currency=currency, expiry=expiry, exchange=exchange)
 
     # ---------------------------------------------------------
-    def createOptionContract(self, symbol, secType="OPT",
-        currency="USD", expiry=None, strike=0.0, otype="CALL", exchange="SMART"):
+    def createOptionContract(self, symbol, expiry=None, strike=0.0, otype="CALL",
+        currency="USD", secType="OPT", exchange="SMART"):
         # secType = OPT (Option) / FOP (Options on Futures)
         contract_tuple = (symbol, secType, exchange, currency, expiry, float(strike), otype)
         contract = self.createContract(contract_tuple)

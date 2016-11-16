@@ -27,7 +27,7 @@ import logging
 from ib.ext.Contract import Contract
 from ib.ext.Order import Order
 
-
+# ---------------------------------------------------------
 dataTypes = {
     "MONTH_CODES" : ['','F','G','H','J','K','M','N','Q','U','V','X','Z'],
 
@@ -174,7 +174,7 @@ dataTypes = {
 
 }
 
-
+# ---------------------------------------------------------
 def createLogger(name, level=logging.WARNING):
     """:Return: a logger with the given `name` and optional `level`."""
     logger = logging.getLogger(name)
@@ -185,13 +185,13 @@ def createLogger(name, level=logging.WARNING):
     logger.propagate = False
     return logger
 
-
+# ---------------------------------------------------------
 def order_to_dict(order):
     """Convert an IBPy Order object to a dict containing any non-default values."""
     default = Order()
     return {field: val for field, val in vars(order).items() if val != getattr(default, field, None)}
 
-
+# ---------------------------------------------------------
 def contract_to_dict(contract):
     """Convert an IBPy Contract object to a dict containing any non-default values."""
     default = Contract()

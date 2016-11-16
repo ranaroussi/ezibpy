@@ -175,7 +175,7 @@ dataTypes = {
 }
 
 
-def create_logger(name, level=logging.WARNING):
+def createLogger(name, level=logging.WARNING):
     """:Return: a logger with the given `name` and optional `level`."""
     logger = logging.getLogger(name)
     logger.setLevel(level)

@@ -134,6 +134,12 @@ class ezIBpy():
         # register exit
         atexit.register(self.disconnect)
 
+        # fire connected/disconnected callbacks/errors once per event
+        self.connection_tracking = {
+            "connected": False,
+            "disconnected": False,
+            "errors": []
+        }
 
     # ---------------------------------------------------------
     def connect(self, clientId=0, host="localhost", port=4001):
@@ -166,7 +172,6 @@ class ezIBpy():
 
         # force refresh of orderId upon connect
         self.handleNextValidId(self.orderId)
-
 
     # ---------------------------------------------------------
     def disconnect(self):

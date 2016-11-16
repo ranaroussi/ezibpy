@@ -197,9 +197,21 @@ class ezIBpy():
     def handleErrorEvents(self, msg):
         """ logs error messages """
         # https://www.interactivebrokers.com/en/software/api/apiguide/tables/api_message_codes.htm
-        if msg.errorCode != -1 and msg.errorCode not in dataTypes["BENIGN_ERROR_CODES"]:
-            self.log.error("[#%s] %s" % (msg.errorCode, msg.errorMsg))
-            self.ibCallback(caller="handleError", msg=msg)
+        if msg.errorCode is not None and msg.errorCode != -1 and \
+            msg.errorCode not in dataTypes["BENIGN_ERROR_CODES"]:
+
+            log = True
+
+            # log disconnect errors only once
+            if msg.errorCode in dataTypes["DISCONNECT_ERROR_CODES"]:
+                log = False
+                if msg.errorCode not in self.connection_tracking["errors"]:
+                    self.connection_tracking["errors"].append(msg.errorCode)
+                    log = True
+
+            if log:
+                self.log.error("[#%s] %s" % (msg.errorCode, msg.errorMsg))
+                self.ibCallback(caller="handleError", msg=msg)
 
     # ---------------------------------------------------------
     def handleServerEvents(self, msg):

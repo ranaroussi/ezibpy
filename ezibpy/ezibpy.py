@@ -22,6 +22,7 @@ import atexit
 import os
 import tempfile
 import time
+import logging
 
 from datetime import datetime
 from pandas import DataFrame, read_pickle
@@ -32,12 +33,12 @@ from ib.ext.Contract import Contract
 from ib.ext.Order import Order
 from ib.ext.ComboLeg import ComboLeg
 
-from .utils import dataTypes
+from .utils import dataTypes, create_logger
 
 # -------------------------------------------------------------
-import logging
-logging.getLogger('ezibpy').setLevel(logging.ERROR)
+create_logger('ezibpy')
 # -------------------------------------------------------------
+
 
 class ezIBpy():
 
@@ -192,13 +193,15 @@ class ezIBpy():
     def handleServerEvents(self, msg):
         """ dispatch msg to the right handler """
 
+        self.log.debug('MSG %s', msg)
+        self.connected = not self.indicatesDisconnection(msg)
+
         if msg.typeName == "error":
             self.handleErrorEvents(msg)
 
         elif msg.typeName == dataTypes["MSG_CURRENT_TIME"]:
             if self.time < msg.time:
                 self.time = msg.time
-                self.connected = True
 
         elif (msg.typeName == dataTypes["MSG_TYPE_MKT_DEPTH"] or
                 msg.typeName == dataTypes["MSG_TYPE_MKT_DEPTH_L2"]):
@@ -1589,3 +1592,8 @@ class ezIBpy():
         contract = self.createContract(contract_tuple, comboLegs=legs)
         return contract
 
+
+    @staticmethod
+    def indicatesDisconnection(msg):
+        """:Return: True if IBPy message `msg` indicates the connection is unavailable for any reason, else False."""
+        return msg.typeName == "error" and msg.errorCode in dataTypes["DISCONNECT_ERROR_CODES"]

@@ -218,7 +218,7 @@ class ezIBpy():
         """ dispatch msg to the right handler """
 
         self.log.debug('MSG %s', msg)
-        self.connected = not self.indicatesDisconnection(msg)
+        self.handleConnectionState(msg)
 
         if msg.typeName == "error":
             self.handleErrorEvents(msg)
@@ -299,6 +299,28 @@ class ezIBpy():
 
     # ---------------------------------------------------------
     # Start admin handlers
+    # ---------------------------------------------------------
+    def handleConnectionState(self, msg):
+        """:Return: True if IBPy message `msg` indicates the connection is unavailable for any reason, else False."""
+        self.connected = not ( msg.typeName == "error" and
+            msg.errorCode in dataTypes["DISCONNECT_ERROR_CODES"] )
+
+        if self.connected:
+            self.connection_tracking["errors"] = []
+            self.connection_tracking["disconnected"] = False
+
+            if msg.typeName == dataTypes["MSG_CURRENT_TIME"] and not self.connection_tracking["connected"]:
+                self.log.info("[CONNECTION TO IB ESTABLISHED]")
+                self.connection_tracking["connected"] = True
+                self.ibCallback(caller="handleConnectionOpened", msg="<connectionOpened>")
+        else:
+            self.connection_tracking["connected"] = False
+
+            if not self.connection_tracking["disconnected"]:
+                self.connection_tracking["disconnected"] = True
+                self.log.info("[CONNECTION TO IB LOST]")
+
+
     # ---------------------------------------------------------
     def handleConnectionClosed(self, msg):
         self.connected = False
@@ -1615,9 +1637,3 @@ class ezIBpy():
         contract_tuple = (symbol, "BAG", legs[0].m_exchange, currency, "", 0.0, "")
         contract = self.createContract(contract_tuple, comboLegs=legs)
         return contract
-
-
-    @staticmethod
-    def indicatesDisconnection(msg):
-        """:Return: True if IBPy message `msg` indicates the connection is unavailable for any reason, else False."""
-        return msg.typeName == "error" and msg.errorCode in dataTypes["DISCONNECT_ERROR_CODES"]

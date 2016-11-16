@@ -23,7 +23,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='ezIBpy',
-    version="1.12.33",
+    version="1.12.35",
     description='Pythonic Wrapper for IbPy',
     long_description=long_description,
     url='https://github.com/ranaroussi/ezibpy',

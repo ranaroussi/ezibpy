@@ -1,6 +1,15 @@
 Change Log
 ===========
 
+1.12.35
+-------
+
+- Introduced ``reconnect()`` method to re-establish lost connection to TWS/GW
+- Trying to automatically re-establish connection when connection to TWS/GW is lost
+- Logging disconnect errors only once per occurrence until connected
+- Misc code improvements and minor bug fixes
+
+
 1.12.34
 -------
 

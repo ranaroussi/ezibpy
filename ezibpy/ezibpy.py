@@ -33,10 +33,12 @@ from ib.ext.Contract import Contract
 from ib.ext.Order import Order
 from ib.ext.ComboLeg import ComboLeg
 
-from .utils import dataTypes, create_logger
+from .utils import (
+    dataTypes, createLogger
+)
 
 # -------------------------------------------------------------
-create_logger('ezibpy')
+createLogger('ezibpy')
 # -------------------------------------------------------------
 
 

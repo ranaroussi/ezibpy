@@ -451,7 +451,7 @@ class ezIBpy():
             # contract identifier
             contractString = self.contractString(msg.contract)
 
-            if self.orders[msg.orderId]["status"] == "SENT":
+            if msg.orderId in self.orders and self.orders[msg.orderId]["status"] == "SENT":
                 try: del self.orders[msg.orderId]
                 except: pass
 

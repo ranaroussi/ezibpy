@@ -22,6 +22,11 @@
 # --------------
 # https://www.interactivebrokers.com/en/software/api/apiguide/java/reqhistoricaldata.htm
 # https://www.interactivebrokers.com/en/software/api/apiguide/tables/tick_types.htm
+import logging
+
+from ib.ext.Contract import Contract
+from ib.ext.Order import Order
+
 
 dataTypes = {
     "MONTH_CODES" : ['','F','G','H','J','K','M','N','Q','U','V','X','Z'],
@@ -32,6 +37,8 @@ dataTypes = {
 
     # API warning codes that are not actually problems and should not be logged
     "BENIGN_ERROR_CODES"             : (200, 2104, 2106),
+    # API error codes indicating IB/TWS disconnection
+    "DISCONNECT_ERROR_CODES"         : (504, 502, 1100, 1300, 2110),
 
     "FIELD_BID_SIZE"                  : 0,
     "FIELD_BID_PRICE"                 : 1,
@@ -166,3 +173,26 @@ dataTypes = {
     "ORDER_ACTION_SHORT"              : "SSHORT"
 
 }
+
+
+def create_logger(name, level=logging.WARNING):
+    """:Return: a logger with the given `name` and optional `level`."""
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+    handler = logging.StreamHandler()
+    handler.setFormatter(logging.Formatter('%(asctime)s [%(levelname)s] %(name)s: %(message)s'))
+    logger.addHandler(handler)
+    logger.propagate = False
+    return logger
+
+
+def order_to_dict(order):
+    """Convert an IBPy Order object to a dict containing any non-default values."""
+    default = Order()
+    return {field: val for field, val in vars(order).items() if val != getattr(default, field, None)}
+
+
+def contract_to_dict(contract):
+    """Convert an IBPy Contract object to a dict containing any non-default values."""
+    default = Contract()
+    return {field: val for field, val in vars(contract).items() if val != getattr(default, field, None)}

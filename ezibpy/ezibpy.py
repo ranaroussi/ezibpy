@@ -175,6 +175,11 @@ class ezIBpy():
             self.log.info("[DISCONNECT FROM IB]")
             self.ibConn.disconnect()
 
+    # ---------------------------------------------------------
+    def reconnect(self):
+        while not self.connected:
+            self.connect(self.clientId, self.host, self.port)
+            time.sleep(1)
 
     # ---------------------------------------------------------
     def getServerTime(self):

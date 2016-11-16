@@ -326,6 +326,9 @@ class ezIBpy():
         self.connected = False
         self.ibCallback(caller="handleConnectionClosed", msg=msg)
 
+        # retry to connect
+        self.reconnect()
+
 
     # ---------------------------------------------------------
     def handleNextValidId(self, orderId):

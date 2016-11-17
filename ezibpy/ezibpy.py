@@ -319,7 +319,6 @@ class ezIBpy():
                 self.connection_tracking["disconnected"] = True
                 self.log.info("[CONNECTION TO IB LOST]")
 
-
     # ---------------------------------------------------------
     def handleConnectionClosed(self, msg):
         self.connected = False
@@ -327,7 +326,6 @@ class ezIBpy():
 
         # retry to connect
         self.reconnect()
-
 
     # ---------------------------------------------------------
     def handleNextValidId(self, orderId):
@@ -490,7 +488,6 @@ class ezIBpy():
 
         # fire callback
         self.ibCallback(caller="handlePortfolio", msg=msg)
-
 
     # ---------------------------------------------------------
     def handleOrders(self, msg):
@@ -1216,19 +1213,25 @@ class ezIBpy():
         newContract.m_strike   = contractTuple[5]
         newContract.m_right    = contractTuple[6]
 
+        if len(contractTuple) == 8:
+            newContract.m_multiplier = contractTuple[7]
+
         # include expired (needed for historical data)
         newContract.m_includeExpired = (newContract.m_secType in ["FUT", "OPT", "FOP"])
 
         if "comboLegs" in kwargs:
             newContract.m_comboLegs = kwargs["comboLegs"]
-        else:
-            # request contract details
+
+        # add contract to pool
+        self.contracts[tickerId] = newContract
+
+        # request contract details
+        if "comboLegs" not in kwargs:
             self.requestContractDetails(newContract)
             time.sleep(.5)
-
-        # add contract to pull
-        # self.contracts[contractTuple[0]] = newContract
-        self.contracts[tickerId] = newContract
+            if newContract.m_secType in ["FUT", "OPT", "FOP"] and \
+                (newContract.m_expiry == "" or newContract.m_strike == "" or newContract.m_right == ""):
+                time.sleep(.5)
 
         # print(vars(newContract))
         # print('Contract Values:%s,%s,%s,%s,%s,%s,%s:' % contractTuple)
@@ -1256,7 +1259,7 @@ class ezIBpy():
     def createOptionContract(self, symbol, expiry=None, strike=0.0, otype="CALL",
         currency="USD", secType="OPT", exchange="SMART"):
         # secType = OPT (Option) / FOP (Options on Futures)
-        contract_tuple = (symbol, secType, exchange, currency, expiry, float(strike), otype)
+        contract_tuple = (symbol, secType, exchange, currency, expiry, strike, otype)
         contract = self.createContract(contract_tuple)
         return contract
 

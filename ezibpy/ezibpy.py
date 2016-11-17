@@ -71,12 +71,14 @@ class ezIBpy():
         # auto-construct for every contract/order
         self.tickerIds        = { 0: "SYMBOL" }
         self.contracts        = {}
-        self.contract_details = {}
         self.orders           = {}
         self.symbol_orders    = {}
         self.account          = {}
         self.positions        = {}
         self.portfolio        = {}
+
+        self._contract_details = {} # multiple expiry/strike/side contracts
+        self.contract_details = {}
 
         # -----------------------------------------------------
         self.log = logging.getLogger('ezibpy') # get logger
@@ -275,13 +277,10 @@ class ezIBpy():
             self.commission = msg.commissionReport.m_commission
 
         elif msg.typeName == dataTypes["MSG_CONTRACT_DETAILS"]:
-            details = vars(msg.contractDetails)
-            details["m_summary"] = vars(details["m_summary"])
-            details['m_end'] = False
-            self.contract_details[msg.reqId] = details
+            self.handleContractDetails(msg, end=False)
 
         elif msg.typeName == dataTypes["MSG_CONTRACT_DETAILS_END"]:
-            self.contract_details[msg.reqId]['m_end'] = True
+            self.handleContractDetails(msg, end=True)
 
         elif msg.typeName == dataTypes["MSG_TICK_SNAPSHOT_END"]:
             self.ibCallback(caller="handleTickSnapshotEnd", msg=msg)
@@ -370,6 +369,69 @@ class ezIBpy():
 
         except:
             pass
+
+    # ---------------------------------------------------------
+    def handleContractDetails(self, msg, end=False):
+        """ handles contractDetails and contractDetailsEnd """
+
+        if end:
+             # mark as downloaded
+            self._contract_details[msg.reqId]['downloaded'] = True
+
+            # move details from temp to permanent collector
+            self.contract_details[msg.reqId] = self._contract_details[msg.reqId]
+            del self._contract_details[msg.reqId]
+
+            # adjust fields if multi contract
+            if len(self.contract_details[msg.reqId]["contracts"]) > 1:
+                self.contract_details[msg.reqId]["m_contractMonth"] = ""
+                # m_summary should hold closest expiration
+                expirations = self.getExpirations(self.contracts[msg.reqId], expired=0)
+                contract = self.contract_details[msg.reqId]["contracts"][-len(expirations)]
+                self.contract_details[msg.reqId]["m_summary"] = vars(contract)
+            else:
+                self.contract_details[msg.reqId]["m_summary"] = vars(
+                    self.contract_details[msg.reqId]["contracts"][0])
+
+            # fire callback
+            self.ibCallback(caller="handleContractDetailsEnd", msg=msg)
+
+            # exit
+            return
+
+        # continue...
+
+        # collect data on all contract details
+        # (including those with multiple expiry/strike/sides)
+        details  = vars(msg.contractDetails)
+        contract = details["m_summary"]
+
+        if msg.reqId in self._contract_details:
+            details['contracts'] = self._contract_details[msg.reqId]["contracts"]
+        else:
+            details['contracts'] = []
+
+        details['contracts'].append(contract)
+        details['downloaded'] = False
+        self._contract_details[msg.reqId] = details
+
+        # add contract's multiple expiry/strike/sides to class collectors
+        contractString = self.contractString(contract)
+        tickerId = self.tickerId(contractString)
+
+        # continue if this is a "multi" contract
+        if tickerId == msg.reqId:
+            self._contract_details[msg.reqId]["m_summary"] = vars(contract)
+        else:
+            # print("+++", tickerId, contractString)
+            self.contracts[tickerId] = contract
+            self.contract_details[tickerId] = details.copy()
+            self.contract_details[tickerId]["m_summary"] = vars(contract)
+            self.contract_details[tickerId]["contracts"] = [contract]
+
+        # fire callback
+        self.ibCallback(caller="handleContractDetails", msg=msg)
+
 
     # ---------------------------------------------------------
     def handleAccount(self, msg):
@@ -1112,14 +1174,16 @@ class ezIBpy():
 
         if tickerId in self.contract_details:
             return self.contract_details[tickerId]
+        elif tickerId in self._contract_details:
+            return self._contract_details[tickerId]
 
         # default values
         return {
-            'm_category': None, 'm_contractMonth': '', 'm_end': True, 'm_evMultiplier': 0,
+            'm_category': None, 'm_contractMonth': '', 'downloaded': False, 'm_evMultiplier': 0,
             'm_evRule': None, 'm_industry': None, 'm_liquidHours': '', 'm_longName': '',
             'm_marketName': '', 'm_minTick': 0.01, 'm_orderTypes': '', 'm_priceMagnifier': 0,
             'm_subcategory': None, 'm_timeZoneId': '', 'm_tradingHours': '', 'm_underConId': 0,
-            'm_validExchanges': 'SMART', 'm_summary': {
+            'm_validExchanges': 'SMART', 'contracts':[Contract()], 'm_summary': {
                 'm_conId': 0, 'm_currency': 'USD', 'm_exchange': 'SMART', 'm_expiry': '',
                 'm_includeExpired': False, 'm_localSymbol': '', 'm_multiplier': '',
                 'm_primaryExch': None, 'm_right': None, 'm_secType': '',
@@ -1514,9 +1578,9 @@ class ezIBpy():
                 if contract.m_secType in ("OPT", "FOP"):
                     reqType = dataTypes["GENERIC_TICKS_NONE"]
 
-            # tickerId = self.tickerId(contract.m_symbol)
             tickerId = self.tickerId(self.contractString(contract))
-            self.ibConn.reqMktData(tickerId, contract, reqType, snapshot)
+            if len(self.contract_details[tickerId]["contracts"]) == 1:
+                self.ibConn.reqMktData(tickerId, contract, reqType, snapshot)
 
     # ---------------------------------------------------------
     def cancelMarketData(self, contracts=None):
@@ -1614,6 +1678,8 @@ class ezIBpy():
     def getConId(self, contract_identifier):
         """ Get contracts conId """
         details = self.contractDetails(contract_identifier)
+        if len(details["contracts"]) > 1:
+            return details["m_underConId"]
         return details["m_summary"]["m_conId"]
 
     # ---------------------------------------------------------
@@ -1623,16 +1689,12 @@ class ezIBpy():
         """ create combo leg
         https://www.interactivebrokers.com/en/software/api/apiguide/java/comboleg.htm
         """
-        summary = self.contractDetails(contract)["m_summary"]
-        if exchange is None:
-            exchange = summary["m_exchange"]
-
         leg =  ComboLeg()
 
-        leg.m_conId     = summary["m_conId"]
+        leg.m_conId     = contract["m_conId"]
         leg.m_ratio     = abs(ratio)
         leg.m_action    = action
-        leg.m_exchange  = exchange
+        leg.m_exchange  = contract["m_exchange"] if exchange is None else exchange
         leg.m_openClose = 0
 
         leg.m_shortSaleSlot      = 0

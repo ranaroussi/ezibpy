@@ -1206,6 +1206,13 @@ class ezIBpy():
         return contract
 
     # ---------------------------------------------------------
+    def createIndexContract(self, symbol, currency="USD", exchange="CBOE"):
+        """ Used for indexes (SPX, DJX, ...) """
+        contract_tuple = (symbol, "IND", exchange, currency, "", 0.0, "")
+        contract = self.createContract(contract_tuple)
+        return contract
+
+    # ---------------------------------------------------------
     # order constructors
     # ---------------------------------------------------------
     def createOrder(self, quantity, price=0., stop=0., tif="DAY",

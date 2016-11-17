@@ -1,6 +1,15 @@
 Change Log
 ===========
 
+1.12.37
+-------
+
+- Handling "multi" contracts (when creating FUT/OPT/FOP with no ``expiry`` and/or ``strike`` and/or ``side``)
+- Added ``getStrikes()`` and ``getExpirations()`` to make it easier to list strikes/expiration dates for "multi" contracts
+- Introduced ``createIndexContract()`` method to easily create contracts for indices
+- Misc code improvements and minor bug fixes
+
+
 1.12.36
 -------
 - Minor bug fixes

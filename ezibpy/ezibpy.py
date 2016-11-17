@@ -1709,3 +1709,48 @@ class ezIBpy():
         contract_tuple = (symbol, "BAG", legs[0].m_exchange, currency, "", 0.0, "")
         contract = self.createContract(contract_tuple, comboLegs=legs)
         return contract
+
+    # ---------------------------------------------------------
+    def getStrikes(self, contract_identifier, smin=None, smax=None):
+        """ return strikes of contract / "multi" contract's contracts """
+        strikes = []
+        contracts = self.contractDetails(contract_identifier)["contracts"]
+
+        if contracts[0].m_secType in ("FOP", "OPT"):
+            for contract in contracts:
+                strikes.append( contract.m_strike )
+
+        # convert to floats
+        strikes = list(map(float, strikes))
+        # strikes = list(set(strikes))
+
+        # get min/max
+        if smin is not None or smax is not None:
+            smin = smin if smin is not None else 0
+            smax = smax if smax is not None else 1000000000
+            srange = list(set(range(smin, smax, 1)))
+            strikes = [n for n in strikes if n in srange]
+
+        strikes.sort()
+        return tuple(strikes)
+
+    # ---------------------------------------------------------
+    def getExpirations(self, contract_identifier, expired=0):
+        """ return expiration of contract / "multi" contract's contracts """
+        expirations = []
+        contracts = self.contractDetails(contract_identifier)["contracts"]
+
+        if contracts[0].m_secType in ("FUT", "FOP", "OPT"):
+            for contract in contracts:
+                expirations.append( contract.m_expiry )
+
+        # convert to ints
+        expirations = list(map(int, expirations))
+        # expirations = list(set(expirations))
+
+        # remove expired contracts
+        today   = int(datetime.now().strftime("%Y%m%d"))
+        closest = min(expirations, key=lambda x:abs(x-today))
+        expirations = expirations[expirations.index(closest)-expired:]
+
+        return tuple(expirations)

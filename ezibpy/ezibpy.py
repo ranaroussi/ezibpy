@@ -23,6 +23,7 @@ import os
 import tempfile
 import time
 import logging
+import sys
 
 from datetime import datetime
 from pandas import DataFrame, read_pickle
@@ -1244,8 +1245,11 @@ class ezIBpy():
 
         # request contract details
         if "comboLegs" not in kwargs:
-            self.requestContractDetails(newContract)
-            time.sleep(2 if self.isMultiContract(newContract) else 0.5)
+            try:
+                self.requestContractDetails(newContract)
+                time.sleep(2 if self.isMultiContract(newContract) else 0.5)
+            except KeyboardInterrupt:
+                sys.exit()
 
         # print(vars(newContract))
         # print('Contract Values:%s,%s,%s,%s,%s,%s,%s:' % contractTuple)
@@ -1596,9 +1600,15 @@ class ezIBpy():
                     reqType = dataTypes["GENERIC_TICKS_NONE"]
 
             # get market data for single contract
+            # limit is 250 requests/second
             if not self.isMultiContract(contract):
-                tickerId = self.tickerId(self.contractString(contract))
-                self.ibConn.reqMktData(tickerId, contract, reqType, snapshot)
+                try:
+                    tickerId = self.tickerId(self.contractString(contract))
+                    self.ibConn.reqMktData(tickerId, contract, reqType, snapshot)
+                    time.sleep(0.0042) # 250 = 1.05s
+                except KeyboardInterrupt:
+                    sys.exit()
+
 
     # ---------------------------------------------------------
     def cancelMarketData(self, contracts=None):

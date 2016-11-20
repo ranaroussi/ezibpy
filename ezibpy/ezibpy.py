@@ -1201,6 +1201,7 @@ class ezIBpy():
             (contract.m_expiry == "" or contract.m_strike == "" or contract.m_right == ""):
             return True
 
+        tickerId = self.tickerId(contract)
         if tickerId in self.contract_details and \
             len(self.contract_details[tickerId]["contracts"]) > 1:
             return True

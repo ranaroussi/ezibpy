@@ -1,6 +1,13 @@
 Change Log
 ===========
 
+1.12.38
+-------
+- Set limit of 250 requests/sec on ``reqMktData()`` as per IB rules
+- Better detection of "multi" contracts
+- Misc code improvements and minor bug fixes
+
+
 1.12.37
 -------
 

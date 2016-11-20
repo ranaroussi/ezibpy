@@ -1192,6 +1192,22 @@ class ezIBpy():
     # ---------------------------------------------------------
     # contract constructors
     # ---------------------------------------------------------
+    def isMultiContract(self, contract):
+        """ tells if is this contract has sub-contract with expiries/strikes/sides """
+        if contract.m_secType == "FUT" and contract.m_expiry == "":
+            return True
+
+        if contract.m_secType in ["OPT", "FOP"] and \
+            (contract.m_expiry == "" or contract.m_strike == "" or contract.m_right == ""):
+            return True
+
+        if tickerId in self.contract_details and \
+            len(self.contract_details[tickerId]["contracts"]) > 1:
+            return True
+
+        return False
+
+    # ---------------------------------------------------------
     def createContract(self, contractTuple, **kwargs):
         # https://www.interactivebrokers.com/en/software/api/apiguide/java/contract.htm
 
@@ -1228,10 +1244,7 @@ class ezIBpy():
         # request contract details
         if "comboLegs" not in kwargs:
             self.requestContractDetails(newContract)
-            time.sleep(.5)
-            if newContract.m_secType in ["FUT", "OPT", "FOP"] and \
-                (newContract.m_expiry == "" or newContract.m_strike == "" or newContract.m_right == ""):
-                time.sleep(.5)
+            time.sleep(2 if self.isMultiContract(newContract) else 0.5)
 
         # print(vars(newContract))
         # print('Contract Values:%s,%s,%s,%s,%s,%s,%s:' % contractTuple)
@@ -1581,8 +1594,9 @@ class ezIBpy():
                 if contract.m_secType in ("OPT", "FOP"):
                     reqType = dataTypes["GENERIC_TICKS_NONE"]
 
-            tickerId = self.tickerId(self.contractString(contract))
-            if len(self.contract_details[tickerId]["contracts"]) == 1:
+            # get market data for single contract
+            if not self.isMultiContract(contract):
+                tickerId = self.tickerId(self.contractString(contract))
                 self.ibConn.reqMktData(tickerId, contract, reqType, snapshot)
 
     # ---------------------------------------------------------

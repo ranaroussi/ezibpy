@@ -1315,9 +1315,16 @@ class ezIBpy():
 
     # ---------------------------------------------------------
     def createFuturesContract(self, symbol, currency="USD", expiry=None, exchange="GLOBEX"):
-        contract_tuple = (symbol, "FUT", exchange, currency, expiry, 0.0, "")
-        contract = self.createContract(contract_tuple)
-        return contract
+        if not isinstance(expiry, list): expiry = [expiry]
+
+        contracts = []
+        for fut_expiry in expiry:
+            contract_tuple = (symbol, "FUT", exchange, currency, fut_expiry, 0.0, "")
+            contract = self.createContract(contract_tuple)
+            contracts.append(contract)
+
+        return contracts[0] if len(contracts) == 1 else contracts
+
 
     def createFutureContract(self, symbol, currency="USD", expiry=None, exchange="GLOBEX"):
         logging.warning("DEPRECATED: This method have been deprecated and will be removed in future versions. \
@@ -1328,9 +1335,19 @@ class ezIBpy():
     def createOptionContract(self, symbol, expiry=None, strike=0.0, otype="CALL",
         currency="USD", secType="OPT", exchange="SMART"):
         # secType = OPT (Option) / FOP (Options on Futures)
-        contract_tuple = (symbol, secType, exchange, currency, expiry, strike, otype)
-        contract = self.createContract(contract_tuple)
-        return contract
+        if not isinstance(expiry, list): expiry = [expiry]
+        if not isinstance(strike, list): strike = [strike]
+        if not isinstance(otype, list):  otype  = [otype]
+
+        contracts = []
+        for opt_expiry in expiry:
+            for opt_strike in strike:
+                for opt_otype in otype:
+                    contract_tuple = (symbol, secType, exchange, currency, opt_expiry, opt_strike, opt_otype)
+                    contract = self.createContract(contract_tuple)
+                    contracts.append(contract)
+
+        return contracts[0] if len(contracts) == 1 else contracts
 
     # ---------------------------------------------------------
     def createCashContract(self, symbol, currency="USD", exchange="IDEALPRO"):

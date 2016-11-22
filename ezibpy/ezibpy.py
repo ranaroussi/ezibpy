@@ -1122,6 +1122,7 @@ class ezIBpy():
 
         if type(contract) != tuple:
             localSymbol   = contract.m_localSymbol
+            contractTuple = self.contract_to_tuple(contract)
 
         # build identifier
         try:

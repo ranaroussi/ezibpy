@@ -1258,7 +1258,7 @@ class ezIBpy():
         if "comboLegs" not in kwargs:
             try:
                 self.requestContractDetails(newContract)
-                time.sleep(2 if self.isMultiContract(newContract) else 0.5)
+                time.sleep(1.5 if self.isMultiContract(newContract) else 0.5)
             except KeyboardInterrupt:
                 sys.exit()
 

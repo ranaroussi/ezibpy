@@ -1,6 +1,14 @@
 Change Log
 ===========
 
+1.12.39
+-------
+- ``createOptionsContract()`` and ``createFuturesContract()`` now accepts lists as for expiry, stikes and sides (m_right) parameters to create multiple contracts at once
+- Options data now holds bid, ask, last and "synthetic" data for each field
+- ``handlePortfolio()`` and ``handlePositions()`` creates new contracts as needed
+- Code improvements and minor bug fixes
+
+
 1.12.38
 -------
 - Set limit of 250 requests/sec on ``reqMktData()`` as per IB rules

@@ -195,6 +195,13 @@ class ezIBpy():
         self.ibConn.reqCurrentTime()
 
     # ---------------------------------------------------------
+    @staticmethod
+    def contract_to_tuple(contract):
+        return (contract.m_symbol, contract.m_secType,
+            contract.m_exchange, contract.m_currency, contract.m_expiry,
+            contract.m_strike, contract.m_right)
+
+    # ---------------------------------------------------------
     # Start event handlers
     # ---------------------------------------------------------
     def handleErrorEvents(self, msg):
@@ -1115,9 +1122,6 @@ class ezIBpy():
 
         if type(contract) != tuple:
             localSymbol   = contract.m_localSymbol
-            contractTuple = (contract.m_symbol, contract.m_secType,
-                contract.m_exchange, contract.m_currency, contract.m_expiry,
-                contract.m_strike, contract.m_right)
 
         # build identifier
         try:

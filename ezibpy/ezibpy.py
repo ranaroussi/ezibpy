@@ -124,10 +124,13 @@ class ezIBpy():
 
         # holds options data
         optionsDF = DataFrame({
-            "datetime":[0], "oi": [0], "volume": [0],
+            "datetime":[0], "oi": [0], "volume": [0], "underlying": [0], "iv": [0],
             "bid":[0], "bidsize":[0],"ask":[0], "asksize":[0], "last":[0], "lastsize":[0],
-            "iv": [0], "dividend": [0], "underlying": [0], "price": [0],
-            "delta": [0], "gamma": [0], "vega": [0], "theta": [0],
+            # opt field
+            "price": [0], "dividend": [0], "imp_vol": [0], "delta": [0], "gamma": [0], "vega": [0], "theta": [0],
+            "last_price": [0], "last_dividend": [0], "last_imp_vol": [0], "last_delta": [0], "last_gamma": [0], "last_vega": [0], "last_theta": [0],
+            "bid_price": [0], "bid_dividend": [0], "bid_imp_vol": [0], "bid_delta": [0], "bid_gamma": [0], "bid_vega": [0], "bid_theta": [0],
+            "ask_price": [0], "ask_dividend": [0], "ask_imp_vol": [0], "ask_delta": [0], "ask_gamma": [0], "ask_vega": [0], "ask_theta": [0],
         })
         optionsDF.set_index('datetime', inplace=True)
         self.optionsData  = { 0: optionsDF } # idx = tickerId
@@ -875,32 +878,50 @@ class ezIBpy():
         only option price is kept at the moment
         https://www.interactivebrokers.com/en/software/api/apiguide/java/tickoptioncomputation.htm
         """
+        def calc_generic_val(data, field):
+            last_val = data['last_'+field].values[-1]
+            bid_val  = data['bid_'+field].values[-1]
+            ask_val  = data['ask_'+field].values[-1]
+            bid_ask_val = last_val
+            if bid_val != 0 and ask_val != 0:
+                bid_ask_val = (bid_val+ask_val)/2
+            return max([ last_val, bid_ask_val ])
+
+        def valid_val(val):
+            return float(val) if val < 1000000000 else None
 
         # create tick holder for ticker
         if msg.tickerId not in self.optionsData.keys():
             self.optionsData[msg.tickerId] = self.optionsData[0].copy()
 
-        if msg.impliedVol < 1000000000:
-            self.optionsData[msg.tickerId]['iv'] = round(float(msg.impliedVol), 2)
-        if msg.pvDividend < 1000000000:
-            self.optionsData[msg.tickerId]['dividend'] = round(float(msg.pvDividend), 2)
-        if msg.delta < 1000000000:
-            self.optionsData[msg.tickerId]['delta'] = round(float(msg.delta), 2)
-        if msg.gamma < 1000000000:
-            self.optionsData[msg.tickerId]['gamma'] = round(float(msg.gamma), 2)
-        if msg.vega < 1000000000:
-            self.optionsData[msg.tickerId]['vega'] = round(float(msg.vega), 2)
-        if msg.theta < 1000000000:
-            self.optionsData[msg.tickerId]['theta'] = round(float(msg.theta), 2)
-        if msg.undPrice < 1000000000:
-            self.optionsData[msg.tickerId]['underlying'] = float(msg.undPrice)
-        if msg.optPrice < 1000000000:
-            self.optionsData[msg.tickerId]['price'] = float(msg.optPrice)
+        col_prepend = ""
+        if msg.field == "FIELD_BID_OPTION_COMPUTATION":
+            col_prepend = "bid_"
+        elif msg.field == "FIELD_ASK_OPTION_COMPUTATION":
+            col_prepend = "ask_"
+        elif msg.field == "FIELD_LAST_OPTION_COMPUTATION":
+            col_prepend = "last_"
 
+        # save side
+        self.optionsData[msg.tickerId][col_prepend+'imp_vol']  = valid_val(msg.impliedVol)
+        self.optionsData[msg.tickerId][col_prepend+'dividend'] = valid_val(msg.pvDividend)
+        self.optionsData[msg.tickerId][col_prepend+'delta']    = valid_val(msg.delta)
+        self.optionsData[msg.tickerId][col_prepend+'gamma']    = valid_val(msg.gamma)
+        self.optionsData[msg.tickerId][col_prepend+'vega']     = valid_val(msg.vega)
+        self.optionsData[msg.tickerId][col_prepend+'theta']    = valid_val(msg.theta)
+        self.optionsData[msg.tickerId][col_prepend+'price']    = valid_val(msg.optPrice)
 
-        # print("----------------------------")
-        # print(self.optionsData[msg.tickerId])
-        # print("----------------------------")
+        # save generic/mid
+        data = self.optionsData[msg.tickerId]
+        self.optionsData[msg.tickerId]['imp_vol']    = calc_generic_val(data, 'imp_vol')
+        self.optionsData[msg.tickerId]['dividend']   = calc_generic_val(data, 'dividend')
+        self.optionsData[msg.tickerId]['delta']      = calc_generic_val(data, 'delta')
+        self.optionsData[msg.tickerId]['gamma']      = calc_generic_val(data, 'gamma')
+        self.optionsData[msg.tickerId]['vega']       = calc_generic_val(data, 'vega')
+        self.optionsData[msg.tickerId]['theta']      = calc_generic_val(data, 'theta')
+        self.optionsData[msg.tickerId]['price']      = calc_generic_val(data, 'price')
+        self.optionsData[msg.tickerId]['underlying'] = valid_val(msg.undPrice)
+
 
         # fire callback
         self.ibCallback(caller="handleTickOptionComputation", msg=msg)

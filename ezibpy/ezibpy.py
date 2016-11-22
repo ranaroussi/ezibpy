@@ -79,7 +79,8 @@ class ezIBpy():
         self.portfolio        = {}
 
         self._contract_details = {} # multiple expiry/strike/side contracts
-        self.contract_details = {}
+        self.contract_details  = {}
+        self.localSymbolExpiry = {}
 
         # -----------------------------------------------------
         self.log = logging.getLogger('ezibpy') # get logger
@@ -420,6 +421,10 @@ class ezIBpy():
         details['contracts'].append(contract)
         details['downloaded'] = False
         self._contract_details[msg.reqId] = details
+
+        # add details to local symbol list
+        if contract.m_localSymbol not in self.localSymbolExpiry:
+            self.localSymbolExpiry[contract.m_localSymbol] = details["m_contractMonth"]
 
         # add contract's multiple expiry/strike/sides to class collectors
         contractString = self.contractString(contract)
@@ -1141,7 +1146,8 @@ class ezIBpy():
             elif contractTuple[1] == "FUT":
                 # round expiry day to expiry month
                 if localSymbol != "":
-                    exp = localSymbol[2:3]+str(contractTuple[4][:4])
+                    # exp = localSymbol[2:3]+str(contractTuple[4][:4])
+                    exp = localSymbol[2:3]+self.localSymbolExpiry[localSymbol][:4]
                 else:
                     exp = str(contractTuple[4])[:6]
                     exp = dataTypes["MONTH_CODES"][int(exp[4:6])] + str(int(exp[:4]))

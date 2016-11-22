@@ -1092,13 +1092,14 @@ class ezIBpy():
     # ---------------------------------------------------------
     # tickerId/Symbols constructors
     # ---------------------------------------------------------
-    def tickerId(self, symbol):
+    def tickerId(self, contract_identifier):
         """
         returns the tickerId for the symbol or
         sets one if it doesn't exits
         """
         # contract passed instead of symbol?
-        if not isinstance(symbol, str):
+        symbol = contract_identifier
+        if isinstance(symbol, Contract):
             symbol = self.contractString(symbol)
 
         for tickerId in self.tickerIds:

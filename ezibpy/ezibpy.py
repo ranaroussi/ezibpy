@@ -400,6 +400,14 @@ class ezIBpy():
                 self.contract_details[msg.reqId]["m_summary"] = vars(
                     self.contract_details[msg.reqId]["contracts"][0])
 
+            # update local db with correct contractString
+            for tid in self.contract_details:
+                oldString = self.tickerIds[tid]
+                newString = self.contractString(self.contract_details[tid]["contracts"][0])
+                self.tickerIds[tid] = newString
+                self.portfolio[newString] = self.portfolio[oldString]
+                self.positions[newString] = self.positions[oldString]
+
             # fire callback
             self.ibCallback(caller="handleContractDetailsEnd", msg=msg)
 

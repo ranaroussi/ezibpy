@@ -464,12 +464,17 @@ class ezIBpy():
     # ---------------------------------------------------------
     def handlePosition(self, msg):
         """ handle positions changes """
+        self.log.info("[POSITION]: %s", msg)
+
+        # check that contract exists
+        contract = msg.contract
+        while contract not in self.contracts.values():
+            contract = self.createContract(self.contract_to_tuple(msg.contract))
 
         # contract identifier
-        contractString = self.contractString(msg.contract)
+        contractString = self.contractString(contract)
 
         # if msg.pos != 0 or contractString in self.contracts.keys():
-        self.log.info("[POSITION]: %s", msg)
         self.positions[contractString] = {
             "symbol":        contractString,
             "position":      int(msg.pos),
@@ -485,8 +490,13 @@ class ezIBpy():
         """ handle portfolio updates """
         self.log.info("[PORTFOLIO]: %s", msg)
 
+        # check that contract exists
+        contract = msg.contract
+        while contract not in self.contracts.values():
+            contract = self.createContract(self.contract_to_tuple(msg.contract))
+
         # contract identifier
-        contractString = self.contractString(msg.contract)
+        contractString = self.contractString(contract)
 
         self.portfolio[contractString] = {
             "symbol":        contractString,

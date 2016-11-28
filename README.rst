@@ -461,8 +461,7 @@ Install ezIBpy using ``pip``:
 
 .. code:: bash
 
-    $ pip install ezibpy
-
+    $ pip install ezibpy --upgrade --no-cache-dir
 
 Requirements
 ------------

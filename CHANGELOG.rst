@@ -1,6 +1,12 @@
 Change Log
 ===========
 
+
+1.12.40
+-------
+- Fixed bug in ``handleContractDetails()``
+
+
 1.12.39
 -------
 - ``createOptionsContract()`` and ``createFuturesContract()`` now accepts lists as for expiry, stikes and sides (m_right) parameters to create multiple contracts at once

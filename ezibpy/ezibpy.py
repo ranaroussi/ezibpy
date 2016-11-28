@@ -408,8 +408,11 @@ class ezIBpy():
                 oldString = self.tickerIds[tid]
                 newString = self.contractString(self.contract_details[tid]["contracts"][0])
                 self.tickerIds[tid] = newString
-                self.portfolio[newString] = self.portfolio[oldString]
-                self.positions[newString] = self.positions[oldString]
+                if newString != oldString:
+                    if oldString in self.portfolio:
+                        self.portfolio[newString] = self.portfolio[oldString]
+                    if oldString in self.positions:
+                        self.positions[newString] = self.positions[oldString]
 
             # fire callback
             self.ibCallback(caller="handleContractDetailsEnd", msg=msg)

@@ -1815,9 +1815,12 @@ class ezIBpy():
         strikes = []
         contracts = self.contractDetails(contract_identifier)["contracts"]
 
-        if contracts[0].m_secType in ("FOP", "OPT"):
-            for contract in contracts:
-                strikes.append( contract.m_strike )
+        if contracts[0].m_secType not in ("FOP", "OPT"):
+            return []
+        
+        # collect expirations
+        for contract in contracts:
+            strikes.append( contract.m_strike )
 
         # convert to floats
         strikes = list(map(float, strikes))

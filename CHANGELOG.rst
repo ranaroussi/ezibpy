@@ -1,6 +1,10 @@
 Change Log
 ===========
 
+1.12.41
+-------
+- Returns empty lists in ``getExpirations()`` and ``getStrikes()`` for simple contracts
+
 
 1.12.40
 -------

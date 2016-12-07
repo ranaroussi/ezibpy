@@ -1,6 +1,10 @@
 Change Log
 ===========
 
+1.12.42
+-------
+- Code improvements and bug fixes in
+
 1.12.41
 -------
 - Returns empty lists in ``getExpirations()`` and ``getStrikes()`` for simple contracts

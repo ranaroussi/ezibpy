@@ -407,12 +407,14 @@ class ezIBpy():
             for tid in self.contract_details:
                 oldString = self.tickerIds[tid]
                 newString = self.contractString(self.contract_details[tid]["contracts"][0])
-                self.tickerIds[tid] = newString
-                if newString != oldString:
-                    if oldString in self.portfolio:
-                        self.portfolio[newString] = self.portfolio[oldString]
-                    if oldString in self.positions:
-                        self.positions[newString] = self.positions[oldString]
+
+                if len(self.contract_details[msg.reqId]["contracts"]) > 1:
+                    self.tickerIds[tid] = newString
+                    if newString != oldString:
+                        if oldString in self.portfolio:
+                            self.portfolio[newString] = self.portfolio[oldString]
+                        if oldString in self.positions:
+                            self.positions[newString] = self.positions[oldString]
 
             # fire callback
             self.ibCallback(caller="handleContractDetailsEnd", msg=msg)
@@ -1817,7 +1819,7 @@ class ezIBpy():
 
         if contracts[0].m_secType not in ("FOP", "OPT"):
             return []
-        
+
         # collect expirations
         for contract in contracts:
             strikes.append( contract.m_strike )
@@ -1844,7 +1846,7 @@ class ezIBpy():
 
         if contracts[0].m_secType not in ("FUT", "FOP", "OPT"):
             return []
-        
+
         # collect expirations
         for contract in contracts:
             expirations.append( contract.m_expiry )

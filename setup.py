@@ -23,7 +23,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='ezIBpy',
-    version="1.12.42",
+    version="1.12.43",
     description='Pythonic Wrapper for IbPy',
     long_description=long_description,
     url='https://github.com/ranaroussi/ezibpy',
@@ -48,7 +48,7 @@ setup(
     platforms = ['any'],
     keywords='ezibpy interactive brokers tws, ibgw, ibpy',
     packages=find_packages(exclude=['contrib', 'docs', 'tests', 'examples']),
-    install_requires=['pandas', 'ibpy2>=0.8.0'],
+    install_requires=['pandas', 'python-dateutil>=2.5.3', 'ibpy2>=0.8.0'],
     entry_points={
         'console_scripts': [
             'sample=sample:main',

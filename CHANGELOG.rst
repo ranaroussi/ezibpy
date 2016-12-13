@@ -1,6 +1,11 @@
 Change Log
 ===========
 
+1.12.43
+-------
+- Added ``utils.contract_expiry_from_symbol()`` for parsing contract's expiry from symbol
+- Code improvements and bug fixes in
+
 1.12.42
 -------
 - Code improvements and bug fixes in

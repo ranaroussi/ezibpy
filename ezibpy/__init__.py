@@ -21,7 +21,8 @@
 __version__ = "1.12.42"
 __author__ = "Ran Aroussi"
 
-__all__ = ['ezIBpy', 'dataTypes']
+__all__ = ['ezIBpy', 'dataTypes', 'utils']
 
 from ezibpy.ezibpy import ezIBpy
 from ezibpy.utils import dataTypes
+import ezibpy.utils as utils

@@ -27,6 +27,9 @@ import logging
 from ib.ext.Contract import Contract
 from ib.ext.Order import Order
 
+from datetime import datetime
+from dateutil import relativedelta
+
 # ---------------------------------------------------------
 dataTypes = {
     "MONTH_CODES" : ['','F','G','H','J','K','M','N','Q','U','V','X','Z'],
@@ -196,3 +199,22 @@ def contract_to_dict(contract):
     """Convert an IBPy Contract object to a dict containing any non-default values."""
     default = Contract()
     return {field: val for field, val in vars(contract).items() if val != getattr(default, field, None)}
+
+# ---------------------------------------------------------
+def contract_expiry_from_symbol(symbol):
+    expiry = None
+    symbol, asset_class = symbol.split("_")
+
+    if asset_class == "FUT":
+        expiry = str(symbol)[-5:]
+        y = int(expiry[-4:])
+        m = dataTypes["MONTH_CODES"].index(expiry[:1])
+        day = datetime(y, m, 1)
+        expiry = day + relativedelta.relativedelta(weeks=2, weekday=relativedelta.FR)
+        expiry = expiry.strftime("%Y-%m-%d")
+
+    elif asset_class in ("OPT","FOP"):
+        expiry = str(symbol)[-17:-9]
+        expiry = expiry[:4]+"-"+expiry[4:6]+"-"+expiry[6:]
+
+    return expiry

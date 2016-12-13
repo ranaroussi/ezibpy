@@ -484,7 +484,8 @@ class ezIBpy():
 
         # check that contract exists
         contract = msg.contract
-        while contract not in self.contracts.values():
+        # while contract not in self.contracts.values():
+        if contract not in self.contracts.values():
             contract = self.createContract(self.contract_to_tuple(msg.contract))
 
         # contract identifier
@@ -508,7 +509,8 @@ class ezIBpy():
 
         # check that contract exists
         contract = msg.contract
-        while contract not in self.contracts.values():
+        # while contract not in self.contracts.values():
+        if contract not in self.contracts.values():
             contract = self.createContract(self.contract_to_tuple(msg.contract))
 
         # contract identifier

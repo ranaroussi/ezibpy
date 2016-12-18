@@ -654,11 +654,9 @@ class ezIBpy():
             # print(self.historicalData)
             if self.csv_path != None:
                 for sym in self.historicalData:
-                    # print("[HISTORY FINISHED]: " + str(sym.upper()))
-                    # contractString = self.contractString(str(sym))
                     contractString = str(sym)
-                    print("[HISTORY FINISHED]: " + contractString)
-                    self.historicalData[sym].to_csv(
+                    self.log.info("[HISTORICAL DATA FOR %s DOWNLOADED]" % contractString)
+                    self.historicalData[contractString].to_csv(
                         self.csv_path + contractString +'.csv'
                         )
 

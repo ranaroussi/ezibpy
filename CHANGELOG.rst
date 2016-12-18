@@ -1,6 +1,10 @@
 Change Log
 ===========
 
+1.12.44
+-------
+- Replaced ``print()`` in ``handleHistoricalData()`` to ``self.log.info()``
+
 1.12.43
 -------
 - Added ``utils.contract_expiry_from_symbol()`` for parsing contract's expiry from symbol

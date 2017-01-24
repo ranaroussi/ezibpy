@@ -1,7 +1,7 @@
 ezIBpy: Pythonic Wrapper for IbPy
 =================================================
 
-.. image:: https://img.shields.io/pypi/pyversions/ezibpy.svg?maxAge=2592000
+.. image:: https://img.shields.io/pypi/pyversions/ezibpy.svg?maxAge=60
     :target: https://pypi.python.org/pypi/ezibpy
     :alt: Python version
 
@@ -13,7 +13,7 @@ ezIBpy: Pythonic Wrapper for IbPy
     :target: https://pypi.python.org/pypi/ezibpy
     :alt: PyPi version
 
-.. image:: https://img.shields.io/pypi/status/ezibpy.svg?maxAge=2592000
+.. image:: https://img.shields.io/pypi/status/ezibpy.svg?maxAge=60
     :target: https://pypi.python.org/pypi/ezibpy
     :alt: PyPi status
 

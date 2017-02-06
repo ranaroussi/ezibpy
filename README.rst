@@ -47,6 +47,7 @@ Although this is great news, I don't see ezIBpy becoming obsolete anytime soon s
 
 If you're a developer and interested in helping converting ezIBpy to work with IB's Python API - please let me know :)
 
+-----
 
 Code Examples
 =============

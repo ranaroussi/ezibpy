@@ -482,14 +482,13 @@ class ezIBpy():
         """ handle positions changes """
         self.log.info("[POSITION]: %s", msg)
 
-        # check that contract exists
-        contract = msg.contract
-        # while contract not in self.contracts.values():
-        if contract not in self.contracts.values():
-            contract = self.createContract(self.contract_to_tuple(msg.contract))
-
         # contract identifier
-        contractString = self.contractString(contract)
+        contract_tuple = self.contract_to_tuple(msg.contract)
+        contractString = self.contractString(contract_tuple)
+
+        # try creating the contract
+        if msg.contract not in self.contracts.values() and msg.contract.m_exchange:
+            self.createContract(contract_tuple)
 
         # if msg.pos != 0 or contractString in self.contracts.keys():
         self.positions[contractString] = {
@@ -507,14 +506,13 @@ class ezIBpy():
         """ handle portfolio updates """
         self.log.info("[PORTFOLIO]: %s", msg)
 
-        # check that contract exists
-        contract = msg.contract
-        # while contract not in self.contracts.values():
-        if contract not in self.contracts.values():
-            contract = self.createContract(self.contract_to_tuple(msg.contract))
-
         # contract identifier
-        contractString = self.contractString(contract)
+        contract_tuple = self.contract_to_tuple(msg.contract)
+        contractString = self.contractString(contract_tuple)
+
+        # try creating the contract
+        if msg.contract not in self.contracts.values() and msg.contract.m_exchange:
+            self.createContract(contract_tuple)
 
         self.portfolio[contractString] = {
             "symbol":        contractString,

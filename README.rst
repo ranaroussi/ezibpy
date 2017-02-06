@@ -38,6 +38,16 @@ for market data and order execution.
 
 -----
 
+NOTE
+=====
+
+Starting with release 9.73, Interactive Brokers is officially supporting a new `Python 3 API client <https://interactivebrokers.github.io/tws-api/#gsc.tab=0>`_.
+Although this is great news, I don't see ezIBpy becoming obsolete anytime soon since IB's API isn't Pythonic or or abstracted enough IMO.
+**I do have plans to drop IbPy in favor of IB's official Python API**, although I don't have a timetable for this transision.
+
+If you're a developer and interested in helping converting ezIBpy to work with IB's Python API - please let me know :)
+
+
 Code Examples
 =============
 

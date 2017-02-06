@@ -1,6 +1,10 @@
 Change Log
 ===========
 
+1.12.45
+-------
+- Properly handling empty ``m_exchange`` returned by IB in ``handlePosition()`` and ``handlePortfolio()``
+
 1.12.44
 -------
 - Replaced ``print()`` in ``handleHistoricalData()`` to ``self.log.info()``

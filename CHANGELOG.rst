@@ -1,6 +1,12 @@
 Change Log
 ===========
 
+1.12.46
+-------
+- Added order object to ``self.orders``
+- Updated ``createComboLeg`` to handle different contract types
+- Added ability to specify ``format_date`` in ``requestHistoricalData()`` (defaults to ``2``, same as before)
+
 1.12.45
 -------
 - Properly handling empty ``m_exchange`` returned by IB in ``handlePosition()`` and ``handlePortfolio()``

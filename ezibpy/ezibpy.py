@@ -1792,10 +1792,10 @@ class ezIBpy():
         """
         leg =  ComboLeg()
 
-        leg.m_conId     = contract["m_conId"]
+        leg.m_conId     = self.getConId(contract)
         leg.m_ratio     = abs(ratio)
         leg.m_action    = action
-        leg.m_exchange  = contract["m_exchange"] if exchange is None else exchange
+        leg.m_exchange  = contract.m_exchange if exchange is None else exchange
         leg.m_openClose = 0
 
         leg.m_shortSaleSlot      = 0

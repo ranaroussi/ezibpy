@@ -560,6 +560,7 @@ class ezIBpy():
                     "id":       msg.orderId,
                     "symbol":   contractString,
                     "contract": msg.contract,
+                    "order":    msg.order,
                     "status":   "OPENED",
                     "reason":   None,
                     "avgFillPrice": 0.,

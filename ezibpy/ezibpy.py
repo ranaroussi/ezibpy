@@ -1701,7 +1701,8 @@ class ezIBpy():
 
     # ---------------------------------------------------------
     def requestHistoricalData(self, contracts=None, resolution="1 min",
-        lookback="1 D", data="TRADES", end_datetime=None, rth=False, csv_path=None):
+        lookback="1 D", data="TRADES", end_datetime=None, rth=False,
+        csv_path=None, format_date=2):
         """
         Download to historical data
         https://www.interactivebrokers.com/en/software/api/apiguide/java/reqhistoricaldata.htm
@@ -1729,7 +1730,7 @@ class ezIBpy():
                 barSizeSetting = resolution,
                 whatToShow     = data,
                 useRTH         = int(rth),
-                formatDate     = 2
+                formatDate     = int(format_date)
             )
 
     def cancelHistoricalData(self, contracts=None):

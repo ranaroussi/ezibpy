@@ -38,6 +38,8 @@ from .utils import (
     dataTypes, createLogger
 )
 
+import copy
+
 # -------------------------------------------------------------
 createLogger('ezibpy')
 # -------------------------------------------------------------
@@ -480,11 +482,15 @@ class ezIBpy():
     # ---------------------------------------------------------
     def handlePosition(self, msg):
         """ handle positions changes """
-        self.log.info("[POSITION]: %s", msg)
 
         # contract identifier
         contract_tuple = self.contract_to_tuple(msg.contract)
         contractString = self.contractString(contract_tuple)
+
+        # log handler msg
+        logmsg = copy.copy(msg)
+        logmsg.contract = contractString
+        self.log.info("[POSITION]: %s", logmsg)
 
         # try creating the contract
         if msg.contract not in self.contracts.values() and msg.contract.m_exchange:
@@ -504,11 +510,15 @@ class ezIBpy():
     # ---------------------------------------------------------
     def handlePortfolio(self, msg):
         """ handle portfolio updates """
-        self.log.info("[PORTFOLIO]: %s", msg)
 
         # contract identifier
         contract_tuple = self.contract_to_tuple(msg.contract)
         contractString = self.contractString(contract_tuple)
+
+        # log handler msg
+        logmsg = copy.copy(msg)
+        logmsg.contract = contractString
+        self.log.info("[PORTFOLIO]: %s", logmsg)
 
         # try creating the contract
         if msg.contract not in self.contracts.values() and msg.contract.m_exchange:
@@ -535,7 +545,14 @@ class ezIBpy():
         It is possible that orderStatus() may return duplicate messages.
         It is essential that you filter the message accordingly.
         """
-        self.log.info("[ORDER]: %s", msg)
+
+        # contract identifier
+        contractString = self.contractString(msg.contract)
+
+        # log handler msg
+        logmsg = copy.copy(msg)
+        logmsg.contract = contractString
+        self.log.info("[ORDER]: %s", logmsg)
 
         # get server time
         self.getServerTime()
@@ -547,7 +564,7 @@ class ezIBpy():
         # open order
         if msg.typeName == dataTypes["MSG_TYPE_OPEN_ORDER"]:
             # contract identifier
-            contractString = self.contractString(msg.contract)
+            # contractString = self.contractString(msg.contract)
 
             if msg.orderId in self.orders and self.orders[msg.orderId]["status"] == "SENT":
                 try: del self.orders[msg.orderId]

@@ -1,6 +1,10 @@
 Change Log
 ===========
 
+1.12.47
+-------
+- Uses contract symbol in log message instead of contract object string (fix issue #13)
+
 1.12.46
 -------
 - Added order object to ``self.orders``

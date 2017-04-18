@@ -4,6 +4,7 @@ Change Log
 1.12.47
 -------
 - Uses contract symbol in log message instead of contract object string (fix issue #13)
+- Added Python 3.6 to ``pip`` setup
 
 1.12.46
 -------

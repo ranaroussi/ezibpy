@@ -546,13 +546,13 @@ class ezIBpy():
         It is essential that you filter the message accordingly.
         """
 
-        # contract identifier
-        contractString = self.contractString(msg.contract)
-
         # log handler msg
-        logmsg = copy.copy(msg)
-        logmsg.contract = contractString
-        self.log.info("[ORDER]: %s", logmsg)
+        try:
+            logmsg = copy.copy(msg)
+            logmsg.contract = self.contractString(msg.contract)
+            self.log.info("[ORDER]: %s", logmsg)
+        except:
+            self.log.info("[ORDER]: %s", msg)
 
         # get server time
         self.getServerTime()
@@ -564,7 +564,7 @@ class ezIBpy():
         # open order
         if msg.typeName == dataTypes["MSG_TYPE_OPEN_ORDER"]:
             # contract identifier
-            # contractString = self.contractString(msg.contract)
+            contractString = self.contractString(msg.contract)
 
             if msg.orderId in self.orders and self.orders[msg.orderId]["status"] == "SENT":
                 try: del self.orders[msg.orderId]

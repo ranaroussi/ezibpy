@@ -1,6 +1,10 @@
 Change Log
 ===========
 
+1.12.48
+-------
+- Fixed bug in ``handleOrders`` logger (bug introduced in version 1.12.47)
+
 1.12.47
 -------
 - Uses contract symbol in log message instead of contract object string (fix issue #13)

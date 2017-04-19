@@ -1,6 +1,10 @@
 Change Log
 ===========
 
+1.12.49
+-------
+- Cleaner code
+
 1.12.48
 -------
 - Fixed bug in ``handleOrders`` logger (bug introduced in version 1.12.47)

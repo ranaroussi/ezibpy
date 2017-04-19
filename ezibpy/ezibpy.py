@@ -151,6 +151,14 @@ class ezIBpy():
         }
 
     # ---------------------------------------------------------
+    def log_msg(self, title, msg):
+        # log handler msg
+        logmsg = copy.copy(msg)
+        if hasattr("contract", logmsg):
+            logmsg.contract = self.contractString(logmsg.contract)
+        self.log.info("["+ str(title).upper() +"]: %s", logmsg)
+
+    # ---------------------------------------------------------
     def connect(self, clientId=0, host="localhost", port=4001):
         """ Establish connection to TWS/IBGW """
         self.clientId = clientId
@@ -300,8 +308,8 @@ class ezIBpy():
             self.ibCallback(caller="handleTickSnapshotEnd", msg=msg)
 
         else:
-            self.log.info("[SERVER]: %s", msg)
-            pass
+            # log handler msg
+            self.log_msg("server", msg)
 
     # ---------------------------------------------------------
     # generic callback function - can be used externally
@@ -473,7 +481,10 @@ class ezIBpy():
                  "AvailableFunds", "AvailableFunds-C", "AvailableFunds-S"]
 
         if msg.key in track:
-            # self.log.info("[ACCOUNT]: %s", msg)
+            # log handler msg
+            self.log_msg("account", msg)
+
+            # assign value
             self.account[msg.key] = float(msg.value)
 
             # fire callback
@@ -483,14 +494,12 @@ class ezIBpy():
     def handlePosition(self, msg):
         """ handle positions changes """
 
+        # log handler msg
+        self.log_msg("position", msg)
+
         # contract identifier
         contract_tuple = self.contract_to_tuple(msg.contract)
         contractString = self.contractString(contract_tuple)
-
-        # log handler msg
-        logmsg = copy.copy(msg)
-        logmsg.contract = contractString
-        self.log.info("[POSITION]: %s", logmsg)
 
         # try creating the contract
         if msg.contract not in self.contracts.values() and msg.contract.m_exchange:
@@ -511,14 +520,12 @@ class ezIBpy():
     def handlePortfolio(self, msg):
         """ handle portfolio updates """
 
+        # log handler msg
+        self.log_msg("portfolio", msg)
+
         # contract identifier
         contract_tuple = self.contract_to_tuple(msg.contract)
         contractString = self.contractString(contract_tuple)
-
-        # log handler msg
-        logmsg = copy.copy(msg)
-        logmsg.contract = contractString
-        self.log.info("[PORTFOLIO]: %s", logmsg)
 
         # try creating the contract
         if msg.contract not in self.contracts.values() and msg.contract.m_exchange:
@@ -547,12 +554,7 @@ class ezIBpy():
         """
 
         # log handler msg
-        try:
-            logmsg = copy.copy(msg)
-            logmsg.contract = self.contractString(msg.contract)
-            self.log.info("[ORDER]: %s", logmsg)
-        except:
-            self.log.info("[ORDER]: %s", msg)
+        self.log_msg("order", msg)
 
         # get server time
         self.getServerTime()
@@ -852,7 +854,9 @@ class ezIBpy():
 
 
         elif (msg.tickType == dataTypes["FIELD_RTVOLUME"]):
-            # self.log.info("[RTVOL]: %s", msg)
+
+            # log handler msg
+            # self.log_msg("rtvol", msg)
 
             tick = dict(dataTypes["RTVOL_TICKS"])
             (tick['price'], tick['size'], tick['time'], tick['volume'],

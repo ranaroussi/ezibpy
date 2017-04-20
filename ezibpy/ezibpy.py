@@ -154,9 +154,9 @@ class ezIBpy():
     def log_msg(self, title, msg):
         # log handler msg
         logmsg = copy.copy(msg)
-        if hasattr("contract", logmsg):
+        if hasattr(logmsg, "contract"):
             logmsg.contract = self.contractString(logmsg.contract)
-        self.log.info("["+ str(title).upper() +"]: %s", logmsg)
+        self.log.info("[" + str(title).upper() + "]: %s", str(logmsg))
 
     # ---------------------------------------------------------
     def connect(self, clientId=0, host="localhost", port=4001):

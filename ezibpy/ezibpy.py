@@ -41,6 +41,11 @@ from .utils import (
 import copy
 
 # -------------------------------------------------------------
+# =============================================
+# check min, python version
+if sys.version_info < (3, 4):
+    raise SystemError("ezIBPy requires Python version >= 3.4")
+# =============================================
 createLogger('ezibpy')
 # -------------------------------------------------------------
 

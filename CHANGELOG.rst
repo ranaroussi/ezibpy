@@ -1,6 +1,12 @@
 Change Log
 ===========
 
+1.12.50
+-------
+- Bugfix in log_msg (issue #16)
+- Checks for Python >= 3.4
+- Better (not perfect) PEP8 compliance
+
 1.12.49
 -------
 - Cleaner code

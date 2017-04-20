@@ -30,13 +30,15 @@ from ib.ext.Order import Order
 from datetime import datetime
 from dateutil import relativedelta
 
-# ---------------------------------------------------------
-dataTypes = {
-    "MONTH_CODES" : ['','F','G','H','J','K','M','N','Q','U','V','X','Z'],
 
-    "PRICE_TICKS" : { 1:"bid", 2:"ask", 4:"last", 6:"high", 7:"low", 9:"close", 14:"open"},
-    "SIZE_TICKS"  : { 0:"bid", 3:"ask", 5:"last", 8:"volume"},
-    "RTVOL_TICKS" : { "instrument":"", "ticketId":0, "price":0, "size":0, "time":0, "volume":0, "vwap":0, "single":0 },
+# ---------------------------------------------
+
+dataTypes = {
+    "MONTH_CODES" : ['', 'F', 'G', 'H', 'J', 'K', 'M', 'N', 'Q', 'U', 'V', 'X', 'Z'],
+
+    "PRICE_TICKS" : {1: "bid", 2: "ask", 4: "last", 6: "high", 7: "low", 9: "close", 14: "open"},
+    "SIZE_TICKS"  : {0: "bid", 3: "ask", 5: "last", 8: "volume"},
+    "RTVOL_TICKS" : {"instrument": "", "ticketId": 0, "price": 0, "size": 0, "time": 0, "volume": 0, "vwap": 0, "single": 0},
 
     # API warning codes that are not actually problems and should not be logged
     "BENIGN_ERROR_CODES"             : (200, 300, 2104, 2106),
@@ -177,7 +179,9 @@ dataTypes = {
 
 }
 
-# ---------------------------------------------------------
+
+# ---------------------------------------------
+
 def createLogger(name, level=logging.WARNING):
     """:Return: a logger with the given `name` and optional `level`."""
     logger = logging.getLogger(name)
@@ -188,19 +192,25 @@ def createLogger(name, level=logging.WARNING):
     logger.propagate = False
     return logger
 
-# ---------------------------------------------------------
+
+# ---------------------------------------------
+
 def order_to_dict(order):
     """Convert an IBPy Order object to a dict containing any non-default values."""
     default = Order()
     return {field: val for field, val in vars(order).items() if val != getattr(default, field, None)}
 
-# ---------------------------------------------------------
+
+# ---------------------------------------------
+
 def contract_to_dict(contract):
     """Convert an IBPy Contract object to a dict containing any non-default values."""
     default = Contract()
     return {field: val for field, val in vars(contract).items() if val != getattr(default, field, None)}
 
-# ---------------------------------------------------------
+
+# ---------------------------------------------
+
 def contract_expiry_from_symbol(symbol):
     expiry = None
     symbol, asset_class = symbol.split("_")
@@ -213,8 +223,8 @@ def contract_expiry_from_symbol(symbol):
         expiry = day + relativedelta.relativedelta(weeks=2, weekday=relativedelta.FR)
         expiry = expiry.strftime("%Y-%m-%d")
 
-    elif asset_class in ("OPT","FOP"):
+    elif asset_class in ("OPT", "FOP"):
         expiry = str(symbol)[-17:-9]
-        expiry = expiry[:4]+"-"+expiry[4:6]+"-"+expiry[6:]
+        expiry = expiry[:4] + "-" + expiry[4:6] + "-" + expiry[6:]
 
     return expiry

@@ -1,6 +1,10 @@
 Change Log
 ===========
 
+1.12.51
+-------
+- Option to convert historical data to UTC using ``requestHistoricalData(..., utc=True)``. Defaults to ``False``.
+
 1.12.50
 -------
 - Bugfix in log_msg (issue #16)

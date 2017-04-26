@@ -27,8 +27,10 @@ import logging
 from ib.ext.Contract import Contract
 from ib.ext.Order import Order
 
-from datetime import datetime
+from pandas import to_datetime as pd_to_datetime
+from datetime import datetime, timedelta
 from dateutil import relativedelta
+import time
 
 
 # ---------------------------------------------
@@ -228,3 +230,21 @@ def contract_expiry_from_symbol(symbol):
         expiry = expiry[:4] + "-" + expiry[4:6] + "-" + expiry[6:]
 
     return expiry
+
+
+# ---------------------------------------------
+
+def local_to_utc(df):
+    """ converts naive (usually local) timezone to UTC) """
+    try:
+        offset_hour = -(datetime.now() - datetime.utcnow()).seconds
+    except:
+        offset_hour = time.altzone if time.daylight else time.timezone
+
+    offset_hour = offset_hour // 3600
+    offset_hour = offset_hour if offset_hour < 10 else offset_hour // 10
+
+    df = df.copy()
+    df.index = df.index.tz_localize('UTC') + datetime.timedelta(hours=offset_hour)
+
+    return df

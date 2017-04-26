@@ -35,7 +35,7 @@ from ib.ext.Order import Order
 from ib.ext.ComboLeg import ComboLeg
 
 from .utils import (
-    dataTypes, createLogger
+    dataTypes, createLogger, local_to_utc
 )
 
 import copy
@@ -146,6 +146,7 @@ class ezIBpy():
 
         # historical data contrainer
         self.historicalData = {}  # idx = symbol
+        self.utc_history = False
 
         # register exit
         atexit.register(self.disconnect)
@@ -681,6 +682,12 @@ class ezIBpy():
 
         if msg.date[:8].lower() == 'finished':
             # print(self.historicalData)
+
+            if self.utc_history:
+                for sym in self.historicalData:
+                    contractString = str(sym)
+                    self.historicalData[contractString] = local_to_utc(self.historicalData[contractString])
+
             if self.csv_path != None:
                 for sym in self.historicalData:
                     contractString = str(sym)
@@ -1723,7 +1730,7 @@ class ezIBpy():
     # -----------------------------------------
     def requestHistoricalData(self, contracts=None, resolution="1 min",
             lookback="1 D", data="TRADES", end_datetime=None, rth=False,
-            csv_path=None, format_date=2):
+            csv_path=None, format_date=2, utc=False):
 
         """
         Download to historical data
@@ -1731,6 +1738,7 @@ class ezIBpy():
         """
 
         self.csv_path = csv_path
+        self.utc_history = utc
 
         if end_datetime == None:
             end_datetime = time.strftime(dataTypes["DATE_TIME_FORMAT_HISTORY"])

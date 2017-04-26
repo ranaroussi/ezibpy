@@ -245,6 +245,6 @@ def local_to_utc(df):
     offset_hour = offset_hour if offset_hour < 10 else offset_hour // 10
 
     df = df.copy()
-    df.index = df.index.tz_localize('UTC') + datetime.timedelta(hours=offset_hour)
+    df.index = pd_to_datetime(df.index, utc=True) + timedelta(hours=offset_hour)
 
     return df

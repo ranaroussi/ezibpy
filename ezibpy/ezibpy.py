@@ -602,9 +602,11 @@ class ezIBpy():
             if msg.orderId in self.orders and self.orders[msg.orderId]['status'] == msg.status.upper():
                 duplicateMessage = True
             else:
-                if "CANCELLED" in msg.status.upper():
+                # remove cancelled orphan orders
+                if "CANCELLED" in msg.status.upper() and msg.parentId not in self.orders.keys():
                     try: del self.orders[msg.orderId]
                     except: pass
+                # otherwise, update order status
                 else:
                     self.orders[msg.orderId]['status']       = msg.status.upper()
                     self.orders[msg.orderId]['reason']       = msg.whyHeld

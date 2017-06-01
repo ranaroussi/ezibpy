@@ -1009,7 +1009,7 @@ class ezIBpy():
         return trailingStop
 
     # -----------------------------------------
-    def modifyStopOrder(self, orderId, parentId, newStop, quantity):
+    def modifyStopOrder(self, orderId, parentId, newStop, quantity, transmit=True):
         """ modify stop order """
         if orderId in self.orders.keys():
             order = self.createStopOrder(
@@ -1017,7 +1017,7 @@ class ezIBpy():
                 parentId = parentId,
                 stop     = newStop,
                 trail    = False,
-                transmit = True
+                transmit = transmit
             )
             return self.placeOrder(self.orders[orderId]['contract'], order, orderId)
 
@@ -1537,9 +1537,11 @@ class ezIBpy():
         return self.placeOrder(contract, order, self.orderId + 1)
 
     # -----------------------------------------
-    def createBracketOrder(self, contract, quantity, entry=0., target=0., stop=0.,
+    def createBracketOrder(self, contract, quantity,
+            entry=0., target=0., stop=0.,
             targetType=None, trailingStop=None, group=None, tif="DAY",
-            fillorkill=False, iceberg=False, rth=False, stop_limit=False, **kwargs):
+            fillorkill=False, iceberg=False, rth=False, stop_limit=False,
+            transmit=True, **kwargs):
 
         """
         creates One Cancels All Bracket Order
@@ -1576,7 +1578,7 @@ class ezIBpy():
                             parentId=entryOrderId,
                             stop=stop,
                             trail=trailingStop,
-                            transmit=True,
+                            transmit=transmit,
                             group=group,
                             rth=rth,
                             tif=tif,

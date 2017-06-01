@@ -43,7 +43,7 @@ dataTypes = {
     "RTVOL_TICKS" : {"instrument": "", "ticketId": 0, "price": 0, "size": 0, "time": 0, "volume": 0, "vwap": 0, "single": 0},
 
     # API warning codes that are not actually problems and should not be logged
-    "BENIGN_ERROR_CODES"             : (200, 300, 2104, 2106),
+    "BENIGN_ERROR_CODES"             : (200, 202, 300, 2104, 2106, 2109),
     # API error codes indicating IB/TWS disconnection
     "DISCONNECT_ERROR_CODES"         : (504, 502, 1100, 1300, 2110),
 

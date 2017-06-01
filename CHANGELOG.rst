@@ -1,6 +1,13 @@
 Change Log
 ===========
 
+1.12.52
+-------
+- ``createBracketOrder()`` and ``modifyStopOrder()`` accept ``transmit`` parameter. Defaults to ``True``.
+- Cancelled (orphan) orders are removed from ``orders`` object
+- Contract collector holds latest contract data
+- Error codes #202 (cancelled order) and #2109 (Outside RTH ignored) code added to ``BENIGN_ERROR_CODES``
+
 1.12.51
 -------
 - Option to convert historical data to UTC using ``requestHistoricalData(..., utc=True)``. Defaults to ``False``.

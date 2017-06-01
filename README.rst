@@ -375,6 +375,9 @@ Custom Callback:
     ibConn.disconnect()
 
 
+\* See `This Gist <https://gist.github.com/ranaroussi/cc2072e5f2cb2b83514fceaeb4b0ca2e>`_ for more examples.
+
+
 Account Information:
 --------------------
 .. code:: python

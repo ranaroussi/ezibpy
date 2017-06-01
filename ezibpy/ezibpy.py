@@ -466,13 +466,13 @@ class ezIBpy():
         # add contract's multiple expiry/strike/sides to class collectors
         contractString = self.contractString(contract)
         tickerId = self.tickerId(contractString)
+        self.contracts[tickerId] = contract
 
         # continue if this is a "multi" contract
         if tickerId == msg.reqId:
             self._contract_details[msg.reqId]["m_summary"] = vars(contract)
         else:
             # print("+++", tickerId, contractString)
-            self.contracts[tickerId] = contract
             self.contract_details[tickerId] = details.copy()
             self.contract_details[tickerId]["m_summary"] = vars(contract)
             self.contract_details[tickerId]["contracts"] = [contract]

@@ -1,10 +1,13 @@
 Change Log
 ===========
 
+1.12.53
+-------
+- Keeps Cancelled orders in ``orders`` object
+
 1.12.52
 -------
 - ``createBracketOrder()`` and ``modifyStopOrder()`` accept ``transmit`` parameter. Defaults to ``True``.
-- Cancelled (orphan) orders are removed from ``orders`` object
 - Contract collector holds latest contract data
 - Error codes #202 (cancelled order) and #2109 (Outside RTH ignored) code added to ``BENIGN_ERROR_CODES``
 

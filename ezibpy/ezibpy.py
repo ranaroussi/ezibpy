@@ -603,16 +603,16 @@ class ezIBpy():
                 duplicateMessage = True
             else:
                 # remove cancelled orphan orders
-                if "CANCELLED" in msg.status.upper() and msg.parentId not in self.orders.keys():
-                    try: del self.orders[msg.orderId]
-                    except: pass
-                # otherwise, update order status
-                else:
-                    self.orders[msg.orderId]['status']       = msg.status.upper()
-                    self.orders[msg.orderId]['reason']       = msg.whyHeld
-                    self.orders[msg.orderId]['avgFillPrice'] = float(msg.avgFillPrice)
-                    self.orders[msg.orderId]['parentId']     = int(msg.parentId)
-                    self.orders[msg.orderId]['time']         = datetime.fromtimestamp(int(self.time))
+                # if "CANCELLED" in msg.status.upper() and msg.parentId not in self.orders.keys():
+                #     try: del self.orders[msg.orderId]
+                #     except: pass
+                # # otherwise, update order status
+                # else:
+                self.orders[msg.orderId]['status']       = msg.status.upper()
+                self.orders[msg.orderId]['reason']       = msg.whyHeld
+                self.orders[msg.orderId]['avgFillPrice'] = float(msg.avgFillPrice)
+                self.orders[msg.orderId]['parentId']     = int(msg.parentId)
+                self.orders[msg.orderId]['time']         = datetime.fromtimestamp(int(self.time))
 
             # remove from orders?
             # if msg.status.upper() == 'CANCELLED':
@@ -622,7 +622,6 @@ class ezIBpy():
         if duplicateMessage == False:
             # group orders by symbol
             self.symbol_orders = self.group_orders("symbol")
-
             self.ibCallback(caller="handleOrders", msg=msg)
 
     # -----------------------------------------

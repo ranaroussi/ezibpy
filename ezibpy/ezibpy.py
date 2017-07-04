@@ -549,6 +549,7 @@ class ezIBpy():
             "averageCost":   float(msg.averageCost),
             "unrealizedPNL": float(msg.unrealizedPNL),
             "realizedPNL":   float(msg.realizedPNL),
+            "totalPNL":      float(msg.realizedPNL) + float(msg.unrealizedPNL),
             "account":       msg.accountName
         }
 

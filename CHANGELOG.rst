@@ -1,6 +1,10 @@
 Change Log
 ===========
 
+1.12.54
+-------
+- ``totalPNL`` (realized + unrealized pnl) is now always available in the ``portfolio`` object
+
 1.12.53
 -------
 - Keeps Cancelled orders in ``orders`` object

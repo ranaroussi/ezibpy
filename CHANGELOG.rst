@@ -1,6 +1,10 @@
 Change Log
 ===========
 
+1.12.55
+-------
+- Better on-demand contract creation (used in ``handlePortfolio()`` and ``handlePositions()`` when received contract that isn't found in local database)
+
 1.12.54
 -------
 - ``totalPNL`` (realized + unrealized pnl) is now always available in the ``portfolio`` object

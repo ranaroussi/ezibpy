@@ -224,6 +224,28 @@ class ezIBpy():
                 contract.m_strike, contract.m_right)
 
     # -----------------------------------------
+    def registerContract(self, contract):
+        """ used for when callback receives a contract
+        that isn't found in local database """
+
+        if contract.m_exchange == "":
+            return
+
+        """
+        if contract not in self.contracts.values():
+            contract_tuple = self.contract_to_tuple(contract)
+            self.createContract(contract_tuple)
+
+        if self.tickerId(contract) not in self.contracts.keys():
+            contract_tuple = self.contract_to_tuple(contract)
+            self.createContract(contract_tuple)
+        """
+
+        if self.getConId(contract) == 0:
+            contract_tuple = self.contract_to_tuple(contract)
+            self.createContract(contract_tuple)
+
+    # -----------------------------------------
     # Start event handlers
     # -----------------------------------------
     def handleErrorEvents(self, msg):
@@ -512,8 +534,7 @@ class ezIBpy():
         contractString = self.contractString(contract_tuple)
 
         # try creating the contract
-        if msg.contract not in self.contracts.values() and msg.contract.m_exchange:
-            self.createContract(contract_tuple)
+        self.registerContract(msg.contract)
 
         # if msg.pos != 0 or contractString in self.contracts.keys():
         self.positions[contractString] = {
@@ -538,8 +559,7 @@ class ezIBpy():
         contractString = self.contractString(contract_tuple)
 
         # try creating the contract
-        if msg.contract not in self.contracts.values() and msg.contract.m_exchange:
-            self.createContract(contract_tuple)
+        self.registerContract(msg.contract)
 
         self.portfolio[contractString] = {
             "symbol":        contractString,

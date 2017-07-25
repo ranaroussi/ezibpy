@@ -1847,7 +1847,14 @@ class ezIBpy():
         """
         leg = ComboLeg()
 
-        leg.m_conId = self.getConId(contract)
+        loops = 0
+        conId = 0
+        while conId == 0 and loops < 100:
+            conId = self.getConId(contract)
+            loops += 1
+            time.sleep(0.05)
+
+        leg.m_conId = conId
         leg.m_ratio = abs(ratio)
         leg.m_action = action
         leg.m_exchange = contract.m_exchange if exchange is None else exchange

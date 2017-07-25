@@ -1858,9 +1858,10 @@ class ezIBpy():
         return leg
 
     # -----------------------------------------
-    def createComboContract(self, symbol, legs, currency="USD"):
+    def createComboContract(self, symbol, legs, currency="USD", exchange=None):
         """ Used for ComboLegs. Expecting list of legs """
-        contract_tuple = (symbol, "BAG", legs[0].m_exchange, currency, "", 0.0, "")
+        exchange = legs[0].m_exchange if exchange is None else exchange
+        contract_tuple = (symbol, "BAG", exchange, currency, "", 0.0, "")
         contract = self.createContract(contract_tuple, comboLegs=legs)
         return contract
 

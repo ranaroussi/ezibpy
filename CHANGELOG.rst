@@ -1,6 +1,11 @@
 Change Log
 ===========
 
+1.12.56
+-------
+- Wait for conId in ``createComboLeg()``
+- Ooption to specify the exchange in ``createComboContract()``
+
 1.12.55
 -------
 - Better on-demand contract creation (used in ``handlePortfolio()`` and ``handlePositions()`` when received contract that isn't found in local database)

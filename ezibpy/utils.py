@@ -126,6 +126,7 @@ dataTypes = {
     "MSG_TYPE_NEXT_ORDER_ID"          : "nextValidId",
     "MSG_TYPE_OPEN_ORDER"             : "openOrder",
     "MSG_TYPE_ORDER_STATUS"           : "orderStatus",
+    "MSG_TYPE_OPEN_ORDER_END"         : "openOrderEnd",
 
     "MSG_TYPE_MKT_DEPTH"              : "updateMktDepth",
     "MSG_TYPE_MKT_DEPTH_L2"           : "updateMktDepthL2",

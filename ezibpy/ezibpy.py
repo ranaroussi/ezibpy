@@ -195,6 +195,9 @@ class ezIBpy():
         self.subscribeAccount = False
         self.requestAccountUpdates(subscribe=True)
 
+        # load working orders
+        self.requestOpenOrders()
+
         # force refresh of orderId upon connect
         self.handleNextValidId(self.orderId)
 
@@ -301,6 +304,7 @@ class ezIBpy():
             self.handleTickOptionComputation(msg)
 
         elif (msg.typeName == dataTypes["MSG_TYPE_OPEN_ORDER"] or
+                msg.typeName == dataTypes["MSG_TYPE_OPEN_ORDER_END"] or
                 msg.typeName == dataTypes["MSG_TYPE_ORDER_STATUS"]):
             self.handleOrders(msg)
 
@@ -1664,6 +1668,13 @@ class ezIBpy():
     # data requesters
     # -----------------------------------------
     # https://github.com/blampe/IbPy/blob/master/demo/reference_python
+    def requestOpenOrders(self, all_clients=False):
+        """
+        Request open orders - loads up orders that wasn't created using this session
+        """
+        if all_clients:
+            self.ibConn.reqAllOpenOrders()
+        self.ibConn.reqOpenOrders()
 
     # -----------------------------------------
     def requestOrderIds(self, numIds=1):

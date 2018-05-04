@@ -654,8 +654,8 @@ class ezIBpy():
             if order[by] not in orders.keys():
                 orders[order[by]] = {}
 
-            try: del order["contract"]
-            except: pass
+            # try: del order["contract"]
+            # except: pass
 
             orders[order[by]][order['id']] = order
 

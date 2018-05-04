@@ -27,10 +27,10 @@ import logging
 from ib.ext.Contract import Contract
 from ib.ext.Order import Order
 
-from pandas import to_datetime as pd_to_datetime
-from datetime import datetime, timedelta
-from dateutil import relativedelta
 import time
+from datetime import datetime, timedelta
+from pandas import to_datetime as pd_to_datetime
+from dateutil import relativedelta
 
 
 # ---------------------------------------------

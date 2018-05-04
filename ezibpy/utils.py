@@ -63,6 +63,9 @@ dataTypes = {
     "FIELD_LAST_OPTION_COMPUTATION"   : 12,
     "FIELD_MODEL_OPTION_COMPUTATION"  : 13,
 
+    "FIELD_RTH_OPEN_TICK"             : 14,
+    "FIELD_RTH_LAST_TICK"             : 57,
+
     "FIELD_OPEN_INTEREST"             : 22, #  tickSize()
     "FIELD_OPTION_HISTORICAL_VOL"     : 23, #  tickGeneric()
     "FIELD_OPTION_IMPLIED_VOL"        : 24, #  tickGeneric()

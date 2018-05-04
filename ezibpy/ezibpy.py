@@ -174,7 +174,7 @@ class ezIBpy():
         self.port = port
         self.ibConn = Connection.create(
             host=self.host,
-            port=self.port,
+            port=int(self.port),
             clientId=self.clientId
         )
 

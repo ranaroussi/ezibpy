@@ -1,6 +1,13 @@
 Change Log
 ===========
 
+1.12.57
+-------
+- Convert port to ``int`` by default
+- Load working orders on startup
+- Keep contract info in order data
+- Misc bug fixes and code improvements
+
 1.12.56
 -------
 - Wait for conId in ``createComboLeg()``

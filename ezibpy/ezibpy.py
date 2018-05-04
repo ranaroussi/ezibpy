@@ -1506,7 +1506,7 @@ class ezIBpy():
             transmit=True, group=None, stop_limit=False, rth=False, tif="DAY"):
 
         """ Creates STOP order """
-        if trail is not None:
+        if trail:
             if trail == "percent":
                 order = self.createOrder(quantity,
                             trailingPercent = stop,

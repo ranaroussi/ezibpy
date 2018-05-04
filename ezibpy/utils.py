@@ -20,8 +20,8 @@
 
 # IB Referrence:
 # --------------
-# https://www.interactivebrokers.com/en/software/api/apiguide/java/reqhistoricaldata.htm
-# https://www.interactivebrokers.com/en/software/api/apiguide/tables/tick_types.htm
+# https://interactivebrokers.github.io/tws-api/historical_bars.html
+# https://interactivebrokers.github.io/tws-api/tick_types.html
 import logging
 
 from ib.ext.Contract import Contract

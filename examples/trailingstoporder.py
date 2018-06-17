@@ -46,15 +46,13 @@ ibConn.createTriggerableTrailingStop(symbol, -1,
             trailAmount   = 10, # for trail using fixed amount
             # trailPercent  = 10, # for trail using percentage
             parentId      = order['entryOrderId'],
-            stopOrderId   = order["stopOrderId"],
-            ticksize      = 0.25 # see note
+            stopOrderId   = order["stopOrderId"]
         )
 
-# ticksize is needed to rounds the stop price to nearest allowed tick size,
-# so you won't try to buy ES at 2200.128230 :)
-
 # NOTE: the stop trigger/trailing is done by the software,
-# so your script needs to keep running for this functionality to work
+# so your script needs to keep running for this functionality to work!
 
+while True:
+    time.sleep(1)
 # disconnect
 # ibConn.disconnect()

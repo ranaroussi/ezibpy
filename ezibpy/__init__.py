@@ -18,7 +18,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-__version__ = "1.12.57"
+__version__ = "1.12.58"
 __author__ = "Ran Aroussi"
 
 __all__ = ['ezIBpy', 'dataTypes', 'utils']

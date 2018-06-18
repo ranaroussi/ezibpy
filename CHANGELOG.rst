@@ -1,6 +1,10 @@
 Change Log
 ===========
 
+1.12.58
+-------
+- Trailing stop uses ticksize from ``contractDetails()``
+
 1.12.57
 -------
 - Convert port to ``int`` by default

@@ -1788,6 +1788,10 @@ class ezIBpy():
             contracts = [contracts]
 
         for contract in contracts:
+            show = str(data).upper()
+            if contract.m_secType in ['CASH', 'CFD'] and data == 'TRADES':
+                show = 'MIDPOINT'
+
             # tickerId = self.tickerId(contract.m_symbol)
             tickerId = self.tickerId(self.contractString(contract))
             self.ibConn.reqHistoricalData(
@@ -1796,7 +1800,7 @@ class ezIBpy():
                 endDateTime    = end_datetime,
                 durationStr    = lookback,
                 barSizeSetting = resolution,
-                whatToShow     = data,
+                whatToShow     = show,
                 useRTH         = int(rth),
                 formatDate     = int(format_date)
             )

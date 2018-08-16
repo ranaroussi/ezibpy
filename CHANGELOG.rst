@@ -1,6 +1,11 @@
 Change Log
 ===========
 
+1.12.59
+-------
+- ``requestHistoricalData()`` data parameter defaults to ``MIDPOINT`` when requesting data for CASH/CFD.
+- Force ``int`` type for order quantity in ``createOrder``
+
 1.12.58
 -------
 - Trailing stop uses ticksize from ``contractDetails()``

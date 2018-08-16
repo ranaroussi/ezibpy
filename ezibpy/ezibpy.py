@@ -1443,7 +1443,7 @@ class ezIBpy():
         order = Order()
         order.m_clientId = self.clientId
         order.m_action = dataTypes["ORDER_ACTION_BUY"] if quantity > 0 else dataTypes["ORDER_ACTION_SELL"]
-        order.m_totalQuantity = abs(quantity)
+        order.m_totalQuantity = abs(int(quantity))
 
         if "orderType" in kwargs:
             order.m_orderType = kwargs["orderType"]

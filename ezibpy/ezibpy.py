@@ -55,8 +55,11 @@ class ezIBpy():
 
     # -----------------------------------------
     @staticmethod
-    def roundClosestValid(val, res, decimals=2):
+    def roundClosestValid(val, res, decimals=None):
         """ round to closest resolution """
+        if decimals is None and "." in str(res):
+            decimals = len(str(res).split('.')[1])
+
         return round(round(val / res) * res, decimals)
 
     # -----------------------------------------

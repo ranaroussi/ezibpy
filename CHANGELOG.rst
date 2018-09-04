@@ -1,6 +1,14 @@
 Change Log
 ===========
 
+1.12.61
+-------
+- ``roundClosestValid()`` auto-detects res
+
+1.12.60
+-------
+- ``requestHistoricalData()`` data parameter defaults to ``MIDPOINT`` when requesting data for CASH/CFD.
+
 1.12.59
 -------
 - ``requestHistoricalData()`` data parameter defaults to ``MIDPOINT`` when requesting data for CASH/CFD.

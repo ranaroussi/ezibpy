@@ -1,6 +1,10 @@
 Change Log
 ===========
 
+1.12.62
+-------
+- ``createBracketOrder()`` Waits 1ms between orders to ensure order submission
+
 1.12.61
 -------
 - ``roundClosestValid()`` auto-detects res

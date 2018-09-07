@@ -1600,6 +1600,7 @@ class ezIBpy():
                             tif       = tif
                         )
 
+            time.sleep(0.0001)
             self.requestOrderIds()
             targetOrderId = self.placeOrder(contract, targetOrder, self.orderId + 1)
 
@@ -1617,6 +1618,7 @@ class ezIBpy():
                             stop_limit=stop_limit
                         )
 
+            time.sleep(0.0001)
             self.requestOrderIds()
             stopOrderId = self.placeOrder(contract, stopOrder, self.orderId + 2)
 

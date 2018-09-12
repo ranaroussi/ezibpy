@@ -401,7 +401,7 @@ class ezIBpy():
             lastOrderId = 1  # default
             if os.path.exists(dbfile):
                 df = read_pickle(dbfile).groupby("clientId").last()
-                filtered = df[df['clientId'] == self.clientId]
+                filtered = df[df.index == self.clientId]
                 if len(filtered) > 0:
                     lastOrderId = filtered['orderId'].values[0]
 
@@ -410,19 +410,21 @@ class ezIBpy():
                 self.orderId = lastOrderId + 1
 
             # save in db
-            orderDB = DataFrame(
-                index=[0], data={'clientId': self.clientId, 'orderId': self.orderId})
+            orderDB = DataFrame(index=[0], data={
+                'clientId': self.clientId,
+                'orderId': self.orderId})
 
             if os.path.exists(dbfile):
-                orderDB = df[df['clientId'] != self.clientId].append(
-                    orderDB[['clientId', 'orderId']])
+                orderDB = df[df.index != self.clientId].append(
+                    orderDB[['clientId', 'orderId']], sort=True)
+                orderDB['clientId'] = orderDB['clientId'].astype(int)
 
             orderDB.groupby("clientId").last().to_pickle(dbfile)
 
             # make writeable by all users
-            try: os.chmod(dbfile, S_IWRITE) # windows (cover all)
+            try: os.chmod(dbfile, S_IWRITE)  # windows (cover all)
             except: pass
-            try: os.chmod(dbfile, 0o777) # *nix
+            try: os.chmod(dbfile, 0o777)  # *nix
             except: pass
 
             time.sleep(.001)

@@ -1,6 +1,10 @@
 Change Log
 ===========
 
+1.12.63
+-------
+- Fixed bug in ``handleNextValidId()``
+
 1.12.62
 -------
 - ``createBracketOrder()`` Waits 1ms between orders to ensure order submission

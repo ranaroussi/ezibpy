@@ -1697,6 +1697,7 @@ class ezIBpy():
         Triggers the nextValidId() event, and the id returned is that next valid ID.
         # https://www.interactivebrokers.com/en/software/api/apiguide/java/reqids.htm
         """
+        self.orderId += 1
         self.ibConn.reqIds(numIds)
 
     # -----------------------------------------

@@ -17,10 +17,6 @@ ezIBpy: Pythonic Wrapper for IbPy
     :target: https://travis-ci.org/ranaroussi/ezibpy
     :alt: Travis-CI build status
 
-.. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
-    :target: http://fix-yahoo-finance.io/docs/latest/?badge=latest
-    :alt: Documentation Status
-
 .. image:: https://img.shields.io/badge/Patreon-accepting-ff69b4.svg?style=flat
     :target: https://www.patreon.com/aroussi
     :alt: Patreon Status

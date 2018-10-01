@@ -1,6 +1,10 @@
 Change Log
 ===========
 
+1.12.64
+-------
+- ``handleNextValidId()`` now handles multiple accounts better
+
 1.12.63
 -------
 - Fixed bug in ``handleNextValidId()``

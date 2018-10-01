@@ -1666,8 +1666,7 @@ class ezIBpy():
             "time": datetime.fromtimestamp(int(self.time))
         }
 
-        # update order id for next time
-        self.requestOrderIds()
+        # return order id
         return useOrderId
 
     # -----------------------------------------

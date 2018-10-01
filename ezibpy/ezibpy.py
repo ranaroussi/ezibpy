@@ -391,6 +391,9 @@ class ezIBpy():
         handle nextValidId event
         https://www.interactivebrokers.com/en/software/api/apiguide/java/nextvalidid.htm
         """
+        if orderId <= self.orderId:
+            return
+
         self.orderId = orderId
 
         # cash last orderId

@@ -26,7 +26,7 @@ import logging
 import sys
 
 from datetime import datetime
-from pandas import DataFrame, read_pickle
+from pandas import DataFrame, read_pickle, concat as pd_concat
 from stat import S_IWRITE
 
 from ib.opt import Connection
@@ -398,12 +398,17 @@ class ezIBpy():
             # db file
             dbfile = tempfile.gettempdir() + "/ezibpy.pkl"
 
-            lastOrderId = 1  # default
+            lastOrderId = int(time.time())  # default
+
             if os.path.exists(dbfile):
-                df = read_pickle(dbfile).groupby("clientId").last()
-                filtered = df[df.index == self.clientId]
-                if len(filtered) > 0:
+                df = read_pickle(dbfile).drop_duplicates(subset=[
+                    'account', 'clientId'], keep='last')
+                filtered = df[(df['account'] == self.accountCode) & (
+                                df['clientId'] == self.clientId)]
+                if not filtered.empty:
                     lastOrderId = filtered['orderId'].values[0]
+                    if lastOrderId < 1000:
+                        lastOrderId = int(time.time())
 
             # override with db if needed
             if self.orderId <= 1 or self.orderId < lastOrderId + 1:
@@ -411,15 +416,15 @@ class ezIBpy():
 
             # save in db
             orderDB = DataFrame(index=[0], data={
-                'clientId': self.clientId,
-                'orderId': self.orderId})
+                'account': self.accountCode,
+                'clientId': int(self.clientId),
+                'orderId': int(self.orderId)})
 
             if os.path.exists(dbfile):
-                orderDB = df[df.index != self.clientId].append(
-                    orderDB[['clientId', 'orderId']], sort=True)
-                orderDB['clientId'] = orderDB['clientId'].astype(int)
+                orderDB = pd_concat([df, orderDB]).drop_duplicates(subset=[
+                    'account', 'clientId'], keep='last')
 
-            orderDB.groupby("clientId").last().to_pickle(dbfile)
+            orderDB.to_pickle(dbfile)
 
             # make writeable by all users
             try: os.chmod(dbfile, S_IWRITE)  # windows (cover all)

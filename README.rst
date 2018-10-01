@@ -1,13 +1,9 @@
 ezIBpy: Pythonic Wrapper for IbPy
 =================================================
 
-.. image:: https://img.shields.io/pypi/pyversions/ezibpy.svg?maxAge=60
+.. image:: https://img.shields.io/badge/python-3.4+-blue.svg?style=flat
     :target: https://pypi.python.org/pypi/ezibpy
     :alt: Python version
-
-.. image:: https://img.shields.io/travis/ranaroussi/ezibpy/master.svg?
-    :target: https://travis-ci.org/ranaroussi/ezibpy
-    :alt: Travis-CI build status
 
 .. image:: https://img.shields.io/pypi/v/ezibpy.svg?maxAge=60
     :target: https://pypi.python.org/pypi/ezibpy
@@ -17,11 +13,23 @@ ezIBpy: Pythonic Wrapper for IbPy
     :target: https://pypi.python.org/pypi/ezibpy
     :alt: PyPi status
 
+.. image:: https://img.shields.io/travis/ranaroussi/ezibpy/master.svg?maxAge=1
+    :target: https://travis-ci.org/ranaroussi/ezibpy
+    :alt: Travis-CI build status
+
+.. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
+    :target: http://ezibpy.io/docs/latest/?badge=latest
+    :alt: Documentation Status
+
+.. image:: https://img.shields.io/badge/Patreon-accepting-ff69b4.svg?style=flat
+    :target: https://www.patreon.com/aroussi
+    :alt: Patreon Status
+
 .. image:: https://img.shields.io/github/stars/ranaroussi/ezibpy.svg?style=social&label=Star&maxAge=60
     :target: https://github.com/ranaroussi/ezibpy
     :alt: Star this repo
 
-.. image:: https://img.shields.io/twitter/follow/aroussi.svg?style=social&label=Follow%20Me&maxAge=60
+.. image:: https://img.shields.io/twitter/follow/aroussi.svg?style=social&label=Follow&maxAge=60
     :target: https://twitter.com/aroussi
     :alt: Follow me on twitter
 

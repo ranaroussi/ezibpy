@@ -34,6 +34,10 @@ from ib.ext.Contract import Contract
 from ib.ext.Order import Order
 from ib.ext.ComboLeg import ComboLeg
 
+# from ibapi.connection import Connection
+# from ibapi.contract import Contract, ComboLeg
+# from ibapi.order import Order
+
 from .utils import (
     dataTypes, createLogger, local_to_utc
 )
@@ -409,9 +413,9 @@ class ezIBpy():
                 filtered = df[(df['account'] == self.accountCode) & (
                                 df['clientId'] == self.clientId)]
                 if not filtered.empty:
-                    lastOrderId = filtered['orderId'].values[0]
-                    if lastOrderId < 1000:
-                        lastOrderId = int(time.time())
+                    lastOrderIdRecord = filtered['orderId'].values[0]
+                    if lastOrderId < lastOrderIdRecord:
+                        lastOrderId = lastOrderIdRecord
 
             # override with db if needed
             if self.orderId <= 1 or self.orderId < lastOrderId + 1:

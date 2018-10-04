@@ -1,6 +1,10 @@
 Change Log
 ===========
 
+1.12.65
+-------
+- ``handleNextValidId()`` initiates new orderId counter for each session
+
 1.12.64
 -------
 - ``handleNextValidId()`` now handles multiple accounts better

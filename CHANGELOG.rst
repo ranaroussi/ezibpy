@@ -1,6 +1,10 @@
 Change Log
 ===========
 
+1.12.66
+-------
+- ``handleTrailingStops()`` checks for on "if touched"
+
 1.12.65
 -------
 - ``handleNextValidId()`` initiates new orderId counter for each session

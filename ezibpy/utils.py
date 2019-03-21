@@ -4,7 +4,7 @@
 # ezIBpy: Pythonic Wrapper for IbPy
 # https://github.com/ranaroussi/ezibpy
 #
-# Copyright 2015-2018 Ran Aroussi
+# Copyright 2015-2019 Ran Aroussi
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

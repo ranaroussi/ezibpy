@@ -77,19 +77,20 @@ class ezIBpy():
 
         self.time        = 0
         self.commission  = 0
-        self.accountCode = 0
         self.orderId     = int(time.time()) - 1553126400  # default
 
         # auto-construct for every contract/order
         self.tickerIds     = {0: "SYMBOL"}
         self.contracts     = {}
         self.orders        = {}
+        self.account_orders= {}
         self.symbol_orders = {}
-        self.account       = {}
-        self.positions     = {}
-        self.portfolio     = {}
 
+        self._accounts     = {}
+        self._positions    = {}
+        self._portfolios   = {}
         self._contract_details = {}  # multiple expiry/strike/side contracts
+
         self.contract_details  = {}
         self.localSymbolExpiry = {}
 
@@ -334,8 +335,8 @@ class ezIBpy():
         elif msg.typeName == dataTypes["MSG_CONNECTION_CLOSED"]:
             self.handleConnectionClosed(msg)
 
-        elif msg.typeName == dataTypes["MSG_TYPE_MANAGED_ACCOUNTS"]:
-            self.accountCode = msg.accountsList
+        # elif msg.typeName == dataTypes["MSG_TYPE_MANAGED_ACCOUNTS"]:
+        #     self.accountCode = msg.accountsList
 
         elif msg.typeName == dataTypes["MSG_COMMISSION_REPORT"]:
             self.commission = msg.commissionReport.m_commission
@@ -430,10 +431,10 @@ class ezIBpy():
                 if len(self.contract_details[msg.reqId]["contracts"]) > 1:
                     self.tickerIds[tid] = newString
                     if newString != oldString:
-                        if oldString in self.portfolio:
-                            self.portfolio[newString] = self.portfolio[oldString]
-                        if oldString in self.positions:
-                            self.positions[newString] = self.positions[oldString]
+                        if oldString in self._portfolios:
+                            self._portfolios[newString] = self._portfolios[oldString]
+                        if oldString in self._positions:
+                            self._positions[newString] = self._positions[oldString]
 
             # fire callback
             self.ibCallback(caller="handleContractDetailsEnd", msg=msg)
@@ -479,25 +480,68 @@ class ezIBpy():
         self.ibCallback(caller="handleContractDetails", msg=msg)
 
     # -----------------------------------------
+    # Account handling
+    # -----------------------------------------
     def handleAccount(self, msg):
         """
         handle account info update
         https://www.interactivebrokers.com/en/software/api/apiguide/java/updateaccountvalue.htm
         """
-        track = ["BuyingPower", "CashBalance", "DayTradesRemaining",
-                 "NetLiquidation", "InitMarginReq", "MaintMarginReq",
-                 "AvailableFunds", "AvailableFunds-C", "AvailableFunds-S"]
 
-        if msg.key in track:
+        # parse value
+        try:
+            msg.value = float(msg.value)
+        except Exception:
+            msg.value = msg.value
+            if msg.value in ['true', 'false']:
+                msg.value = (msg.value == 'true')
+
+        try:
             # log handler msg
             self.log_msg("account", msg)
 
-            # assign value
-            self.account[msg.key] = float(msg.value)
+            # new account?
+            if msg.accountName not in self._accounts.keys():
+                self._accounts[msg.accountName] = {}
+
+            # set value
+            self._accounts[msg.accountName][msg.key] = msg.value
 
             # fire callback
             self.ibCallback(caller="handleAccount", msg=msg)
+        except Exception:
+            pass
 
+    @property
+    def accounts(self):
+        return self._accounts
+
+    @property
+    def account(self):
+        return self.getAccount()
+
+    @property
+    def accountCodes(self):
+        return list(self._accounts.keys())
+
+    @property
+    def accountCode(self):
+        return self.accountCodes[0]
+
+    def getAccount(self, account=None):
+        if len(self._accounts) == 0:
+            return {}
+
+        if account is None:
+            if len(self._accounts) > 1:
+                raise ValueError("Must specify account number as multiple accounts exists.")
+            return self._accounts[list(self._accounts.keys())[0]]
+        if account in self._accounts:
+            return self._accounts[account]
+        raise ValueError("Account %s not found in account list" % account)
+
+    # -----------------------------------------
+    # Position handling
     # -----------------------------------------
     def handlePosition(self, msg):
         """ handle positions changes """
@@ -512,8 +556,12 @@ class ezIBpy():
         # try creating the contract
         self.registerContract(msg.contract)
 
+        # new account?
+        if msg.account not in self._positions.keys():
+            self._positions[msg.account] = {}
+
         # if msg.pos != 0 or contractString in self.contracts.keys():
-        self.positions[contractString] = {
+        self._positions[msg.account][contractString] = {
             "symbol":        contractString,
             "position":      int(msg.pos),
             "avgCost":       float(msg.avgCost),
@@ -523,6 +571,24 @@ class ezIBpy():
         # fire callback
         self.ibCallback(caller="handlePosition", msg=msg)
 
+    @property
+    def positions(self):
+        return self.getPositions()
+
+    def getPositions(self, account=None):
+        if len(self._positions) == 0:
+            return {}
+
+        if account is None:
+            if len(self._positions) > 1:
+                raise ValueError("Must specify account number as multiple accounts exists.")
+            return self._positions[list(self._positions.keys())[0]]
+        if account in self._positions:
+            return self._positions[account]
+        raise ValueError("Account %s not found in account list" % account)
+
+    # -----------------------------------------
+    # Portfolio handling
     # -----------------------------------------
     def handlePortfolio(self, msg):
         """ handle portfolio updates """
@@ -537,7 +603,11 @@ class ezIBpy():
         # try creating the contract
         self.registerContract(msg.contract)
 
-        self.portfolio[contractString] = {
+        # new account?
+        if msg.accountName not in self._portfolios.keys():
+            self._portfolios[msg.accountName] = {}
+
+        self._portfolios[msg.accountName][contractString] = {
             "symbol":        contractString,
             "position":      int(msg.position),
             "marketPrice":   float(msg.marketPrice),
@@ -552,6 +622,28 @@ class ezIBpy():
         # fire callback
         self.ibCallback(caller="handlePortfolio", msg=msg)
 
+    @property
+    def portfolios(self):
+        return self._portfolios
+
+    @property
+    def portfolio(self):
+        return self.getPortfolio()
+
+    def getPortfolio(self, account=None):
+        if len(self._portfolios) == 0:
+            return {}
+
+        if account is None:
+            if len(self._portfolios) > 1:
+                raise ValueError("Must specify account number as multiple accounts exists.")
+            return self._portfolios[list(self._portfolios.keys())[0]]
+        if account in self._portfolios:
+            return self._portfolios[account]
+        raise ValueError("Account %s not found in account list" % account)
+
+    # -----------------------------------------
+    # Order handling
     # -----------------------------------------
     def handleOrders(self, msg):
         """ handle order open & status """
@@ -575,9 +667,13 @@ class ezIBpy():
             # contract identifier
             contractString = self.contractString(msg.contract)
 
+            order_account = ""
             if msg.orderId in self.orders and self.orders[msg.orderId]["status"] == "SENT":
-                try: del self.orders[msg.orderId]
-                except: pass
+                order_account = self.orders[msg.orderId]["account"]
+                try:
+                    del self.orders[msg.orderId]
+                except Exception:
+                    pass
 
             if msg.orderId in self.orders:
                 duplicateMessage = True
@@ -591,8 +687,10 @@ class ezIBpy():
                     "reason":   None,
                     "avgFillPrice": 0.,
                     "parentId": 0,
-                    "time": datetime.fromtimestamp(int(self.time))
+                    "time": datetime.fromtimestamp(int(self.time)),
+                    "account": order_account
                 }
+                self._assgin_order_to_account(self.orders[msg.orderId])
 
         # order status
         elif msg.typeName == dataTypes["MSG_TYPE_ORDER_STATUS"]:
@@ -616,10 +714,35 @@ class ezIBpy():
             #     del self.orders[msg.orderId]
 
         # fire callback
-        if duplicateMessage == False:
+        if duplicateMessage is False:
             # group orders by symbol
             self.symbol_orders = self.group_orders("symbol")
             self.ibCallback(caller="handleOrders", msg=msg)
+
+    # -----------------------------------------
+    def _assgin_order_to_account(self, order):
+        # assign order to account_orders dict
+        account_key = order["account"]
+        if account_key == "":
+            return
+        # new account?
+        if account_key not in self.account_orders.keys():
+            self.account_orders[account_key] = {}
+        self.account_orders[account_key][order['id']] = order
+
+    # -----------------------------------------
+    def getOrders(self, account=None):
+        if len(self.account_orders) == 0:
+            return {}
+        if account is None:
+            if len(self.account_orders) > 1:
+                raise ValueError("Must specify account number as multiple accounts exists.")
+            return self.account_orders[list(self.account_orders.keys())[0]]
+        if account == "*":
+            return self.orders
+        if account in self.account_orders:
+            return self.account_orders[account]
+        raise ValueError("Account %s not found in account list" % account)
 
     # -----------------------------------------
     def group_orders(self, by="symbol"):
@@ -1039,7 +1162,7 @@ class ezIBpy():
         # contractString = self.contractString(contract)
 
         # filled / no positions?
-        if (self.positions[symbol] == 0) | \
+        if (self._positions[symbol] == 0) | \
                 (self.orders[trailingStop['orderId']]['status'] == "FILLED"):
             del self.trailingStops[tickerId]
             return None
@@ -1617,7 +1740,7 @@ class ezIBpy():
         }
 
     # -----------------------------------------
-    def placeOrder(self, contract, order, orderId=None):
+    def placeOrder(self, contract, order, orderId=None, account=None):
         """ Place order on IB TWS """
 
         # get latest order id before submitting an order
@@ -1625,8 +1748,11 @@ class ezIBpy():
 
         # continue...
         useOrderId = self.orderId if orderId == None else orderId
+        if account:
+            order.m_account = account
         self.ibConn.placeOrder(useOrderId, contract, order)
 
+        account_key = order.m_account
         self.orders[useOrderId] = {
             "id":       useOrderId,
             "symbol":   self.contractString(contract),
@@ -1635,8 +1761,11 @@ class ezIBpy():
             "reason":   None,
             "avgFillPrice": 0.,
             "parentId": 0,
-            "time": datetime.fromtimestamp(int(self.time))
+            "time": datetime.fromtimestamp(int(self.time)),
+            "account": None
         }
+        if hasattr(order, "m_account"):
+            self.orders[useOrderId]["account"] = order.m_account
 
         # return order id
         return useOrderId
@@ -1822,7 +1951,9 @@ class ezIBpy():
         """
         if self.subscribeAccount != subscribe:
             self.subscribeAccount = subscribe
-            self.ibConn.reqAccountUpdates(subscribe, self.accountCode)
+            self.ibConn.reqAccountUpdates(subscribe, 0)
+            # for accountCode in self.accountCodes:
+            #     self.ibConn.reqAccountUpdates(subscribe, accountCode)
 
     # -----------------------------------------
     def requestContractDetails(self, contract):

@@ -20,13 +20,12 @@
 
 import atexit
 import os
-import tempfile
 import time
 import logging
 import sys
 
 from datetime import datetime
-from pandas import DataFrame, read_pickle, concat as pd_concat
+from pandas import DataFrame, concat as pd_concat
 from stat import S_IWRITE
 
 from ib.opt import Connection

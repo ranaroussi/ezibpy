@@ -731,7 +731,7 @@ class ezIBpy():
                     contractString = str(sym)
                     self.historicalData[contractString] = local_to_utc(self.historicalData[contractString])
 
-            if self.csv_path != None:
+            if self.csv_path is not None:
                 for sym in self.historicalData:
                     contractString = str(sym)
                     self.log.info("[HISTORICAL DATA FOR %s DOWNLOADED]" % contractString)

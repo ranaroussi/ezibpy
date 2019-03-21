@@ -1409,11 +1409,6 @@ class ezIBpy():
 
         return contracts[0] if len(contracts) == 1 else contracts
 
-    def createFutureContract(self, symbol, currency="USD", expiry=None, exchange="GLOBEX"):
-        logging.warning("DEPRECATED: This method have been deprecated and will be removed in future versions. \
-            Use createFuturesContract() instead.")
-        return self.createFuturesContract(symbol=symbol, currency=currency, expiry=expiry, exchange=exchange)
-
     # -----------------------------------------
     def createOptionContract(self, symbol, expiry=None, strike=0.0, otype="CALL",
             currency="USD", secType="OPT", exchange="SMART"):

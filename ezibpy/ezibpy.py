@@ -1449,7 +1449,8 @@ class ezIBpy():
     # order constructors
     # -----------------------------------------
     def createOrder(self, quantity, price=0., stop=0., tif="DAY",
-            fillorkill=False, iceberg=False, transmit=True, rth=False, **kwargs):
+            fillorkill=False, iceberg=False, transmit=True, rth=False,
+            account=None, **kwargs):
 
         # https://www.interactivebrokers.com/en/software/api/apiguide/java/order.htm
         order = Order()
@@ -1469,6 +1470,10 @@ class ezIBpy():
         order.hidden       = iceberg
         order.m_transmit   = int(transmit)
         order.m_outsideRth = int(rth == False)
+
+        # send to specific account?
+        if account is not None:
+            order.m_account = account
 
         # The publicly disclosed order size for Iceberg orders
         if iceberg & ("blockOrder" in kwargs):

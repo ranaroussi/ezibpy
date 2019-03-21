@@ -1,6 +1,12 @@
 Change Log
 ===========
 
+1.12.67
+-------
+- Support for multiple/FA accounts!
+- Get info using ``getAccount('DUXXXXXX')``, ``getPositions('DUXXXXXX')``, ``getPortfolio('DUXXXXXX')``, or ``getOrders('DUXXXXXX')``
+- Submit order to specific account using by specifing ``account=DUXXXXXX`` in ``create*Order()`` or ``placeOrder()`` methods
+
 1.12.66
 -------
 - ``handleTrailingStops()`` checks for on "if touched"

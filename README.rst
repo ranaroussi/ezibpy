@@ -17,10 +17,6 @@ ezIBpy: Pythonic Wrapper for IbPy
     :target: https://travis-ci.org/ranaroussi/ezibpy
     :alt: Travis-CI build status
 
-.. image:: https://img.shields.io/badge/Patreon-accepting-ff69b4.svg?style=flat
-    :target: https://www.patreon.com/aroussi
-    :alt: Patreon Status
-
 .. image:: https://img.shields.io/github/stars/ranaroussi/ezibpy.svg?style=social&label=Star&maxAge=60
     :target: https://github.com/ranaroussi/ezibpy
     :alt: Star this repo
@@ -37,6 +33,12 @@ that was developed to speed up the development of
 trading software that relies on
 `Interactive Brokers <https://www.interactivebrokers.com>`_
 for market data and order execution.
+
+**Version 1.12.67 now supports multiple/FA accounts!**
+
+- Get info using ``getAccount('DUXXXXXX')``, ``getPositions('DUXXXXXX')``, ``getPortfolio('DUXXXXXX')``, or ``getOrders('DUXXXXXX')``
+- Submit order to specific account using by specifing ``account=DUXXXXXX`` in ``create*Order()`` or ``placeOrder()`` methods
+
 
 `Changelog » <./CHANGELOG.rst>`__
 
@@ -185,6 +187,9 @@ Submit an Order:
     # submit an order (returns order id)
     orderId = ibConn.placeOrder(contract, order)
 
+    # to submit an order to a specific account (ie DUXXXXXX), use:
+    # orderId = ibConn.placeOrder(contract, order, account="DUXXXXXX")
+
     # let order fill
     time.sleep(1)
 
@@ -212,6 +217,9 @@ Submit a Bracket Order:
 
     # submit a bracket order (entry=0 = MKT order)
     order = ibConn.createBracketOrder(contract, quantity=1, entry=0, target=2200., stop=1900.)
+
+    # to submit bracket order to a specific account (ie DUXXXXXX), use:
+    # order = ibConn.createBracketOrder(contract, quantity=1, entry=0, target=2200., stop=1900., account="DUXXXXXX")
 
     # let order fill
     time.sleep(1)

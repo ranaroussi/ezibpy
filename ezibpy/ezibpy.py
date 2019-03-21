@@ -1052,7 +1052,8 @@ class ezIBpy():
         return trailingStop
 
     # -----------------------------------------
-    def modifyStopOrder(self, orderId, parentId, newStop, quantity, transmit=True):
+    def modifyStopOrder(self, orderId, parentId, newStop, quantity,
+                        transmit=True, account=None):
         """ modify stop order """
         if orderId in self.orders.keys():
             order = self.createStopOrder(
@@ -1060,7 +1061,8 @@ class ezIBpy():
                 parentId = parentId,
                 stop     = newStop,
                 trail    = False,
-                transmit = transmit
+                transmit = transmit,
+                account  = account
             )
             return self.placeOrder(self.orders[orderId]['contract'], order, orderId)
 
@@ -1509,7 +1511,8 @@ class ezIBpy():
 
     # -----------------------------------------
     def createTargetOrder(self, quantity, parentId=0,
-            target=0., orderType=None, transmit=True, group=None, tif="DAY", rth=False):
+            target=0., orderType=None, transmit=True, group=None, tif="DAY",
+            rth=False, account=None):
         """ Creates TARGET order """
         order = self.createOrder(quantity,
                     price     = target,
@@ -1518,13 +1521,15 @@ class ezIBpy():
                     ocaGroup  = group,
                     parentId  = parentId,
                     rth       = rth,
-                    tif       = tif
+                    tif       = tif,
+                    account   = account
                 )
         return order
 
     # -----------------------------------------
     def createStopOrder(self, quantity, parentId=0, stop=0., trail=None,
-            transmit=True, group=None, stop_limit=False, rth=False, tif="DAY"):
+            transmit=True, group=None, stop_limit=False, rth=False, tif="DAY",
+            account=None):
 
         """ Creates STOP order """
         if trail:
@@ -1536,7 +1541,8 @@ class ezIBpy():
                             ocaGroup  = group,
                             parentId  = parentId,
                             rth       = rth,
-                            tif       = tif
+                            tif       = tif,
+                            account   = account
                         )
             else:
                 order = self.createOrder(quantity,
@@ -1547,7 +1553,8 @@ class ezIBpy():
                             ocaGroup  = group,
                             parentId  = parentId,
                             rth       = rth,
-                            tif       = tif
+                            tif       = tif,
+                            account   = account
                         )
 
         else:
@@ -1559,24 +1566,27 @@ class ezIBpy():
                         ocaGroup  = group,
                         parentId  = parentId,
                         rth       = rth,
-                        tif       = tif
+                        tif       = tif,
+                        account   = account
                     )
         return order
 
     # -----------------------------------------
     def createTrailingStopOrder(self, contract, quantity,
-            parentId=0, trailPercent=100., group=None, triggerPrice=None):
+            parentId=0, trailPercent=100., group=None, triggerPrice=None,
+            account=None):
 
         """ convert hard stop order to trailing stop order """
         if parentId not in self.orders:
             raise ValueError("Order #" + str(parentId) + " doesn't exist or wasn't submitted")
 
         order = self.createStopOrder(quantity,
-                    stop=trailPercent,
-                    transmit=True,
-                    trail=True,
+                    stop     = trailPercent,
+                    transmit = True,
+                    trail    = True,
                     # ocaGroup = group
-                    parentId=parentId
+                    parentId = parentId,
+                    account  = account
                 )
 
         self.requestOrderIds()
@@ -1587,7 +1597,7 @@ class ezIBpy():
             entry=0., target=0., stop=0.,
             targetType=None, trailingStop=None, group=None, tif="DAY",
             fillorkill=False, iceberg=False, rth=False, stop_limit=False,
-            transmit=True, **kwargs):
+            transmit=True, account=None, **kwargs):
 
         """
         creates One Cancels All Bracket Order
@@ -1598,7 +1608,8 @@ class ezIBpy():
 
         # main order
         enteyOrder = self.createOrder(quantity, price=entry, transmit=False,
-                        tif=tif, fillorkill=fillorkill, iceberg=iceberg, rth=rth)
+                        tif=tif, fillorkill=fillorkill, iceberg=iceberg,
+                        rth=rth, account=account)
         entryOrderId = self.placeOrder(contract, enteyOrder)
 
         # target
@@ -1611,7 +1622,8 @@ class ezIBpy():
                             orderType = targetType,
                             group     = group,
                             rth       = rth,
-                            tif       = tif
+                            tif       = tif,
+                            account   = account
                         )
 
             time.sleep(0.0001)
@@ -1622,14 +1634,15 @@ class ezIBpy():
         stopOrderId = 0
         if stop > 0:
             stopOrder = self.createStopOrder(-quantity,
-                            parentId=entryOrderId,
-                            stop=stop,
-                            trail=trailingStop,
-                            transmit=transmit,
-                            group=group,
-                            rth=rth,
-                            tif=tif,
-                            stop_limit=stop_limit
+                            parentId   = entryOrderId,
+                            stop       = stop,
+                            trail      = trailingStop,
+                            transmit   = transmit,
+                            group      = group,
+                            rth        = rth,
+                            tif        = tif,
+                            stop_limit = stop_limit,
+                            account    = account
                         )
 
             time.sleep(0.0001)

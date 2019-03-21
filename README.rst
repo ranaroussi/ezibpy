@@ -34,13 +34,14 @@ trading software that relies on
 `Interactive Brokers <https://www.interactivebrokers.com>`_
 for market data and order execution.
 
+`Changelog » <./CHANGELOG.rst>`__
+
+-----
+
 **Version 1.12.67 now supports multiple/FA accounts!**
 
 - Get info using ``getAccount('DUXXXXXX')``, ``getPositions('DUXXXXXX')``, ``getPortfolio('DUXXXXXX')``, or ``getOrders('DUXXXXXX')``
-- Submit order to specific account using by specifing ``account=DUXXXXXX`` in ``create*Order()`` or ``placeOrder()`` methods
-
-
-`Changelog » <./CHANGELOG.rst>`__
+- Submit order to specific account using by specifing ``account=DUXXXXXX`` in ``createOrder()``, ``placeOrder()``, ``createBracketOrder()``, ``createTrailingStopOrder()``, ``createStopOrder()``, and ``createTargetOrder()`` methods
 
 -----
 

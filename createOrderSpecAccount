@@ -1,0 +1,54 @@
+def createOrder(self, quantity, price=0., stop=0., act='act_num', tif="DAY",
+            fillorkill=False, iceberg=False, transmit=True, rth=False, **kwargs):
+
+        # https://www.interactivebrokers.com/en/software/api/apiguide/java/order.htm
+        order = Order()
+        order.m_clientId = self.clientId
+        order.m_action = dataTypes["ORDER_ACTION_BUY"] if quantity > 0 else dataTypes["ORDER_ACTION_SELL"]
+        order.m_totalQuantity = abs(int(quantity))
+        order.m_account = act
+
+        if "orderType" in kwargs:
+            order.m_orderType = kwargs["orderType"]
+        else:
+            order.m_orderType = dataTypes["ORDER_TYPE_MARKET"] if price == 0 else dataTypes["ORDER_TYPE_LIMIT"]
+
+        order.m_lmtPrice   = price  # LMT  Price
+        order.m_auxPrice   = stop  # STOP Price
+        order.m_tif        = tif   # DAY, GTC, IOC, GTD
+        order.m_allOrNone  = int(fillorkill)
+        order.hidden       = iceberg
+        order.m_transmit   = int(transmit)
+        order.m_outsideRth = int(rth == False)
+
+        # The publicly disclosed order size for Iceberg orders
+        if iceberg & ("blockOrder" in kwargs):
+            order.m_blockOrder = kwargs["m_blockOrder"]
+
+        # The percent offset amount for relative orders.
+        if "percentOffset" in kwargs:
+            order.m_percentOffset = kwargs["percentOffset"]
+
+        # The order ID of the parent order,
+        # used for bracket and auto trailing stop orders.
+        if "parentId" in kwargs:
+            order.m_parentId = kwargs["parentId"]
+
+        # oca group (Order Cancels All)
+        # used for bracket and auto trailing stop orders.
+        if "ocaGroup" in kwargs:
+            order.m_ocaGroup = kwargs["ocaGroup"]
+            if "ocaType" in kwargs:
+                order.m_ocaType = kwargs["ocaType"]
+            else:
+                order.m_ocaType = 2  # proportionately reduced size of remaining orders
+
+        # For TRAIL order
+        if "trailingPercent" in kwargs:
+            order.m_trailingPercent = kwargs["trailingPercent"]
+
+        # For TRAILLIMIT orders only
+        if "trailStopPrice" in kwargs:
+            order.m_trailStopPrice = kwargs["trailStopPrice"]
+
+        return order

@@ -196,17 +196,19 @@ class ezIBpy():
         self.getServerTime()
 
         # subscribe to position and account changes
-        self.subscribePositions = False
-        self.requestPositionUpdates(subscribe=True)
-
         self.subscribeAccount = False
         self.requestAccountUpdates(subscribe=True)
+
+        self.subscribePositions = False
+        self.requestPositionUpdates(subscribe=True)
 
         # load working orders
         self.requestOpenOrders()
 
         # force refresh of orderId upon connect
         self.handleNextValidId(self.orderId)
+
+        time.sleep(1)
 
     # -----------------------------------------
     def disconnect(self):

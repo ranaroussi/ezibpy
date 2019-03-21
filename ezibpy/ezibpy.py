@@ -79,7 +79,7 @@ class ezIBpy():
         self.time        = 0
         self.commission  = 0
         self.accountCode = 0
-        self.orderId     = 1
+        self.orderId     = int(time.time()) - 1553126400  # default
 
         # auto-construct for every contract/order
         self.tickerIds     = {0: "SYMBOL"}
@@ -397,54 +397,8 @@ class ezIBpy():
         handle nextValidId event
         https://www.interactivebrokers.com/en/software/api/apiguide/java/nextvalidid.htm
         """
-        if orderId <= self.orderId:
-            return
-
-        self.orderId = orderId
-
-        # cash last orderId
-        try:
-            # db file
-            dbfile = tempfile.gettempdir() + "/ezibpy.pkl"
-
-            lastOrderId = int(time.time())  # default
-
-            if os.path.exists(dbfile):
-                df = read_pickle(dbfile).drop_duplicates(subset=[
-                    'account', 'clientId'], keep='last')
-                filtered = df[(df['account'] == self.accountCode) & (
-                                df['clientId'] == self.clientId)]
-                if not filtered.empty:
-                    lastOrderIdRecord = filtered['orderId'].values[0]
-                    if lastOrderId < lastOrderIdRecord:
-                        lastOrderId = lastOrderIdRecord
-
-            # override with db if needed
-            if self.orderId <= 1 or self.orderId < lastOrderId + 1:
-                self.orderId = lastOrderId + 1
-
-            # save in db
-            orderDB = DataFrame(index=[0], data={
-                'account': self.accountCode,
-                'clientId': int(self.clientId),
-                'orderId': int(self.orderId)})
-
-            if os.path.exists(dbfile):
-                orderDB = pd_concat([df, orderDB]).drop_duplicates(subset=[
-                    'account', 'clientId'], keep='last')
-
-            orderDB.to_pickle(dbfile)
-
-            # make writeable by all users
-            try: os.chmod(dbfile, S_IWRITE)  # windows (cover all)
-            except: pass
-            try: os.chmod(dbfile, 0o777)  # *nix
-            except: pass
-
-            time.sleep(.001)
-
-        except:
-            pass
+        if orderId > self.orderId:
+            self.orderId = orderId
 
     # -----------------------------------------
     def handleContractDetails(self, msg, end=False):

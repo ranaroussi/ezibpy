@@ -449,7 +449,7 @@ class ezIBpy():
         """ handles contractDetails and contractDetailsEnd """
 
         if end:
-             # mark as downloaded
+            # mark as downloaded
             self._contract_details[msg.reqId]['downloaded'] = True
 
             # move details from temp to permanent collector

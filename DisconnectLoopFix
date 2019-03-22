@@ -1,0 +1,7 @@
+def disconnect(self):
+   """ Disconnect from TWS/IBGW """
+   if self.ibConn is not None:
+      self.connected = False
+      self.log.info("[DISCONNECT FROM IB]")
+      time.sleep(1)
+      self.ibConn.disconnect()

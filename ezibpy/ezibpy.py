@@ -707,7 +707,7 @@ class ezIBpy():
                 # remove cancelled orphan orders
                 # if "CANCELLED" in msg.status.upper() and msg.parentId not in self.orders.keys():
                 #     try: del self.orders[msg.orderId]
-                #     except: pass
+                #     except Exception: pass
                 # # otherwise, update order status
                 # else:
                 self.orders[msg.orderId]['status']       = msg.status.upper()
@@ -761,7 +761,7 @@ class ezIBpy():
                 orders[order[by]] = {}
 
             # try: del order["contract"]
-            # except: pass
+            # except Exception: pass
 
             orders[order[by]][order['id']] = order
 
@@ -1031,7 +1031,7 @@ class ezIBpy():
                 # fire callback
                 self.ibCallback(caller="handleTickString", msg=msg, tick=tick)
 
-            except:
+            except Exception:
                 pass
 
         else:
@@ -1324,7 +1324,7 @@ class ezIBpy():
         """ returns the symbol of a tickerId """
         try:
             return self.tickerIds[tickerId]
-        except:
+        except Exception:
             return ""
 
     # -----------------------------------------
@@ -1376,7 +1376,7 @@ class ezIBpy():
             contractString = seperator.join(
                 str(v) for v in contractString).replace(seperator + "STK", "")
 
-        except:
+        except Exception:
             contractString = contractTuple[0]
 
         return contractString.replace(" ", "_").upper()

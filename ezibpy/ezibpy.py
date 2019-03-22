@@ -94,6 +94,10 @@ class ezIBpy():
         self.contract_details  = {}
         self.localSymbolExpiry = {}
 
+        # do not reconnect if diconnected by user
+        # only try and reconnect if disconnected by network/other issues
+        self._disconnected_by_user = False
+
         # -------------------------------------
         self.log = logging.getLogger('ezibpy')  # get logger
         # -------------------------------------
@@ -208,6 +212,7 @@ class ezIBpy():
         # force refresh of orderId upon connect
         self.handleNextValidId(self.orderId)
 
+        self._disconnected_by_user = False
         time.sleep(1)
 
     # -----------------------------------------
@@ -216,6 +221,7 @@ class ezIBpy():
         if self.ibConn is not None:
             self.log.info("[DISCONNECT FROM IB]")
             self.ibConn.disconnect()
+            self._disconnected_by_user = True
 
     # -----------------------------------------
     def reconnect(self):
@@ -389,7 +395,8 @@ class ezIBpy():
         self.ibCallback(caller="handleConnectionClosed", msg=msg)
 
         # retry to connect
-        self.reconnect()
+        if not self._disconnected_by_user:
+            self.reconnect()
 
     # -----------------------------------------
     def handleNextValidId(self, orderId):

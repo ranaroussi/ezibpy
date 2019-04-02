@@ -40,6 +40,7 @@ for market data and order execution.
 
 **Version 1.12.67 now supports multiple/FA accounts!**
 
+- Option to specify IB account upon connect. Alternatively, you can...
 - Get info using ``getAccount('DUXXXXXX')``, ``getPositions('DUXXXXXX')``, ``getPortfolio('DUXXXXXX')``, or ``getOrders('DUXXXXXX')``
 - Submit order to a specific account by specifing ``account=DUXXXXXX`` in ``createOrder()``, ``placeOrder()``, ``createBracketOrder()``, ``createTrailingStopOrder()``, ``createStopOrder()``, and ``createTargetOrder()`` methods
 

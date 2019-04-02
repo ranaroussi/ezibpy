@@ -78,12 +78,14 @@ class ezIBpy():
         self.time        = 0
         self.commission  = 0
         self.orderId     = int(time.time()) - 1553126400  # default
+        self.default_account = None
 
         # auto-construct for every contract/order
         self.tickerIds     = {0: "SYMBOL"}
         self.contracts     = {}
         self.orders        = {}
         self.account_orders= {}
+        self.account_symbols_orders= {}
         self.symbol_orders = {}
 
         self._accounts     = {}
@@ -178,8 +180,10 @@ class ezIBpy():
         self.log.info("[" + str(title).upper() + "]: %s", str(logmsg))
 
     # -----------------------------------------
-    def connect(self, clientId=0, host="localhost", port=4001):
+    def connect(self, clientId=0, host="localhost", port=4001, account=None):
         """ Establish connection to TWS/IBGW """
+        if account is not None:
+            self.default_account = account
         self.clientId = clientId
         self.host = host
         self.port = port
@@ -519,6 +523,11 @@ class ezIBpy():
         except Exception:
             pass
 
+    def _get_default_account_if_none(self, account):
+        if account is None and self.default_account is not None:
+            return self.default_account
+        return account
+
     @property
     def accounts(self):
         return self._accounts
@@ -539,12 +548,16 @@ class ezIBpy():
         if len(self._accounts) == 0:
             return {}
 
+        account = self._get_default_account_if_none(account)
+
         if account is None:
             if len(self._accounts) > 1:
                 raise ValueError("Must specify account number as multiple accounts exists.")
             return self._accounts[list(self._accounts.keys())[0]]
+
         if account in self._accounts:
             return self._accounts[account]
+
         raise ValueError("Account %s not found in account list" % account)
 
     # -----------------------------------------
@@ -586,12 +599,16 @@ class ezIBpy():
         if len(self._positions) == 0:
             return {}
 
+        account = self._get_default_account_if_none(account)
+
         if account is None:
             if len(self._positions) > 1:
                 raise ValueError("Must specify account number as multiple accounts exists.")
             return self._positions[list(self._positions.keys())[0]]
+
         if account in self._positions:
             return self._positions[account]
+
         raise ValueError("Account %s not found in account list" % account)
 
     # -----------------------------------------
@@ -641,12 +658,16 @@ class ezIBpy():
         if len(self._portfolios) == 0:
             return {}
 
+        account = self._get_default_account_if_none(account)
+
         if account is None:
             if len(self._portfolios) > 1:
                 raise ValueError("Must specify account number as multiple accounts exists.")
             return self._portfolios[list(self._portfolios.keys())[0]]
+
         if account in self._portfolios:
             return self._portfolios[account]
+
         raise ValueError("Account %s not found in account list" % account)
 
     # -----------------------------------------
@@ -724,6 +745,10 @@ class ezIBpy():
         if duplicateMessage is False:
             # group orders by symbol
             self.symbol_orders = self.group_orders("symbol")
+            # group orders by accounts->symbol
+            for accountCode in self.accountCodes:
+                self.account_symbols_orders[accountCode] = self.group_orders(
+                    "symbol", accountCode)
             self.ibCallback(caller="handleOrders", msg=msg)
 
     # -----------------------------------------
@@ -741,21 +766,31 @@ class ezIBpy():
     def getOrders(self, account=None):
         if len(self.account_orders) == 0:
             return {}
+
+        account = self._get_default_account_if_none(account)
+
         if account is None:
             if len(self.account_orders) > 1:
                 raise ValueError("Must specify account number as multiple accounts exists.")
             return self.account_orders[list(self.account_orders.keys())[0]]
+
         if account == "*":
             return self.orders
+
         if account in self.account_orders:
             return self.account_orders[account]
+
         raise ValueError("Account %s not found in account list" % account)
 
     # -----------------------------------------
-    def group_orders(self, by="symbol"):
+    def group_orders(self, by="symbol", account=None):
         orders = {}
-        for orderId in self.orders:
-            order = self.orders[orderId]
+        collection = self.orders
+        if account is not None:
+            collection = self.account_orders[account]
+
+        for orderId in collection:
+            order = collection[orderId]
 
             if order[by] not in orders.keys():
                 orders[order[by]] = {}
@@ -1147,7 +1182,7 @@ class ezIBpy():
                 stop     = newStop,
                 trail    = False,
                 transmit = transmit,
-                account  = account
+                account  = self._get_default_account_if_none(account)
             )
             return self.placeOrder(self.orders[orderId]['contract'], order, orderId)
 
@@ -1559,6 +1594,7 @@ class ezIBpy():
         order.m_outsideRth = int(rth == False)
 
         # send to specific account?
+        account = self._get_default_account_if_none(account)
         if account is not None:
             order.m_account = account
 
@@ -1607,7 +1643,7 @@ class ezIBpy():
                     parentId  = parentId,
                     rth       = rth,
                     tif       = tif,
-                    account   = account
+                    account   = self._get_default_account_if_none(account)
                 )
         return order
 
@@ -1627,7 +1663,7 @@ class ezIBpy():
                             parentId  = parentId,
                             rth       = rth,
                             tif       = tif,
-                            account   = account
+                            account   = self._get_default_account_if_none(account)
                         )
             else:
                 order = self.createOrder(quantity,
@@ -1639,7 +1675,7 @@ class ezIBpy():
                             parentId  = parentId,
                             rth       = rth,
                             tif       = tif,
-                            account   = account
+                            account   = self._get_default_account_if_none(account)
                         )
 
         else:
@@ -1652,7 +1688,7 @@ class ezIBpy():
                         parentId  = parentId,
                         rth       = rth,
                         tif       = tif,
-                        account   = account
+                        account   = self._get_default_account_if_none(account)
                     )
         return order
 
@@ -1671,7 +1707,7 @@ class ezIBpy():
                     trail    = True,
                     # ocaGroup = group
                     parentId = parentId,
-                    account  = account
+                    account  = self._get_default_account_if_none(account)
                 )
 
         self.requestOrderIds()
@@ -1694,7 +1730,7 @@ class ezIBpy():
         # main order
         enteyOrder = self.createOrder(quantity, price=entry, transmit=False,
                         tif=tif, fillorkill=fillorkill, iceberg=iceberg,
-                        rth=rth, account=account)
+                        rth=rth, account=self._get_default_account_if_none(account))
         entryOrderId = self.placeOrder(contract, enteyOrder)
 
         # target
@@ -1708,7 +1744,7 @@ class ezIBpy():
                             group     = group,
                             rth       = rth,
                             tif       = tif,
-                            account   = account
+                            account   = self._get_default_account_if_none(account)
                         )
 
             time.sleep(0.0001)
@@ -1727,7 +1763,7 @@ class ezIBpy():
                             rth        = rth,
                             tif        = tif,
                             stop_limit = stop_limit,
-                            account    = account
+                            account    = self._get_default_account_if_none(account)
                         )
 
             time.sleep(0.0001)
@@ -1755,7 +1791,9 @@ class ezIBpy():
 
         # continue...
         useOrderId = self.orderId if orderId == None else orderId
-        if account:
+
+        account = self._get_default_account_if_none(account)
+        if account is not None:
             order.m_account = account
         self.ibConn.placeOrder(useOrderId, contract, order)
 

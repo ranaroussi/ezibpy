@@ -29,7 +29,7 @@ setup(
     url='https://github.com/ranaroussi/ezibpy',
     author='Ran Aroussi',
     author_email='ran@aroussi.com',
-    license='LGPL',
+    license='Apache Software License',
     classifiers=[
         'License :: OSI Approved :: Apache Software License',
         'Development Status :: 5 - Production/Stable',

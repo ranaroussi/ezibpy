@@ -1653,43 +1653,44 @@ class ezIBpy():
             account=None):
 
         """ Creates STOP order """
-        if trail:
-            if trail == "percent":
-                order = self.createOrder(quantity,
-                            trailingPercent = stop,
-                            transmit  = transmit,
-                            orderType = dataTypes["ORDER_TYPE_TRAIL_STOP"],
-                            ocaGroup  = group,
-                            parentId  = parentId,
-                            rth       = rth,
-                            tif       = tif,
-                            account   = self._get_default_account_if_none(account)
-                        )
+        stop_limit_price = 0
+        if stop_limit if not False:
+            if stop_limit is True:
+                stop_limit_price = stop
             else:
-                order = self.createOrder(quantity,
-                            trailStopPrice = stop,
-                            stop      = stop,
-                            transmit  = transmit,
-                            orderType = dataTypes["ORDER_TYPE_TRAIL_STOP"],
-                            ocaGroup  = group,
-                            parentId  = parentId,
-                            rth       = rth,
-                            tif       = tif,
-                            account   = self._get_default_account_if_none(account)
-                        )
+                try:
+                    stop_limit_price = float(stop_limit)
+                except Exception:
+                    stop_limit_price = stop
 
+
+        order_data = {
+            "quantity": quantity
+            "stop": stop,
+            "price": stop_limit_price,
+            "transmit": transmit,
+            "ocaGroup": group,
+            "parentId": parentId,
+            "rth": rth,
+            "tif": tif,
+            "account": self._get_default_account_if_none(account)
+        }
+
+        if trail:
+            order_data['orderType'] = dataTypes["ORDER_TYPE_TRAIL_STOP"]
+            if stop_limit:
+                order_data['orderType'] = dataTypes["ORDER_TYPE_TRAIL_STOP_LIMIT"]
+
+            if trail == "percent":
+                order_data['trailingPercent'] = stop
+            else:
+                order_data['trailStopPrice'] = stop
         else:
-            order = self.createOrder(quantity,
-                        stop      = stop,
-                        price     = stop if stop_limit else 0.,
-                        transmit  = transmit,
-                        orderType = dataTypes["ORDER_TYPE_STOP_LIMIT"] if stop_limit else dataTypes["ORDER_TYPE_STOP"],
-                        ocaGroup  = group,
-                        parentId  = parentId,
-                        rth       = rth,
-                        tif       = tif,
-                        account   = self._get_default_account_if_none(account)
-                    )
+            order_data['orderType'] = dataTypes["ORDER_TYPE_STOP"]
+            if stop_limit:
+                order_data['orderType'] = dataTypes["ORDER_TYPE_STOP_LIMIT"]
+
+        order = self.createOrder(**order_data)
         return order
 
     # -----------------------------------------

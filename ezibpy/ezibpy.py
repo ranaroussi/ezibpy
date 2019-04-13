@@ -787,6 +787,8 @@ class ezIBpy():
         orders = {}
         collection = self.orders
         if account is not None:
+            if account not in self.account_orders:
+                self.account_orders[account] = {}
             collection = self.account_orders[account]
 
         for orderId in collection:
@@ -1654,7 +1656,7 @@ class ezIBpy():
 
         """ Creates STOP order """
         stop_limit_price = 0
-        if stop_limit if not False:
+        if stop_limit is not False:
             if stop_limit is True:
                 stop_limit_price = stop
             else:
@@ -1665,7 +1667,7 @@ class ezIBpy():
 
 
         order_data = {
-            "quantity": quantity
+            "quantity": quantity,
             "stop": stop,
             "price": stop_limit_price,
             "transmit": transmit,

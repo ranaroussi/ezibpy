@@ -1763,13 +1763,16 @@ class ezIBpy():
     # -----------------------------------------
     def createBracketOrder(self, contract, quantity,
             entry=0., target=0., stop=0.,
-            targetType=None, trailingStop=None, group=None, tif="DAY",
-            fillorkill=False, iceberg=False, rth=False, stop_limit=False,
+            targetType=None, stopType=None,
+            trailingStop=False,  # (pct/amt/False)
+            trailingValue=None,  # value to train by (amt/pct)
+            trailingTrigger=None,  # (price where hard stop starts trailing)
+            group=None, tif="DAY",
+            fillorkill=False, iceberg=False, rth=False,
             transmit=True, account=None, **kwargs):
 
         """
         creates One Cancels All Bracket Order
-        trailingStop = None (regular stop) / percent / amount
         """
         if group == None:
             group = "bracket_" + str(int(time.time()))

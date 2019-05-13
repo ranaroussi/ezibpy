@@ -1673,16 +1673,24 @@ class ezIBpy():
             target=0., orderType=None, transmit=True, group=None, tif="DAY",
             rth=False, account=None):
         """ Creates TARGET order """
-        order = self.createOrder(quantity,
-                    price     = target,
-                    transmit  = transmit,
-                    orderType = dataTypes["ORDER_TYPE_LIMIT"] if orderType == None else orderType,
-                    ocaGroup  = group,
-                    parentId  = parentId,
-                    rth       = rth,
-                    tif       = tif,
-                    account   = self._get_default_account_if_none(account)
-                )
+        params = {
+            "quantity": quantity,
+            "price": target,
+            "transmit": transmit,
+            "orderType": orderType,
+            "ocaGroup": group,
+            "parentId": parentId,
+            "rth": rth,
+            "tif": tif,
+            "account": self._get_default_account_if_none(account)
+        }
+        # default order type is "Market if Touched"
+        if orderType is None or orderType[0].upper() == "M":
+            params['orderType'] = dataTypes["ORDER_TYPE_MIT"]
+            params['auxPrice'] = target
+            del params['price']
+
+        order = self.createOrder(**params)
         return order
 
     # -----------------------------------------

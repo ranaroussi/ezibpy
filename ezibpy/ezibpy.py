@@ -1800,17 +1800,19 @@ class ezIBpy():
                             account   = account
                         )
 
-            time.sleep(0.001)
+            time.sleep(0.01)
             self.requestOrderIds()
             targetOrderId = self.placeOrder(contract, targetOrder, self.orderId + 1)
+            # print(self.orderId, targetOrderId)
 
         # stop
         stopOrderId = 0
         if stop > 0:
+            stop_limit = stopType and stopType.upper() in ["LIMIT", "LMT"]
             stopOrder = self.createStopOrder(-quantity,
                             parentId   = entryOrderId,
                             stop       = stop,
-                            trail      = trailingStop,
+                            trail      = None,
                             transmit   = transmit,
                             group      = group,
                             rth        = rth,
@@ -1819,14 +1821,27 @@ class ezIBpy():
                             account    = account
                         )
 
-            time.sleep(0.001)
+            time.sleep(0.01)
             self.requestOrderIds()
             stopOrderId = self.placeOrder(contract, stopOrder, self.orderId + 2)
+            # print(self.orderId, stopOrderId)
 
-        # triggered trailing stop?
-        # if ("triggerPrice" in kwargs) & ("trailPercent" in kwargs):
-            # self.pendingTriggeredTrailingStopOrders.append()
-            # self.signal_ttl    = kwargs["signal_ttl"] if "signal_ttl" in kwargs else 0
+            # triggered trailing stop?
+            if trailingStop and trailingTrigger and trailingValue:
+                trailing_params = {
+                    "symbol": self.contractString(contract),
+                    "quantity": -quantity,
+                    "triggerPrice": trailingTrigger,
+                    "parentId": entryOrderId,
+                    "stopOrderId": stopOrderId,
+                    "targetOrderId": targetOrderId if targetOrderId != 0 else None
+                }
+                if trailingStop.lower() in ['amt', 'amount']:
+                    trailing_params["trailAmount"] = trailingValue
+                elif trailingStop.lower() in ['pct', 'percent']:
+                    trailing_params["trailPercent"] = trailingValue
+
+                self.createTriggerableTrailingStop(**trailing_params)
 
         return {
             "group": group,

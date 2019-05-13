@@ -1624,7 +1624,7 @@ class ezIBpy():
             order.m_orderType = dataTypes["ORDER_TYPE_MARKET"] if price == 0 else dataTypes["ORDER_TYPE_LIMIT"]
 
         order.m_lmtPrice   = price  # LMT  Price
-        order.m_auxPrice   = stop  # STOP Price
+        order.m_auxPrice   = kwargs["auxPrice"] if "auxPrice" in kwargs else stop
         order.m_tif        = tif   # DAY, GTC, IOC, GTD
         order.m_allOrNone  = int(fillorkill)
         order.hidden       = iceberg

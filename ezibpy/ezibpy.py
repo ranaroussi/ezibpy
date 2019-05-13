@@ -1135,6 +1135,11 @@ class ezIBpy():
     # -----------------------------------------
     # trailing stops
     # -----------------------------------------
+    def cancelTriggerableTrailingStop(self, symbol):
+        """ cancel **pending** triggerable trailing stop """
+        del self.triggerableTrailingStops[symbol]
+
+
     def createTriggerableTrailingStop(self, symbol, quantity=1,
             triggerPrice=0, trailPercent=100., trailAmount=0.,
             parentId=0, stopOrderId=None, targetOrderId=None,

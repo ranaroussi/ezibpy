@@ -1730,10 +1730,13 @@ class ezIBpy():
         if group == None:
             group = "bracket_" + str(int(time.time()))
 
+        account = self._get_default_account_if_none(account)
+
         # main order
         enteyOrder = self.createOrder(quantity, price=entry, transmit=False,
                         tif=tif, fillorkill=fillorkill, iceberg=iceberg,
-                        rth=rth, account=self._get_default_account_if_none(account))
+                        rth=rth, account=account, **kwargs)
+
         entryOrderId = self.placeOrder(contract, enteyOrder)
 
         # target
@@ -1747,10 +1750,10 @@ class ezIBpy():
                             group     = group,
                             rth       = rth,
                             tif       = tif,
-                            account   = self._get_default_account_if_none(account)
+                            account   = account
                         )
 
-            time.sleep(0.0001)
+            time.sleep(0.001)
             self.requestOrderIds()
             targetOrderId = self.placeOrder(contract, targetOrder, self.orderId + 1)
 
@@ -1766,10 +1769,10 @@ class ezIBpy():
                             rth        = rth,
                             tif        = tif,
                             stop_limit = stop_limit,
-                            account    = self._get_default_account_if_none(account)
+                            account    = account
                         )
 
-            time.sleep(0.0001)
+            time.sleep(0.001)
             self.requestOrderIds()
             stopOrderId = self.placeOrder(contract, stopOrder, self.orderId + 2)
 

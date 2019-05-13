@@ -1137,7 +1137,8 @@ class ezIBpy():
     # -----------------------------------------
     def createTriggerableTrailingStop(self, symbol, quantity=1,
             triggerPrice=0, trailPercent=100., trailAmount=0.,
-            parentId=0, stopOrderId=None, **kwargs):
+            parentId=0, stopOrderId=None, targetOrderId=None,
+            **kwargs):
         """ adds order to triggerable list """
 
         ticksize = self.contractDetails(symbol)["m_minTick"]
@@ -1145,6 +1146,7 @@ class ezIBpy():
         self.triggerableTrailingStops[symbol] = {
             "parentId": parentId,
             "stopOrderId": stopOrderId,
+            "targetOrderId": targetOrderId,
             "triggerPrice": triggerPrice,
             "trailAmount": abs(trailAmount),
             "trailPercent": abs(trailPercent),
@@ -1263,6 +1265,7 @@ class ezIBpy():
             pendingOrder = self.triggerableTrailingStops[symbol]
             parentId     = pendingOrder["parentId"]
             stopOrderId  = pendingOrder["stopOrderId"]
+            targetOrderId  = pendingOrder["targetOrderId"]
             triggerPrice = pendingOrder["triggerPrice"]
             trailAmount  = pendingOrder["trailAmount"]
             trailPercent = pendingOrder["trailPercent"]
@@ -1317,6 +1320,11 @@ class ezIBpy():
                 if trailingStopOrderId:
                     # print(">>> TRAILING STOP")
                     del self.triggerableTrailingStops[symbol]
+
+                    # delete target and keep traling only
+                    if targetOrderId and targetOrderId in self.orders.keys():
+                        # print("DELETING TARGET")
+                        self.cancelOrder(targetOrderId)
 
                     # register trailing stop
                     tickerId = self.tickerId(symbol)

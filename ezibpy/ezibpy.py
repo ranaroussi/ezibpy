@@ -1139,18 +1139,30 @@ class ezIBpy():
         """ cancel **pending** triggerable trailing stop """
         del self.triggerableTrailingStops[symbol]
 
-
+    # -----------------------------------------
     def modifyTriggerableTrailingStop(self, symbol, quantity=1,
             triggerPrice=0, trailPercent=100., trailAmount=0.,
             parentId=0, stopOrderId=None, targetOrderId=None, **kwargs):
 
-        self.cancelTriggerableTrailingStop(symbol)
+        params = {
+            "symbol": symbol,
+            "quantity": quantity,
+            "triggerPrice": triggerPrice,
+            "trailPercent": abs(trailPercent),
+            "trailAmount": abs(trailAmount),
+            "parentId": parentId,
+            "stopOrderId": stopOrderId,
+            "targetOrderId": targetOrderId,
+        }
 
-        return self.createTriggerableTrailingStop(symbol, quantity,
-            triggerPrice, trailPercent, trailAmount, parentId,
-            stopOrderId, targetOrderId, **kwargs)
+        if symbol in self.triggerableTrailingStops:
+            original = self.triggerableTrailingStops[symbol]
+            self.cancelTriggerableTrailingStop(symbol)
+            params = {**original, **kwargs}
 
+        return self.createTriggerableTrailingStop(**params)
 
+    # -----------------------------------------
     def createTriggerableTrailingStop(self, symbol, quantity=1,
             triggerPrice=0, trailPercent=100., trailAmount=0.,
             parentId=0, stopOrderId=None, targetOrderId=None,

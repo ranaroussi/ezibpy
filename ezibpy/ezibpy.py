@@ -1710,7 +1710,7 @@ class ezIBpy():
 
     # -----------------------------------------
     def createTrailingStopOrder(self, contract, quantity,
-            parentId=0, trailPercent=100., group=None, triggerPrice=None,
+            parentId=0, trailPercent=100., group=None,
             account=None):
 
         """ convert hard stop order to trailing stop order """

@@ -1135,6 +1135,34 @@ class ezIBpy():
     # -----------------------------------------
     # trailing stops
     # -----------------------------------------
+    def createTriggerableTrailingStop(self, symbol, quantity=1,
+            triggerPrice=0, trailPercent=100., trailAmount=0.,
+            parentId=0, stopOrderId=None, targetOrderId=None,
+            **kwargs):
+        """
+        adds order to triggerable list
+
+        IMPORTANT! For trailing stop to work you'll need
+            1. real time market data subscription for the tracked ticker
+            2. the python/algo script to be kept alive
+        """
+
+        ticksize = self.contractDetails(symbol)["m_minTick"]
+
+        self.triggerableTrailingStops[symbol] = {
+            "parentId": parentId,
+            "stopOrderId": stopOrderId,
+            "targetOrderId": targetOrderId,
+            "triggerPrice": triggerPrice,
+            "trailAmount": abs(trailAmount),
+            "trailPercent": abs(trailPercent),
+            "quantity": quantity,
+            "ticksize": ticksize
+        }
+
+        return self.triggerableTrailingStops[symbol]
+
+    # -----------------------------------------
     def cancelTriggerableTrailingStop(self, symbol):
         """ cancel **pending** triggerable trailing stop """
         del self.triggerableTrailingStops[symbol]
@@ -1161,28 +1189,6 @@ class ezIBpy():
             params = {**original, **kwargs}
 
         return self.createTriggerableTrailingStop(**params)
-
-    # -----------------------------------------
-    def createTriggerableTrailingStop(self, symbol, quantity=1,
-            triggerPrice=0, trailPercent=100., trailAmount=0.,
-            parentId=0, stopOrderId=None, targetOrderId=None,
-            **kwargs):
-        """ adds order to triggerable list """
-
-        ticksize = self.contractDetails(symbol)["m_minTick"]
-
-        self.triggerableTrailingStops[symbol] = {
-            "parentId": parentId,
-            "stopOrderId": stopOrderId,
-            "targetOrderId": targetOrderId,
-            "triggerPrice": triggerPrice,
-            "trailAmount": abs(trailAmount),
-            "trailPercent": abs(trailPercent),
-            "quantity": quantity,
-            "ticksize": ticksize
-        }
-
-        return self.triggerableTrailingStops[symbol]
 
     # -----------------------------------------
     def registerTrailingStop(self, tickerId, orderId=0, quantity=1,

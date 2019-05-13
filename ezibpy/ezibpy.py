@@ -1140,6 +1140,17 @@ class ezIBpy():
         del self.triggerableTrailingStops[symbol]
 
 
+    def modifyTriggerableTrailingStop(self, symbol, quantity=1,
+            triggerPrice=0, trailPercent=100., trailAmount=0.,
+            parentId=0, stopOrderId=None, targetOrderId=None, **kwargs):
+
+        self.cancelTriggerableTrailingStop(symbol)
+
+        return self.createTriggerableTrailingStop(symbol, quantity,
+            triggerPrice, trailPercent, trailAmount, parentId,
+            stopOrderId, targetOrderId, **kwargs)
+
+
     def createTriggerableTrailingStop(self, symbol, quantity=1,
             triggerPrice=0, trailPercent=100., trailAmount=0.,
             parentId=0, stopOrderId=None, targetOrderId=None,

@@ -1852,7 +1852,7 @@ class ezIBpy():
 
         # target
         targetOrderId = 0
-        if target > 0:
+        if target > 0 or targetType == "MOC":
             targetOrder = self.createTargetOrder(-quantity,
                             parentId  = entryOrderId,
                             target    = target,

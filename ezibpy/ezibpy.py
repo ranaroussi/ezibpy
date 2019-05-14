@@ -1212,13 +1212,14 @@ class ezIBpy():
 
     # -----------------------------------------
     def modifyStopOrder(self, orderId, parentId, newStop, quantity,
-                        transmit=True, account=None):
+                        transmit=True, stop_limit=False, account=None):
         """ modify stop order """
         if orderId in self.orders.keys():
             order = self.createStopOrder(
                 quantity = quantity,
                 parentId = parentId,
                 stop     = newStop,
+                stop_limit = stop_limit,
                 trail    = False,
                 transmit = transmit,
                 account  = self._get_default_account_if_none(account)

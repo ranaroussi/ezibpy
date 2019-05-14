@@ -1138,7 +1138,7 @@ class ezIBpy():
     def createTriggerableTrailingStop(self, symbol, quantity=1,
             triggerPrice=0, trailPercent=100., trailAmount=0.,
             parentId=0, stopOrderId=None, targetOrderId=None,
-            **kwargs):
+            account=None, **kwargs):
         """
         adds order to triggerable list
 
@@ -1157,7 +1157,8 @@ class ezIBpy():
             "trailAmount": abs(trailAmount),
             "trailPercent": abs(trailPercent),
             "quantity": quantity,
-            "ticksize": ticksize
+            "ticksize": ticksize,
+            "account": self._get_default_account_if_none(account)
         }
 
         return self.triggerableTrailingStops[symbol]

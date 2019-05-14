@@ -1668,12 +1668,18 @@ class ezIBpy():
 
         if "orderType" in kwargs:
             order.m_orderType = kwargs["orderType"]
+            if kwargs["orderType"] == "MOO":
+                order.m_orderType = "MKT"
+                tif = "OPG"
+            elif kwargs["orderType"] == "LOO":
+                order.m_orderType = "LMT"
+                tif = "OPG"
         else:
             order.m_orderType = dataTypes["ORDER_TYPE_MARKET"] if price == 0 else dataTypes["ORDER_TYPE_LIMIT"]
 
         order.m_lmtPrice   = price  # LMT  Price
         order.m_auxPrice   = kwargs["auxPrice"] if "auxPrice" in kwargs else stop
-        order.m_tif        = tif   # DAY, GTC, IOC, GTD
+        order.m_tif        = tif   # DAY, GTC, IOC, GTD, OPG, ...
         order.m_allOrNone  = int(fillorkill)
         order.hidden       = iceberg
         order.m_transmit   = int(transmit)

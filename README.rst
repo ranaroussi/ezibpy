@@ -402,13 +402,6 @@ Account Information:
     ibConn = ezibpy.ezIBpy()
     ibConn.connect(clientId=100, host="localhost", port=4001)
 
-    # subscribe to account/position updates
-    ibConn.requestPositionUpdates(subscribe=True)
-    ibConn.requestAccountUpdates(subscribe=True)
-
-    # wait 30 seconds
-    time.sleep(30)
-
     # available variables (auto-updating)
     print("Market Data")
     print(ibConn.marketData)

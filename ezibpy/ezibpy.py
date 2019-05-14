@@ -56,6 +56,8 @@ createLogger('ezibpy')
 
 class ezIBpy():
 
+    # trailch = False  # (used for debugging)
+
     # -----------------------------------------
     @staticmethod
     def roundClosestValid(val, res, decimals=None):
@@ -1243,8 +1245,11 @@ class ezIBpy():
         # contract       = self.contracts[tickerId]
         # contractString = self.contractString(contract)
 
+        if self.default_account is None:
+            self.default_account = list(self._positions.keys())[0]
+
         # filled / no positions?
-        if (self._positions[symbol] == 0) | \
+        if (self._positions[self.default_account][symbol] == 0) | \
                 (self.orders[trailingStop['orderId']]['status'] == "FILLED"):
             del self.trailingStops[tickerId]
             return None
@@ -1289,93 +1294,128 @@ class ezIBpy():
         return trailingStopOrderId
 
     # -----------------------------------------
-    def triggerTrailingStops(self, tickerId):
+    def triggerTrailingStops(self, tickerId, **kwargs):
         """ trigger waiting trailing stops """
         # print('.')
-        # test
-        symbol = self.tickerSymbol(tickerId)
+
+        # get pricing data
         price  = self.marketData[tickerId]['last'][0]
-        # contract = self.contracts[tickerId]
+        contract = self.contracts[tickerId]
+        symbol = self.tickerSymbol(tickerId)
 
-        if symbol in self.triggerableTrailingStops.keys():
-            pendingOrder = self.triggerableTrailingStops[symbol]
-            parentId     = pendingOrder["parentId"]
-            stopOrderId  = pendingOrder["stopOrderId"]
-            targetOrderId  = pendingOrder["targetOrderId"]
-            triggerPrice = pendingOrder["triggerPrice"]
-            trailAmount  = pendingOrder["trailAmount"]
-            trailPercent = pendingOrder["trailPercent"]
-            quantity     = pendingOrder["quantity"]
-            ticksize     = pendingOrder["ticksize"]
+        # abort?
+        if symbol not in self.triggerableTrailingStops.keys():
+            return
 
-            # print(">>>>>>>", pendingOrder)
-            # print(">>>>>>>", parentId)
-            # print(">>>>>>>", self.orders)
+        # # trigger the order (used for debugging)
+        # if not self.trailch:
+        #     self.triggerableTrailingStops[symbol]['triggerPrice'] = price
+        #     self.trailch = True
+        #     return
 
-            # abort
-            if parentId not in self.orders.keys():
-                # print("DELETING")
-                del self.triggerableTrailingStops[symbol]
-                return None
-            else:
-                if self.orders[parentId]["status"] != "FILLED":
-                    return None
+        # extract order data
+        pendingOrder  = self.triggerableTrailingStops[symbol]
+        parentId      = pendingOrder["parentId"]
+        stopOrderId   = pendingOrder["stopOrderId"]
+        targetOrderId = pendingOrder["targetOrderId"]
+        triggerPrice  = pendingOrder["triggerPrice"]
+        trailAmount   = pendingOrder["trailAmount"]
+        trailPercent  = pendingOrder["trailPercent"]
+        quantity      = pendingOrder["quantity"]
+        ticksize      = pendingOrder["ticksize"]
+        account       = pendingOrder["account"]
 
-            # print("\n\n", quantity, triggerPrice, price, "\n\n")
+        # abort?
+        if parentId not in self.orders.keys():
+            del self.triggerableTrailingStops[symbol]
+            return
+        elif self.orders[parentId]["status"] != "FILLED":
+            return
 
-            # create the order
-            if ((quantity > 0) & (triggerPrice >= price)) | ((quantity < 0) & (triggerPrice <= price)):
+        # print(">>>>>>>", pendingOrder)
+        # print(">>>>>>>", parentId)
+        # print(">>>>>>>", self.orders)
 
-                newStop = price
-                if trailAmount > 0:
-                    if quantity > 0:
-                        newStop += trailAmount
-                    else:
-                        newStop -= trailAmount
-                elif trailPercent > 0:
-                    if quantity > 0:
-                        newStop += price * (trailPercent / 100)
-                    else:
-                        newStop -= price * (trailPercent / 100)
+        print("[TRAIL]", quantity, triggerPrice, price)
+
+        if ((quantity > 0) & (triggerPrice >= price)) | (
+            (quantity < 0) & (triggerPrice <= price)):
+            # print('TRIGGER ***********')
+
+            newStop = price
+            if trailAmount > 0:
+                if quantity > 0:
+                    newStop += trailAmount
                 else:
-                    del self.triggerableTrailingStops[symbol]
-                    return 0
+                    newStop -= trailAmount
+            elif trailPercent > 0:
+                if quantity > 0:
+                    newStop += price * (trailPercent / 100)
+                else:
+                    newStop -= price * (trailPercent / 100)
+            else:
+                del self.triggerableTrailingStops[symbol]
+                return 0
 
-                # print("------", stopOrderId , parentId, newStop , quantity, "------")
+            # print("------", stopOrderId , parentId, newStop , quantity, "------")
 
-                # use valid newStop
-                newStop = self.roundClosestValid(newStop, ticksize)
+            # use valid newStop
+            trailingStopOrderId = self.modifyStopOrder(
+                orderId  = stopOrderId,
+                parentId = parentId,
+                newStop  = self.roundClosestValid(newStop, ticksize),
+                quantity = quantity,
+                account  = account
+            )
 
-                trailingStopOrderId = self.modifyStopOrder(
-                    orderId  = stopOrderId,
+            """
+            @TODO : convert hard stop to trailing
+            if trailAmount > 0:
+                trailValue = self.roundClosestValid(abs(trailAmount), ticksize)
+                trailType = 'amount'
+            elif trailPercent > 0:
+                trailValue = abs(trailPercent)
+                trailType = 'percent'
+            else:
+                del self.triggerableTrailingStops[symbol]
+                return
+
+            trailingStopOrderId = self.createTrailingStopOrder(
+                contract=contract,
+                quantity=quantity,
+                parentId=stopOrderId,
+                trailType=trailType,
+                trailValue=trailValue,
+                stopTrigger=triggerPrice,
+                account=account)
+            """
+
+            if trailingStopOrderId:
+                # print(">>> TRAILING STOP TRIGGERED")
+                del self.triggerableTrailingStops[symbol]
+
+                # "delete" target and keep traling only
+                if targetOrderId and targetOrderId in self.orders.keys():
+                    # self.cancelOrder(targetOrderId)
+                    targetOrder = self.orders[targetOrderId]['order']
+                    targetOrder.m_auxPrice = 0 if quantity < 0 else 1000000
+                    self.placeOrder(contract, order, targetOrderId,
+                                    targetOrder.m_account)
+
+                # register trailing stop
+                tickerId = self.tickerId(symbol)
+                self.registerTrailingStop(
+                    tickerId = tickerId,
                     parentId = parentId,
-                    newStop  = newStop,
-                    quantity = quantity
+                    orderId = stopOrderId,
+                    lastPrice = price,
+                    trailAmount = trailAmount,
+                    trailPercent = trailPercent,
+                    quantity = quantity,
+                    ticksize = ticksize
                 )
 
-                if trailingStopOrderId:
-                    # print(">>> TRAILING STOP")
-                    del self.triggerableTrailingStops[symbol]
-
-                    # delete target and keep traling only
-                    if targetOrderId and targetOrderId in self.orders.keys():
-                        # print("DELETING TARGET")
-                        self.cancelOrder(targetOrderId)
-
-                    # register trailing stop
-                    tickerId = self.tickerId(symbol)
-                    self.registerTrailingStop(
-                        tickerId = tickerId,
-                        parentId = parentId,
-                        orderId = stopOrderId,
-                        lastPrice = price,
-                        trailAmount = trailAmount,
-                        trailPercent = trailPercent,
-                        quantity = quantity,
-                        ticksize = ticksize
-                    )
-
-                    return trailingStopOrderId
+                return trailingStopOrderId
 
         return None
 
@@ -1703,8 +1743,8 @@ class ezIBpy():
 
     # -----------------------------------------
     def createStopOrder(self, quantity, parentId=0, stop=0., trail=None,
-            transmit=True, group=None, stop_limit=False, rth=False, tif="DAY",
-            account=None):
+            transmit=True, trigger=None, group=None, stop_limit=False,
+            rth=False, tif="DAY", account=None, **kwargs):
 
         """ Creates STOP order """
         stop_limit_price = 0
@@ -1717,10 +1757,16 @@ class ezIBpy():
                 except Exception:
                     stop_limit_price = stop
 
+        trailStopPrice = trigger if trigger else stop_limit_price
+        if quantity > 0:
+            trailStopPrice -= abs(stop)
+        elif quantity < 0:
+            trailStopPrice -= abs(stop)
 
         order_data = {
             "quantity": quantity,
-            "stop": stop,
+            "trailStopPrice": trailStopPrice,
+            "stop": abs(stop),
             "price": stop_limit_price,
             "transmit": transmit,
             "ocaGroup": group,
@@ -1732,13 +1778,16 @@ class ezIBpy():
 
         if trail:
             order_data['orderType'] = dataTypes["ORDER_TYPE_TRAIL_STOP"]
-            if stop_limit:
+            if "orderType" in kwargs:
+                order_data['orderType'] = kwargs["orderType"]
+            elif stop_limit:
+                # order_data['lmtPriceOffset'] = ??
                 order_data['orderType'] = dataTypes["ORDER_TYPE_TRAIL_STOP_LIMIT"]
 
             if trail == "percent":
                 order_data['trailingPercent'] = stop
             else:
-                order_data['trailStopPrice'] = stop
+                order_data['auxPrice'] = stop
         else:
             order_data['orderType'] = dataTypes["ORDER_TYPE_STOP"]
             if stop_limit:
@@ -1749,17 +1798,18 @@ class ezIBpy():
 
     # -----------------------------------------
     def createTrailingStopOrder(self, contract, quantity,
-            parentId=0, trailPercent=100., group=None,
-            account=None):
+            parentId=0, trailType='percent', trailValue=100.,
+            group=None, stopTrigger=None, account=None, **kwargs):
 
         """ convert hard stop order to trailing stop order """
         if parentId not in self.orders:
             raise ValueError("Order #" + str(parentId) + " doesn't exist or wasn't submitted")
 
         order = self.createStopOrder(quantity,
-                    stop     = trailPercent,
+                    stop     = trailValue,
+                    trail    = trailType,
                     transmit = True,
-                    trail    = True,
+                    trigger  = stopTrigger,
                     # ocaGroup = group
                     parentId = parentId,
                     account  = self._get_default_account_if_none(account)
@@ -1817,6 +1867,8 @@ class ezIBpy():
         stopOrderId = 0
         if stop > 0:
             stop_limit = stopType and stopType.upper() in ["LIMIT", "LMT"]
+            # stop_limit = stop_limit or (
+            #     trailingStop and trailingTrigger and trailingValue)
             stopOrder = self.createStopOrder(-quantity,
                             parentId   = entryOrderId,
                             stop       = stop,
@@ -1835,6 +1887,7 @@ class ezIBpy():
             # print(self.orderId, stopOrderId)
 
             # triggered trailing stop?
+            # print(trailingStop, trailingTrigger, trailingValue)
             if trailingStop and trailingTrigger and trailingValue:
                 trailing_params = {
                     "symbol": self.contractString(contract),
@@ -1842,7 +1895,8 @@ class ezIBpy():
                     "triggerPrice": trailingTrigger,
                     "parentId": entryOrderId,
                     "stopOrderId": stopOrderId,
-                    "targetOrderId": targetOrderId if targetOrderId != 0 else None
+                    "targetOrderId": targetOrderId if targetOrderId != 0 else None,
+                    "account": account
                 }
                 if trailingStop.lower() in ['amt', 'amount']:
                     trailing_params["trailAmount"] = trailingValue

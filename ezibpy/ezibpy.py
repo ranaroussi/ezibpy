@@ -1739,7 +1739,7 @@ class ezIBpy():
             "account": self._get_default_account_if_none(account)
         }
         # default order type is "Market if Touched"
-        if orderType is None or orderType[0].upper() == "M":
+        if orderType is None: # or orderType.upper() == "MKT":
             params['orderType'] = dataTypes["ORDER_TYPE_MIT"]
             params['auxPrice'] = target
             del params['price']

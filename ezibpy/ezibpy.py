@@ -1564,11 +1564,11 @@ class ezIBpy():
         tickerId = self.tickerId(contractString)
 
         # construct contract
+        exchange = contractTuple[2].upper().replace("NASDAQ", "ISLAND")
         newContract = Contract()
-
         newContract.m_symbol   = contractTuple[0]
         newContract.m_secType  = contractTuple[1]
-        newContract.m_exchange = contractTuple[2]
+        newContract.m_exchange = exchange
         newContract.m_currency = contractTuple[3]
         newContract.m_expiry   = contractTuple[4]
         newContract.m_strike   = contractTuple[5]

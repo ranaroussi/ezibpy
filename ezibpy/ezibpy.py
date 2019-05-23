@@ -748,8 +748,8 @@ class ezIBpy():
             # if msg.status.upper() == 'CANCELLED':
             #     del self.orders[msg.orderId]
 
-        # attach sub-orders
-        if hasattr(msg, 'parentId'):
+            # attach sub-orders
+            # if hasattr(msg, 'parentId'):
             parentId = self.orders[msg.orderId]['parentId']
             if parentId > 0 and parentId in self.orders:
                 if 'attached' not in self.orders[parentId]:

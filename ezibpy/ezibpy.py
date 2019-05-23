@@ -744,7 +744,7 @@ class ezIBpy():
                 self.orders[msg.orderId]['parentId'] = int(msg.parentId)
                 self.orders[msg.orderId]['time'] = datetime.fromtimestamp(int(self.time))
 
-            # remove from orders?
+            # remove from orders? no! (keep log)
             # if msg.status.upper() == 'CANCELLED':
             #     del self.orders[msg.orderId]
 

@@ -1679,11 +1679,11 @@ class ezIBpy():
 
         order.m_lmtPrice   = price  # LMT  Price
         order.m_auxPrice   = kwargs["auxPrice"] if "auxPrice" in kwargs else stop
-        order.m_tif        = tif   # DAY, GTC, IOC, GTD, OPG, ...
+        order.m_tif        = tif.upper()   # DAY, GTC, IOC, GTD, OPG, ...
         order.m_allOrNone  = int(fillorkill)
         order.hidden       = iceberg
         order.m_transmit   = int(transmit)
-        order.m_outsideRth = int(rth == False)
+        order.m_outsideRth = int(rth == False and tif.upper() != "OPG")
 
         # send to specific account?
         account = self._get_default_account_if_none(account)
@@ -1864,7 +1864,6 @@ class ezIBpy():
                             account   = account
                         )
 
-            time.sleep(0.01)
             self.requestOrderIds()
             targetOrderId = self.placeOrder(contract, targetOrder, self.orderId + 1)
             # print(self.orderId, targetOrderId)
@@ -1887,7 +1886,6 @@ class ezIBpy():
                             account    = account
                         )
 
-            time.sleep(0.01)
             self.requestOrderIds()
             stopOrderId = self.placeOrder(contract, stopOrder, self.orderId + 2)
             # print(self.orderId, stopOrderId)

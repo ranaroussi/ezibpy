@@ -717,6 +717,7 @@ class ezIBpy():
                     "reason":   None,
                     "avgFillPrice": 0.,
                     "parentId": 0,
+                    "attached": set(),
                     "time": datetime.fromtimestamp(int(self.time)),
                     "account": order_account
                 }
@@ -742,6 +743,14 @@ class ezIBpy():
             # remove from orders?
             # if msg.status.upper() == 'CANCELLED':
             #     del self.orders[msg.orderId]
+
+        # attach sub-orders
+        if hasattr(msg, 'parentId'):
+            parentId = self.orders[msg.orderId]['parentId']
+            if parentId > 0 and parentId in self.orders:
+                if 'attached' not in self.orders[parentId]:
+                    self.orders[parentId]['attached'] = set()
+                self.orders[parentId]['attached'].add(msg.orderId)
 
         # fire callback
         if duplicateMessage is False:
@@ -1924,6 +1933,7 @@ class ezIBpy():
 
         # get latest order id before submitting an order
         self.requestOrderIds()
+        # time.sleep(0.01)
 
         # continue...
         useOrderId = self.orderId if orderId == None else orderId
@@ -1981,6 +1991,7 @@ class ezIBpy():
         """
         self.orderId += 1
         self.ibConn.reqIds(numIds)
+        time.sleep(0.01)
 
     # -----------------------------------------
     def requestMarketDepth(self, contracts=None, num_rows=10):

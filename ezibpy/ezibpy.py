@@ -60,7 +60,9 @@ class ezIBpy():
 
     # -----------------------------------------
     @staticmethod
-    def roundClosestValid(val, res, decimals=None):
+    def roundClosestValid(val, res=0.01, decimals=None):
+        if val is None:
+            return None
         """ round to closest resolution """
         if decimals is None and "." in str(res):
             decimals = len(str(res).split('.')[1])
@@ -1936,6 +1938,11 @@ class ezIBpy():
         # get latest order id before submitting an order
         self.requestOrderIds()
         # time.sleep(0.01)
+
+        # make sure the price confirms to th contract
+        ticksize = self.contractDetails(contract)["m_minTick"]
+        order.m_lmtPrice = self.roundClosestValid(order.m_lmtPrice, ticksize)
+        order.m_auxPrice = self.roundClosestValid(order.m_auxPrice, ticksize)
 
         # continue...
         useOrderId = self.orderId if orderId == None else orderId

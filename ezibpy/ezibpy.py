@@ -756,6 +756,14 @@ class ezIBpy():
                     self.orders[parentId]['attached'] = set()
                 self.orders[parentId]['attached'].add(msg.orderId)
 
+            # cancel orphan sub-orders
+            if self.orders[msg.orderId]['status'] == "FILLED":
+                order = self.orders[msg.orderId]
+                positions = self.getPositions(order['account'])
+                if (positions[order['symbol']] == 0):
+                    for orderId in order['attached']:
+                        self.cancelOrder(orderId)
+
         # fire callback
         if duplicateMessage is False:
             # group orders by symbol

@@ -738,11 +738,11 @@ class ezIBpy():
                 #     except Exception: pass
                 # # otherwise, update order status
                 # else:
-                self.orders[msg.orderId]['status']       = msg.status.upper()
-                self.orders[msg.orderId]['reason']       = msg.whyHeld
+                self.orders[msg.orderId]['status'] = msg.status.upper()
+                self.orders[msg.orderId]['reason'] = msg.whyHeld
                 self.orders[msg.orderId]['avgFillPrice'] = float(msg.avgFillPrice)
-                self.orders[msg.orderId]['parentId']     = int(msg.parentId)
-                self.orders[msg.orderId]['time']         = datetime.fromtimestamp(int(self.time))
+                self.orders[msg.orderId]['parentId'] = int(msg.parentId)
+                self.orders[msg.orderId]['time'] = datetime.fromtimestamp(int(self.time))
 
             # remove from orders?
             # if msg.status.upper() == 'CANCELLED':

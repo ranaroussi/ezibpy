@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 #
-# ezIBpy: Pythonic Wrapper for IbPy
+# ezIBpy: a Pythonic Client for Interactive Brokers API
 # https://github.com/ranaroussi/ezibpy
 
-"""ezIBpy: Pythonic Wrapper for IbPy
+"""ezIBpy: a Pythonic Client for Interactive Brokers API
 ezIBpy is a Pythonic wrapper for IbPy library
 (https://github.com/blampe/IbPy), that was developed to
 speed up the development of trading software that relies on

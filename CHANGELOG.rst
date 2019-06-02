@@ -1,6 +1,17 @@
 Change Log
 ===========
 
+1.12.68
+-------
+- Better hanling of MOO/MOC orders (+ in bracket orders)
+- Cancelling orphan orders (stop/target) on same-instrument fills
+- Automaticaly rounding order prices to acceptable ticksize for contract
+- Added quantity, side, and sub-orders' ids to order metadata
+- Setting ``outsideRth`` to ``False`` if ``TIF`` is ``OPG`` (for MOO orders)
+- Default target order type changed to ``Market if Touched``
+- Using "ISLAND" exchanged when "NASDAQ" is entered (ISLAND = NASDAQ)
+- Misc code refactoring and minor bug fixes
+
 1.12.67
 -------
 - Support for multiple/FA accounts!

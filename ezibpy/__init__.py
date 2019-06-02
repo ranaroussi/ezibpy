@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 #
-# ezIBpy: Pythonic Wrapper for IbPy
+# ezIBpy: a Pythonic Client for Interactive Brokers API
 # https://github.com/ranaroussi/ezibpy
 #
 # Copyright 2015-2019 Ran Aroussi
@@ -18,7 +18,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-__version__ = "1.12.67"
+__version__ = "1.12.68"
 __author__ = "Ran Aroussi"
 
 __all__ = ['ezIBpy', 'dataTypes', 'utils']

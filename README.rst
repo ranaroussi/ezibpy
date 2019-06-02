@@ -40,6 +40,7 @@ for market data and order execution.
 
 **Version 1.12.67 now supports multiple/FA accounts!**
 
+- Option to specify IB account upon connect. Alternatively, you can...
 - Get info using ``getAccount('DUXXXXXX')``, ``getPositions('DUXXXXXX')``, ``getPortfolio('DUXXXXXX')``, or ``getOrders('DUXXXXXX')``
 - Submit order to a specific account by specifing ``account=DUXXXXXX`` in ``createOrder()``, ``placeOrder()``, ``createBracketOrder()``, ``createTrailingStopOrder()``, ``createStopOrder()``, and ``createTargetOrder()`` methods
 
@@ -64,6 +65,8 @@ Interactive Brokers’ `TWS <https://www.interactivebrokers.com/en/index.php?f=1
 `IB Gateway <https://www.interactivebrokers.com/en/index.php?f=16457>`_ installed and running on the machine.
 
 **Market Data**
+
+**\*\*\* YOU MUST HAVE ACTIVE MARKET DATA SUBSCRIPTION TO USE THESE METHODS \*\*\***
 
 - `Request Market Data <#request-market-data>`_
 - `Request Market Depth <#request-market-depth>`_
@@ -487,7 +490,7 @@ Requirements
 ------------
 
 * `Python <https://www.python.org>`_ >=3.4
-* `Pandas <https://github.com/pydata/pandas>`_ (tested to work with >=0.18.1)
+* `Pandas <https://github.com/pydata/pandas>`_ (tested to work with >=0.23.0)
 * `dateutil <https://pypi.python.org/pypi/python-dateutil>`_ (tested to with with >=2.5.1)
 * `IbPy2 <https://github.com/blampe/IbPy>`_ (tested to work with >=0.8.0)
 * Latest Interactive Brokers’ `TWS <https://www.interactivebrokers.com/en/index.php?f=15875>`_ or `IB Gateway <https://www.interactivebrokers.com/en/index.php?f=16457>`_ installed and running on the machine

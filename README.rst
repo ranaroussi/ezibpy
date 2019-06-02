@@ -1,7 +1,7 @@
 ezIBpy: Pythonic Wrapper for IbPy
 =================================================
 
-.. image:: https://img.shields.io/badge/python-3.4+-blue.svg?style=flat
+.. image:: https://img.shields.io/badge/python-3.5+-blue.svg?style=flat
     :target: https://pypi.python.org/pypi/ezibpy
     :alt: Python version
 

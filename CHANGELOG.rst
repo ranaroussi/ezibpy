@@ -1,6 +1,10 @@
 Change Log
 ===========
 
+1.12.69
+-------
+- Making ``_get_active_account()`` (formerly ``_get_default_account_if_none()``) more fool-proof
+
 1.12.68
 -------
 - Better hanling of MOO/MOC orders (+ in bracket orders)

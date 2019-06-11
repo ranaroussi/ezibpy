@@ -552,7 +552,7 @@ class ezIBpy():
         if len(self._accounts) == 0:
             return {}
 
-        account = self._get_default_account_if_none(account)
+        account = self._get_active_account(account)
 
         if account is None:
             if len(self._accounts) > 1:
@@ -603,7 +603,7 @@ class ezIBpy():
         if len(self._positions) == 0:
             return {}
 
-        account = self._get_default_account_if_none(account)
+        account = self._get_active_account(account)
 
         if account is None:
             if len(self._positions) > 1:
@@ -662,7 +662,7 @@ class ezIBpy():
         if len(self._portfolios) == 0:
             return {}
 
-        account = self._get_default_account_if_none(account)
+        account = self._get_active_account(account)
 
         if account is None:
             if len(self._portfolios) > 1:
@@ -706,6 +706,7 @@ class ezIBpy():
                     del self.orders[msg.orderId]
                 except Exception:
                     pass
+            order_account = self._get_active_account(order_account)
 
             if msg.orderId in self.orders:
                 duplicateMessage = True
@@ -790,7 +791,7 @@ class ezIBpy():
         if len(self.account_orders) == 0:
             return {}
 
-        account = self._get_default_account_if_none(account)
+        account = self._get_active_account(account)
 
         if account is None:
             if len(self.account_orders) > 1:
@@ -1181,7 +1182,7 @@ class ezIBpy():
             "trailPercent": abs(trailPercent),
             "quantity": quantity,
             "ticksize": ticksize,
-            "account": self._get_default_account_if_none(account)
+            "account": self._get_active_account(account)
         }
 
         return self.triggerableTrailingStops[symbol]
@@ -1245,7 +1246,7 @@ class ezIBpy():
                 stop_limit = stop_limit,
                 trail    = False,
                 transmit = transmit,
-                account  = self._get_default_account_if_none(account)
+                account  = self._get_active_account(account)
             )
             return self.placeOrder(self.orders[orderId]['contract'], order, orderId)
 
@@ -1709,7 +1710,7 @@ class ezIBpy():
         order.m_outsideRth = int(rth == False and tif.upper() != "OPG")
 
         # send to specific account?
-        account = self._get_default_account_if_none(account)
+        account = self._get_active_account(account)
         if account is not None:
             order.m_account = account
 
@@ -1759,7 +1760,7 @@ class ezIBpy():
             "parentId": parentId,
             "rth": rth,
             "tif": tif,
-            "account": self._get_default_account_if_none(account)
+            "account": self._get_active_account(account)
         }
         # default order type is "Market if Touched"
         if orderType is None: # or orderType.upper() == "MKT":
@@ -1802,7 +1803,7 @@ class ezIBpy():
             "parentId": parentId,
             "rth": rth,
             "tif": tif,
-            "account": self._get_default_account_if_none(account)
+            "account": self._get_active_account(account)
         }
 
         if trail:
@@ -1841,7 +1842,7 @@ class ezIBpy():
                     trigger  = stopTrigger,
                     # ocaGroup = group
                     parentId = parentId,
-                    account  = self._get_default_account_if_none(account)
+                    account  = self._get_active_account(account)
                 )
 
         self.requestOrderIds()
@@ -1864,7 +1865,7 @@ class ezIBpy():
         if group == None:
             group = "bracket_" + str(int(time.time()))
 
-        account = self._get_default_account_if_none(account)
+        account = self._get_active_account(account)
 
         # main order
         enteyOrder = self.createOrder(quantity, price=entry, transmit=False,
@@ -1955,7 +1956,7 @@ class ezIBpy():
         # continue...
         useOrderId = self.orderId if orderId == None else orderId
 
-        account = self._get_default_account_if_none(account)
+        account = self._get_active_account(account)
         if account is not None:
             order.m_account = account
         self.ibConn.placeOrder(useOrderId, contract, order)

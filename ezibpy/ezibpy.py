@@ -699,7 +699,7 @@ class ezIBpy():
             # contract identifier
             contractString = self.contractString(msg.contract)
 
-            order_account = ""
+            order_account = None
             if msg.orderId in self.orders and self.orders[msg.orderId]["status"] == "SENT":
                 order_account = self.orders[msg.orderId]["account"]
                 try:

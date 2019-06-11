@@ -527,9 +527,13 @@ class ezIBpy():
         except Exception:
             pass
 
-    def _get_default_account_if_none(self, account):
-        if account is None and self.default_account is not None:
-            return self.default_account
+    def _get_active_account(self, account):
+        account = None if account == "" else None
+        if account is None:
+            if self.default_account is not None:
+                return self.default_account
+            elif len(self._accounts) > 0:
+                return self.accountCodes[0]
         return account
 
     @property

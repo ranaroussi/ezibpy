@@ -1,6 +1,11 @@
 Change Log
 ===========
 
+1.12.70
+-------
+- Added ``createContinuousFuturesContract(symbol, exchange)``
+- ``createFuturesContract()`` accepts @SYMBOL (ie ``@ES``) and creates continuous contract
+
 1.12.69
 -------
 - Making ``_get_active_account()`` (formerly ``_get_default_account_if_none()``) more fool-proof

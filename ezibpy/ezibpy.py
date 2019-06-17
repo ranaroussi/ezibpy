@@ -422,6 +422,7 @@ class ezIBpy():
         if end:
             # mark as downloaded
             self._contract_details[msg.reqId]['downloaded'] = True
+            self._contract_details[msg.reqId]['tickerId'] = msg.reqId
 
             # move details from temp to permanent collector
             self.contract_details[msg.reqId] = self._contract_details[msg.reqId]
@@ -1538,6 +1539,7 @@ class ezIBpy():
 
         # default values
         return {
+            'tickerId': 0,
             'm_category': None, 'm_contractMonth': '', 'downloaded': False, 'm_evMultiplier': 0,
             'm_evRule': None, 'm_industry': None, 'm_liquidHours': '', 'm_longName': '',
             'm_marketName': '', 'm_minTick': 0.01, 'm_orderTypes': '', 'm_priceMagnifier': 0,
@@ -1625,16 +1627,59 @@ class ezIBpy():
         return contract
 
     # -----------------------------------------
-    def createFuturesContract(self, symbol, currency="USD", expiry=None, exchange="GLOBEX"):
+    def createFuturesContract(self, symbol, currency="USD", expiry=None,
+                              exchange="GLOBEX", multiplier=""):
+        if symbol[0] == "@":
+            return self.createContinuousFuturesContract(symbol[1:], exchange)
+
         expiry = [expiry] if not isinstance(expiry, list) else expiry
 
         contracts = []
         for fut_expiry in expiry:
-            contract_tuple = (symbol, "FUT", exchange, currency, fut_expiry, 0.0, "")
+            contract_tuple = (symbol, "FUT", exchange, currency,
+                              fut_expiry, 0.0, "", multiplier)
             contract = self.createContract(contract_tuple)
             contracts.append(contract)
 
         return contracts[0] if len(contracts) == 1 else contracts
+
+    # -----------------------------------------
+    def createContinuousFuturesContract(self, symbol, exchange="GLOBEX",
+                                        is_retry=False):
+
+        contfut_contract = self.createContract((
+            symbol, "CONTFUT", exchange, '', '', '', ''))
+
+        # wait max 250ms for contract details
+        for x in range(25):
+            time.sleep(0.01)
+            contfut = self.contractDetails(contfut_contract)
+            if contfut["tickerId"] != 0 and contfut["m_summary"]["m_conId"] != 0:
+                break
+
+        # if contfut["m_summary"]["m_conId"] == 0:
+        #     contfut = self.contractDetails(contfut["contracts"][0])
+
+        # can't find contract? retry and if still fails - raise error
+        if contfut["m_summary"]["m_conId"] == 0:
+            # print(symbol, contfut["m_summary"]["m_conId"])
+            if not is_retry:
+                return self.createContinuousFuturesContract(symbol, exchange, True)
+            raise ValueError("Can't find a valid Contract using this "
+                            "combination (%s/%s)" % (symbol, exchange))
+
+        # delete continuous placeholder
+        tickerId = contfut["tickerId"]
+        del self.contracts[tickerId]
+        del self.contract_details[tickerId]
+
+        # create futures contract
+        expiry = contfut["m_contractMonth"]
+        currency = contfut["m_summary"]["m_currency"]
+        multiplier = contfut["m_summary"]["m_multiplier"]
+
+        return self.createFuturesContract(
+            symbol, currency, expiry, exchange, multiplier)
 
     # -----------------------------------------
     def createOptionContract(self, symbol, expiry=None, strike=0.0, otype="CALL",

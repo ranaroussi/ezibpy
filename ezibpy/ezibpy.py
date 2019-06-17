@@ -1676,7 +1676,7 @@ class ezIBpy():
         # create futures contract
         expiry = contfut["m_contractMonth"]
         currency = contfut["m_summary"]["m_currency"]
-        multiplier = contfut["m_summary"]["m_multiplier"]
+        multiplier = int(contfut["m_summary"]["m_multiplier"])
 
         return self.createFuturesContract(
             symbol, currency, expiry, exchange, multiplier)

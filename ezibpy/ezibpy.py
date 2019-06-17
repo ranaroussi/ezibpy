@@ -1645,7 +1645,7 @@ class ezIBpy():
 
     # -----------------------------------------
     def createContinuousFuturesContract(self, symbol, exchange="GLOBEX",
-                                        is_retry=False):
+                                        output="contract", is_retry=False):
 
         contfut_contract = self.createContract((
             symbol, "CONTFUT", exchange, '', '', '', ''))
@@ -1664,7 +1664,8 @@ class ezIBpy():
         if contfut["m_summary"]["m_conId"] == 0:
             # print(symbol, contfut["m_summary"]["m_conId"])
             if not is_retry:
-                return self.createContinuousFuturesContract(symbol, exchange, True)
+                return self.createContinuousFuturesContract(
+                    symbol, exchange, output, True)
             raise ValueError("Can't find a valid Contract using this "
                             "combination (%s/%s)" % (symbol, exchange))
 
@@ -1677,6 +1678,10 @@ class ezIBpy():
         expiry = contfut["m_contractMonth"]
         currency = contfut["m_summary"]["m_currency"]
         multiplier = int(contfut["m_summary"]["m_multiplier"])
+
+        if output == "tuple":
+            return (symbol, "FUT", exchange, currency,
+                    expiry, 0.0, "", multiplier)
 
         return self.createFuturesContract(
             symbol, currency, expiry, exchange, multiplier)

@@ -1500,17 +1500,8 @@ class ezIBpy():
                                   # contractTuple[6], str(strike).replace(".", ""))
 
             elif contractTuple[1] == "FUT":
-                exp = ' ' # default
-
-                # round expiry day to expiry month
-                if localSymbol != "":
-                    # exp = localSymbol[2:3]+str(contractTuple[4][:4])
-                    exp = localSymbol[2:3] + self.localSymbolExpiry[localSymbol][:4]
-
-                if ' ' in exp:
-                    exp = str(contractTuple[4])[:6]
-                    exp = dataTypes["MONTH_CODES"][int(exp[4:6])] + str(int(exp[:4]))
-
+                exp = str(contractTuple[4])[:6]
+                exp = dataTypes["MONTH_CODES"][int(exp[4:6])] + exp[:4]
                 contractString = (contractTuple[0] + exp, contractTuple[1])
 
             elif contractTuple[1] == "CASH":

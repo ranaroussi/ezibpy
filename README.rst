@@ -13,7 +13,7 @@ ezIBpy: Pythonic Wrapper for IbPy
     :target: https://pypi.python.org/pypi/ezibpy
     :alt: PyPi status
 
-.. image:: https://img.shields.io/travis/ranaroussi/ezibpy/master.svg?maxAge=1
+.. image:: https://img.shields.io/travis/ranaroussi/ezibpy/main.svg?maxAge=1
     :target: https://travis-ci.org/ranaroussi/ezibpy
     :alt: Travis-CI build status
 

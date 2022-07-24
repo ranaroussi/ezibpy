@@ -50,9 +50,4 @@ setup(
     keywords='ezibpy, interactive brokers, tws, ibgw, ibpy',
     packages=find_packages(exclude=['contrib', 'docs', 'tests', 'examples']),
     install_requires=['pandas>=0.23.0', 'python-dateutil>=2.5.3', 'ibpy2>=0.8.0'],
-    entry_points={
-        'console_scripts': [
-            'sample=sample:main',
-        ],
-    },
 )
